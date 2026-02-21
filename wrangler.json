@@ -1,0 +1,13 @@
+{
+  "name": "business-advanced-checkout",
+  "compatibility_date": "2024-01-01",
+  "main": ".open-next/worker.js",
+  "d1_databases": [
+    {
+      "binding": "DATABASE",
+      "database_name": "business-advanced-checkout-db",
+      "database_id": "placeholder",
+      "migrations_dir": "./migrations"
+    }
+  ]
+}

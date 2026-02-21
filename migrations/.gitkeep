@@ -1,0 +1,2 @@
+# Migrations directory for D1 database
+# Schema is initialized via wrangler d1 execute command
