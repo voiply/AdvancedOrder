@@ -1272,26 +1272,27 @@ export default function Home() {
   // Helper function to get plan price (accounts for coupon)
   // Business Advanced Plan: $11.95/mo ($4 telco + $7.95 support)
   // NOTE: Coupon ONLY applies to 3-month plan
+  const getUserCount = () => parseInt(numUsers) || 1;
+
   const getPlanPrice = () => {
-    // $11.95/mo pricing
-    // 3-month: $35.85 ($11.95 * 3)
-    // Annual: $119.50 ($11.95 * 10, get 2 months free)
-    // 3-year: $358.50 ($11.95 * 30, get 6 months free)
-    if (selectedPlan === 'annually') return 119.50;
-    if (selectedPlan === '3year') return 358.50;
+    // $11.95/mo per user pricing
+    const users = getUserCount();
+    if (selectedPlan === 'annually') return 119.50 * users;
+    if (selectedPlan === '3year') return 358.50 * users;
     if (selectedPlan === '3month') {
-      return couponApplied ? 23.90 : 35.85; // coupon = 1 month free ($11.95 off)
+      return couponApplied ? 23.90 * users : 35.85 * users;
     }
-    return 35.85;
+    return 35.85 * users;
   };
   
   // Get plan price for tax calculation (ALWAYS full price, even with coupon)
   const getPlanPriceForTax = (planOverride?: string) => {
     const plan = planOverride || selectedPlan;
-    if (plan === 'annually') return 119.50;
-    if (plan === '3year') return 358.50;
-    if (plan === '3month') return 35.85;
-    return 35.85;
+    const users = getUserCount();
+    if (plan === 'annually') return 119.50 * users;
+    if (plan === '3year') return 358.50 * users;
+    if (plan === '3month') return 35.85 * users;
+    return 35.85 * users;
   };
 
   // Get the plan months multiplier (for calculating managed desk phone costs)
@@ -3457,6 +3458,22 @@ export default function Home() {
                         <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
                       </div>
 
+                      {/* Service Plan */}
+                      <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
+                        <div>
+                          <p className="text-sm font-medium text-[#080808]">
+                            Voiply Business Plan ({selectedPlan === '3month' ? '3-Month' : selectedPlan === 'annually' ? '1-Year' : '3-Year'})
+                          </p>
+                          <p className="text-xs text-[#999]">
+                            $11.95/mo × {getUserCount()} user{getUserCount() !== 1 ? 's' : ''} × {getPlanMonths()} mo
+                            {couponApplied && selectedPlan === '3month' ? ' (1 mo free)' : ''}
+                          </p>
+                        </div>
+                        <span className="text-sm font-bold text-[#080808]">
+                          ${getPlanPrice().toFixed(2)}
+                        </span>
+                      </div>
+
                       {/* Selected Phones - Hardware */}
                       {!ownDevice && Object.entries(selectedPhones).map(([phoneId, qty]) => {
                         const phone = PHONES.find(p => p.id === phoneId);
@@ -3575,7 +3592,24 @@ export default function Home() {
 
                     {/* Plan Selector - 3 vertical card boxes */}
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA] mb-2">Select your plan</p>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA]">
+                          Select your plan for {getUserCount()} user{getUserCount() !== 1 ? 's' : ''}
+                        </p>
+                        {needsPhonesStep && (
+                          <button
+                            type="button"
+                            onClick={() => setCurrentStep(4)}
+                            className="flex items-center gap-1 text-xs text-[#F53900] hover:underline font-medium"
+                            title="Edit phone selection"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                            Edit phones
+                          </button>
+                        )}
+                      </div>
                       <div className="space-y-2">
 
                         {/* 3-Month */}
@@ -3595,14 +3629,14 @@ export default function Home() {
                                 <span className="text-[9px] font-bold text-white bg-[#17DB4E] px-1.5 py-0.5 rounded-full">1 MONTH FREE</span>
                               )}
                             </div>
-                            <p className="text-xs text-[#999] mt-0.5">{couponApplied ? '$7.97' : '$11.95'}/mo</p>
+                            <p className="text-xs text-[#999] mt-0.5">{couponApplied ? '$7.97' : '$11.95'}/mo per user</p>
                           </div>
                           <div className="text-right">
                             {couponApplied && (
-                              <p className="text-xs text-[#CCC] line-through">$35.85</p>
+                              <p className="text-xs text-[#CCC] line-through">${(35.85 * getUserCount()).toFixed(2)}</p>
                             )}
                             <span className={`text-base font-bold ${selectedPlan === '3month' ? 'text-[#F53900]' : 'text-[#080808]'}`}>
-                              {couponApplied ? '$23.90' : '$35.85'}
+                              ${(couponApplied ? 23.90 * getUserCount() : 35.85 * getUserCount()).toFixed(2)}
                             </span>
                           </div>
                         </button>
@@ -3622,12 +3656,12 @@ export default function Home() {
                               <span className={`text-sm font-semibold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>1-Year</span>
                               <span className="text-[9px] font-bold text-white bg-[#17DB4E] px-1.5 py-0.5 rounded-full">MOST POPULAR</span>
                             </div>
-                            <p className="text-xs text-[#999] mt-0.5">12 months for the price of 10 · $9.95/mo</p>
+                            <p className="text-xs text-[#999] mt-0.5">12 months for the price of 10 · $9.95/mo per user</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-[#CCC] line-through">$143.40</p>
+                            <p className="text-xs text-[#CCC] line-through">${(143.40 * getUserCount()).toFixed(2)}</p>
                             <span className={`text-base font-bold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>
-                              $119.50
+                              ${(119.50 * getUserCount()).toFixed(2)}
                             </span>
                           </div>
                         </button>
@@ -3647,12 +3681,12 @@ export default function Home() {
                               <span className={`text-sm font-semibold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>3-Year</span>
                               <span className="text-[9px] font-bold text-white bg-[#7C5CF6] px-1.5 py-0.5 rounded-full">LOCK IN YOUR RATE</span>
                             </div>
-                            <p className="text-xs text-[#999] mt-0.5">36 months for the price of 30 · $9.96/mo</p>
+                            <p className="text-xs text-[#999] mt-0.5">36 months for the price of 30 · $9.96/mo per user</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-[#CCC] line-through">$430.20</p>
+                            <p className="text-xs text-[#CCC] line-through">${(430.20 * getUserCount()).toFixed(2)}</p>
                             <span className={`text-base font-bold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>
-                              $358.50
+                              ${(358.50 * getUserCount()).toFixed(2)}
                             </span>
                           </div>
                         </button>
