@@ -158,7 +158,14 @@ export default function Home() {
   const [canPort, setCanPort] = useState(false);
   const [hasInternet, setHasInternet] = useState<boolean | null>(null);
   
-  // Step 2: New Number Selection (only if hasPhone === false)
+  // Step 2: Business Needs Assessment
+  const [numUsers, setNumUsers] = useState('');
+  const [callMethod, setCallMethod] = useState('');
+  const [numLocations, setNumLocations] = useState('');
+  const [highCallVolume, setHighCallVolume] = useState('');
+  const [needCallRecording, setNeedCallRecording] = useState('');
+  
+  // Step 3: New Number Selection (only if hasPhone === false)
   const [areaCode, setAreaCode] = useState('412');
   const [availableNumbers, setAvailableNumbers] = useState<string[]>([]);
   const [loadingNumbers, setLoadingNumbers] = useState(false);
@@ -172,7 +179,7 @@ export default function Home() {
   const [zipFromAutocomplete, setZipFromAutocomplete] = useState(false);
   const [zipValidating, setZipValidating] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ address?: string; hasPhone?: string; phoneNumber?: string; hasInternet?: string }>({});
-  const [step4Errors, setStep4Errors] = useState<{ firstName?: string; lastName?: string; email?: string; mobileNumber?: string; card?: string }>({});
+  const [step5Errors, setStep5Errors] = useState<{ firstName?: string; lastName?: string; email?: string; mobileNumber?: string; card?: string }>({});
   const [emailValidated, setEmailValidated] = useState<boolean | null>(null); // null=unchecked, true=valid, false=invalid
   const [emailValidating, setEmailValidating] = useState(false);
   const [mobileValidated, setMobileValidated] = useState<boolean | null>(null);
@@ -180,12 +187,12 @@ export default function Home() {
   const [zipError, setZipError] = useState('');
   const [zipHint, setZipHint] = useState('');
   
-  // Step 3: Plan Selection
+  // Step 4: Plan Selection
   const [selectedBundle, setSelectedBundle] = useState<string | null>('adapter');
   const [selectedPlan, setSelectedPlan] = useState<'3month' | 'annually' | '3year'>('annually');
   const [ownDevice, setOwnDevice] = useState(false);
   
-  // Step 4: Payment
+  // Step 5: Payment
   const [smartyLoaded, setSmartyLoaded] = useState(false);
   const [smartySuggestions, setSmartySuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -318,7 +325,7 @@ export default function Home() {
               ? 'Your bank could not verify your card. Please try again with a different card.'
               : 'Authentication was not completed. Please try again.',
           });
-          setCurrentStep(4);
+          setCurrentStep(5);
           // Strip Stripe params from URL without reloading
           const cleanUrl = new URL(window.location.href);
           cleanUrl.searchParams.delete('payment_intent');
@@ -378,6 +385,11 @@ export default function Home() {
             setInternetPackage(session.internetPackage || 'phone-only');
             setInternetDevice(session.internetDevice || 'rental');
             setStripeCustomerId(session.stripeCustomerId || '');
+            if (session.numUsers) setNumUsers(session.numUsers);
+            if (session.callMethod) setCallMethod(session.callMethod);
+            if (session.numLocations) setNumLocations(session.numLocations);
+            if (session.highCallVolume) setHighCallVolume(session.highCallVolume);
+            if (session.needCallRecording) setNeedCallRecording(session.needCallRecording);
             setCurrentStep(session.currentStep || 1);
             
             // Save to localStorage
@@ -576,6 +588,11 @@ export default function Home() {
             internetDevice,
             stripeCustomerId,
             paymentIntentId,
+            numUsers,
+            callMethod,
+            numLocations,
+            highCallVolume,
+            needCallRecording,
             currentStep
           })
         });
@@ -602,7 +619,8 @@ export default function Home() {
       address, country, addressComponents, billingSameAsShipping, billingAddress, billingCountry, billingComponents,
       hasPhone, phoneNumber, areaCode, selectedNewNumber, selectedPlan, selectedBundle, 
       ownDevice, protectionPlan, protectionPlanTerm, onlineFax,
-      hasInternet, addInternetPackage, internetPackage, internetDevice, stripeCustomerId]);
+      hasInternet, addInternetPackage, internetPackage, internetDevice, stripeCustomerId,
+      numUsers, callMethod, numLocations, highCallVolume, needCallRecording]);
   
   // Close suggestions when clicking outside
   useEffect(() => {
@@ -743,10 +761,10 @@ export default function Home() {
     }
   };
   
-  // Create Payment Intent when reaching Step 4
+  // Create Payment Intent when reaching Step 5
   useEffect(() => {
     const createPaymentIntent = async () => {
-      if (currentStep === 4 && !clientSecret && !loadingPaymentIntent) {
+      if (currentStep === 5 && !clientSecret && !loadingPaymentIntent) {
         setLoadingPaymentIntent(true);
         
         try {
@@ -836,7 +854,7 @@ export default function Home() {
   // Update Payment Intent when pricing changes
   useEffect(() => {
     const updatePaymentIntent = async () => {
-      if (currentStep === 4 && paymentIntentId && !loadingPaymentIntent) {
+      if (currentStep === 5 && paymentIntentId && !loadingPaymentIntent) {
         try {
           // Calculate total amount
           const planPrice = getPlanPrice();
@@ -895,9 +913,9 @@ export default function Home() {
     updatePaymentIntent();
   }, [currentStep, paymentIntentId, selectedPlan, selectedBundle, ownDevice, protectionPlan, protectionPlanTerm, hasInternet, addInternetPackage, internetPackage, internetDevice, onlineFax]);
   
-  // Clean up Stripe when leaving Step 4
+  // Clean up Stripe when leaving Step 5
   useEffect(() => {
-    if (currentStep !== 4 && stripe) {
+    if (currentStep !== 5 && stripe) {
       setStripe(null);
       setElements(null);
       setPaymentElement(null);
@@ -908,7 +926,7 @@ export default function Home() {
   
   // Initialize Stripe Elements with Payment Element
   useEffect(() => {
-    if (currentStep === 4 && stripeLoaded && clientSecret && typeof window !== 'undefined' && !stripe) {
+    if (currentStep === 5 && stripeLoaded && clientSecret && typeof window !== 'undefined' && !stripe) {
       try {
         setPaymentElementError(false);
         setPaymentElementReady(false);
@@ -1014,7 +1032,7 @@ export default function Home() {
         
         paymentEl.on('change', (event: any) => {
           setCardComplete(event.complete);
-          if (event.complete) setStep4Errors(prev => ({ ...prev, card: undefined }));
+          if (event.complete) setStep5Errors(prev => ({ ...prev, card: undefined }));
         });
         
       } catch (error) {
@@ -1056,9 +1074,9 @@ export default function Home() {
     detectCountry();
   }, []); // Run once on mount
   
-  // Exit intent detection - only on step 4 (order page)
+  // Exit intent detection - only on step 5 (order page)
   useEffect(() => {
-    if (currentStep !== 4 || exitPopupShown || couponApplied) return;
+    if (currentStep !== 5 || exitPopupShown || couponApplied) return;
     
     const handleMouseLeave = (e: MouseEvent) => {
       // Trigger when mouse leaves at the top of the page
@@ -1308,9 +1326,9 @@ export default function Home() {
     }
   };
   
-  // Fetch numbers when entering step 2 (new number selection)
+  // Fetch numbers when entering step 3 (new number selection)
   useEffect(() => {
-    if (currentStep === 2 && hasPhone === false && areaCode.length === 3) {
+    if (currentStep === 3 && hasPhone === false && areaCode.length === 3) {
       fetchAvailableNumbers(areaCode);
     }
   }, [currentStep, hasPhone, areaCode]);
@@ -1392,14 +1410,17 @@ export default function Home() {
     (hasPhone === false || (phoneNumber && phoneValidated)) &&
     hasInternet !== null;
   
-  // Step 2 is number selection (only shown if hasPhone === false)  
-  const canProceedStep2 = selectedNewNumber !== '';
+  // Step 2 is business needs assessment
+  const canProceedStep2 = numUsers !== '' && callMethod !== '' && numLocations !== '' && highCallVolume !== '' && needCallRecording !== '';
   
-  // Step 3 is bundle selection
-  const canProceedStep3 = ownDevice || selectedBundle !== null;
+  // Step 3 is number selection (only shown if hasPhone === false)  
+  const canProceedStep3 = selectedNewNumber !== '';
   
-  // Step 4 is payment
-  const canProceedStep4 = cardComplete;
+  // Step 4 is bundle selection
+  const canProceedStep4 = ownDevice || selectedBundle !== null;
+  
+  // Step 5 is payment
+  const canProceedStep5 = cardComplete;
   
   // Calculate delivery date (5 business days from today, skipping weekends)
   const getDeliveryDate = () => {
@@ -1440,7 +1461,7 @@ export default function Home() {
 
     // Check address
     if (!address || !addressComponents.street) {
-      errors.address = 'Please enter your home address';
+      errors.address = 'Please enter your business address';
     }
 
     // Check hasPhone question
@@ -1480,8 +1501,8 @@ export default function Home() {
   };
   
   const handleNextStep = async () => {
-    // If leaving step 2 (number selection), reserve the number first
-    if (currentStep === 2 && selectedNewNumber) {
+    // If leaving step 3 (number selection), reserve the number first
+    if (currentStep === 3 && selectedNewNumber) {
       setReservingNumber(true);
       setReservationError('');
       
@@ -1504,8 +1525,8 @@ export default function Home() {
           throw new Error(msg);
         }
         
-        // Successfully reserved - proceed to next step
-        setCurrentStep(3);
+        // Successfully reserved - proceed to bundle selection
+        setCurrentStep(4);
         
       } catch (error: any) {
         console.error('Error reserving number:', error);
@@ -1523,39 +1544,41 @@ export default function Home() {
       if (!validateAndScrollStep1()) {
         return; // Stop if validation fails
       }
-      
+      // Send GTM lead event
+      sendGTMEvent('lead');
+      // Always go to business needs assessment
+      setCurrentStep(2);
+    } else if (currentStep === 2) {
+      // From business needs to number selection or bundles
       if (hasPhone === false) {
-        // Send GTM lead event
-        sendGTMEvent('lead');
-        // Go to number selection
-        setCurrentStep(2);
-      } else if (hasPhone === true) {
-        // Send GTM lead event
-        sendGTMEvent('lead');
-        // Skip number selection, go straight to bundles
         setCurrentStep(3);
+      } else {
+        setCurrentStep(4);
       }
-    } else if (currentStep === 3) {
+    } else if (currentStep === 4) {
       // Send GTM add_to_cart event
       sendGTMEvent('add_to_cart');
       // From bundles to payment
-      setCurrentStep(4);
+      setCurrentStep(5);
     }
   };
   
   const handleBack = () => {
     if (currentStep === 2) {
-      // From number selection back to address
+      // From business needs back to address
       setCurrentStep(1);
-    } else if (currentStep === 3 && hasPhone === false) {
-      // From bundles back to number selection
+    } else if (currentStep === 3) {
+      // From number selection back to business needs
       setCurrentStep(2);
-    } else if (currentStep === 3 && hasPhone === true) {
-      // From bundles back to address (skip number selection)
-      setCurrentStep(1);
-    } else if (currentStep === 4) {
-      // From payment back to bundles
+    } else if (currentStep === 4 && hasPhone === false) {
+      // From bundles back to number selection
       setCurrentStep(3);
+    } else if (currentStep === 4 && hasPhone === true) {
+      // From bundles back to business needs (skip number selection)
+      setCurrentStep(2);
+    } else if (currentStep === 5) {
+      // From payment back to bundles
+      setCurrentStep(4);
     }
   };
   
@@ -1709,7 +1732,7 @@ export default function Home() {
     if (!cardComplete) errors.card = 'Please complete your payment details';
 
     if (Object.keys(errors).length > 0) {
-      setStep4Errors(errors);
+      setStep5Errors(errors);
       // Scroll to first error
       if (errors.firstName) {
         firstNameRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1729,7 +1752,7 @@ export default function Home() {
       return false;
     }
 
-    setStep4Errors({});
+    setStep5Errors({});
     return true;
   };
 
@@ -1741,7 +1764,7 @@ export default function Home() {
     // Validate mobile number format (basic check for 10 digits)
     const phoneDigits = mobileNumber.replace(/\D/g, '');
     if (phoneDigits.length !== 10) {
-      setStep4Errors(prev => ({ ...prev, mobileNumber: 'Please enter a valid 10-digit mobile number' }));
+      setStep5Errors(prev => ({ ...prev, mobileNumber: 'Please enter a valid 10-digit mobile number' }));
       mobileNumberRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       mobileNumberRef.current?.focus();
       return;
@@ -2354,16 +2377,16 @@ export default function Home() {
     }
   };
   
-  // Auto-fetch taxes for all plans when entering step 4
+  // Auto-fetch taxes for all plans when entering step 5
   useEffect(() => {
-    if (currentStep === 4 && addressComponents.zipCode) {
+    if (currentStep === 5 && addressComponents.zipCode) {
       fetchTaxesForAllPlans();
     }
   }, [currentStep, addressComponents.zipCode]);
   
-  // Re-fetch taxes when plan selection or options change on step 4
+  // Re-fetch taxes when plan selection or options change on step 5
   useEffect(() => {
-    if (currentStep === 4 && addressComponents.zipCode) {
+    if (currentStep === 5 && addressComponents.zipCode) {
       // Fetch for currently selected plan (will use cache if available)
       fetchTaxBreakdown(false);
     }
@@ -2382,8 +2405,8 @@ export default function Home() {
 
   return (
     <>
-      {/* Stripe SDK - Only load on Step 4 (payment page) */}
-      {currentStep === 4 && (
+      {/* Stripe SDK - Only load on Step 5 (payment page) */}
+      {currentStep === 5 && (
         <Script 
           src="https://js.stripe.com/v3/"
           strategy="lazyOnload"
@@ -2419,13 +2442,13 @@ export default function Home() {
         </header>
 
         {/* Main Content */}
-        <main className={`flex-1 w-full mx-auto px-4 py-6 md:px-6 md:py-8 ${currentStep === 4 ? 'max-w-[975px]' : 'max-w-[650px]'}`}>
+        <main className={`flex-1 w-full mx-auto px-4 py-6 md:px-6 md:py-8 ${currentStep === 5 ? 'max-w-[975px]' : 'max-w-[650px]'}`}>
           {/* Step 1: Address & Phone */}
           {currentStep === 1 && (
             <>
               <div className="mb-6 md:mb-8">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#080808] mb-2 leading-tight">
-                  Let's verify your home address
+                  Let's verify your business address
                 </h1>
                 <p className="text-base md:text-lg text-[#585858] leading-tight">
                   We'll confirm Voiply service is available in your area
@@ -2771,8 +2794,135 @@ export default function Home() {
             </>
           )}
 
-          {/* Step 2: New Number Selection (only if hasPhone === false) */}
+          {/* Step 2: Business Needs Assessment */}
           {currentStep === 2 && (
+            <>
+              <div className="mb-6 md:mb-8">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#080808] mb-2 leading-tight">
+                  Learn more about your business needs
+                </h1>
+                <p className="text-base md:text-lg text-[#585858] leading-tight">
+                  Help us understand your requirements to get you the best quote
+                </p>
+              </div>
+
+              <div className="space-y-6 md:space-y-8">
+                {/* How many users need a phone number? */}
+                <div>
+                  <label className="block text-sm font-medium text-[#080808] mb-2">
+                    How many users need a phone number?
+                  </label>
+                  <select
+                    value={numUsers}
+                    onChange={(e) => setNumUsers(e.target.value)}
+                    className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0 appearance-none cursor-pointer"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23585858' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+                  >
+                    <option value="" disabled>Select number of users</option>
+                    {Array.from({ length: 25 }, (_, i) => i + 1).map(n => (
+                      <option key={n} value={String(n)}>{n}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* How will your team make and receive calls? */}
+                <div>
+                  <label className="block text-sm font-medium text-[#080808] mb-2">
+                    How will your team make and receive calls?
+                  </label>
+                  <select
+                    value={callMethod}
+                    onChange={(e) => setCallMethod(e.target.value)}
+                    className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0 appearance-none cursor-pointer"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23585858' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+                  >
+                    <option value="" disabled>Select call method</option>
+                    <option value="app-only">App-Only (Mobile & Desktop)</option>
+                    <option value="desk-phones">Desktop Phones</option>
+                    <option value="both">Both Apps and Desk Phones</option>
+                  </select>
+                </div>
+
+                {/* How many locations do you have? */}
+                <div>
+                  <label className="block text-sm font-medium text-[#080808] mb-2">
+                    How many locations do you have?
+                  </label>
+                  <select
+                    value={numLocations}
+                    onChange={(e) => setNumLocations(e.target.value)}
+                    className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0 appearance-none cursor-pointer"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23585858' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+                  >
+                    <option value="" disabled>Select number of locations</option>
+                    <option value="one">One location</option>
+                    <option value="multiple">Multiple locations</option>
+                  </select>
+                </div>
+
+                {/* Will your team handle a high volume of calls? */}
+                <div>
+                  <label className="block text-sm font-medium text-[#080808] mb-2">
+                    Will your team handle a high volume of inbound or outbound calls?
+                  </label>
+                  <select
+                    value={highCallVolume}
+                    onChange={(e) => setHighCallVolume(e.target.value)}
+                    className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0 appearance-none cursor-pointer"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23585858' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+                  >
+                    <option value="" disabled>Select call volume</option>
+                    <option value="standard">No, standard business use</option>
+                    <option value="high-volume">Yes, we handle high call volumes</option>
+                    <option value="call-center">Yes, we operate a call center</option>
+                  </select>
+                </div>
+
+                {/* Do you need call recording for compliance? */}
+                <div>
+                  <label className="block text-sm font-medium text-[#080808] mb-2">
+                    Do you need call recording for compliance?
+                  </label>
+                  <select
+                    value={needCallRecording}
+                    onChange={(e) => setNeedCallRecording(e.target.value)}
+                    className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0 appearance-none cursor-pointer"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23585858' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+                  >
+                    <option value="" disabled>Select an option</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+
+                {/* Navigation Buttons */}
+                <div className="flex justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="w-full max-w-[140px] h-12 md:h-14 rounded-[5px] text-base md:text-lg font-semibold transition-colors border border-[#D9D9D9] text-[#585858] hover:bg-gray-50 cursor-pointer"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNextStep}
+                    disabled={!canProceedStep2}
+                    className={`w-full max-w-[300px] h-12 md:h-14 rounded-[5px] text-base md:text-lg font-semibold transition-colors ${
+                      canProceedStep2
+                        ? 'bg-[#F53900] text-white hover:bg-[#d63300] cursor-pointer'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    Continue
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Step 3: New Number Selection (only if hasPhone === false) */}
+          {currentStep === 3 && (
             <>
               <div className="mb-6 md:mb-8">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#080808] mb-2 leading-tight">
@@ -2867,10 +3017,10 @@ export default function Home() {
                   </button>
                   <button
                     type="button"
-                    disabled={!canProceedStep2 || reservingNumber}
+                    disabled={!canProceedStep3 || reservingNumber}
                     onClick={handleNextStep}
                     className={`flex-1 h-10 md:h-12 rounded-[5px] text-sm md:text-base transition-colors ${
-                      canProceedStep2 && !reservingNumber
+                      canProceedStep3 && !reservingNumber
                         ? 'bg-[#F53900] text-white hover:bg-[#d63300] cursor-pointer' 
                         : 'bg-[#E9E9E9] text-[#A5A5A5] cursor-not-allowed'
                     }`}
@@ -2882,8 +3032,8 @@ export default function Home() {
             </>
           )}
 
-          {/* Step 3: Bundle Selection */}
-          {currentStep === 3 && (
+          {/* Step 4: Bundle Selection */}
+          {currentStep === 4 && (
             <>
               <div className="mb-6 md:mb-8">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#080808] mb-2 leading-tight">
@@ -3119,10 +3269,10 @@ export default function Home() {
                   </button>
                   <button
                     type="button"
-                    disabled={!canProceedStep3}
+                    disabled={!canProceedStep4}
                     onClick={handleNextStep}
                     className={`flex-1 h-12 rounded-[5px] text-base transition-colors ${
-                      canProceedStep3
+                      canProceedStep4
                         ? 'bg-[#F53900] text-white hover:bg-[#d63300] cursor-pointer' 
                         : 'bg-[#E9E9E9] text-[#A5A5A5] cursor-not-allowed'
                     }`}
@@ -3134,8 +3284,8 @@ export default function Home() {
             </>
           )}
 
-          {/* Step 4: Payment - Two Column Layout */}
-          {currentStep === 4 && (
+          {/* Step 5: Payment - Two Column Layout */}
+          {currentStep === 5 && (
             <>
               <div className="mb-6 md:mb-8">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#080808] mb-2 leading-tight">
@@ -3561,15 +3711,15 @@ export default function Home() {
                         ref={firstNameRef}
                         type="text"
                         value={firstName}
-                        onChange={(e) => { setFirstName(e.target.value); setStep4Errors(prev => ({ ...prev, firstName: undefined })); }}
+                        onChange={(e) => { setFirstName(e.target.value); setStep5Errors(prev => ({ ...prev, firstName: undefined })); }}
                         placeholder="First Name *"
                         required
-                        className={`w-full h-12 px-3 bg-white border rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0 ${step4Errors.firstName ? 'border-[#F53900]' : 'border-[#D9D9D9]'}`}
+                        className={`w-full h-12 px-3 bg-white border rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0 ${step5Errors.firstName ? 'border-[#F53900]' : 'border-[#D9D9D9]'}`}
                       />
-                      {step4Errors.firstName && (
+                      {step5Errors.firstName && (
                         <p className="mt-1 text-sm text-[#F53900] flex items-center gap-1">
                           <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
-                          {step4Errors.firstName}
+                          {step5Errors.firstName}
                         </p>
                       )}
                       </div>
@@ -3578,15 +3728,15 @@ export default function Home() {
                         ref={lastNameRef}
                         type="text"
                         value={lastName}
-                        onChange={(e) => { setLastName(e.target.value); setStep4Errors(prev => ({ ...prev, lastName: undefined })); }}
+                        onChange={(e) => { setLastName(e.target.value); setStep5Errors(prev => ({ ...prev, lastName: undefined })); }}
                         placeholder="Last Name *"
                         required
-                        className={`w-full h-12 px-3 bg-white border rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0 ${step4Errors.lastName ? 'border-[#F53900]' : 'border-[#D9D9D9]'}`}
+                        className={`w-full h-12 px-3 bg-white border rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0 ${step5Errors.lastName ? 'border-[#F53900]' : 'border-[#D9D9D9]'}`}
                       />
-                      {step4Errors.lastName && (
+                      {step5Errors.lastName && (
                         <p className="mt-1 text-sm text-[#F53900] flex items-center gap-1">
                           <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
-                          {step4Errors.lastName}
+                          {step5Errors.lastName}
                         </p>
                       )}
                       </div>
@@ -3599,7 +3749,7 @@ export default function Home() {
                       value={email}
                       onChange={(e) => {
                         setEmail(e.target.value);
-                        setStep4Errors(prev => ({ ...prev, email: undefined }));
+                        setStep5Errors(prev => ({ ...prev, email: undefined }));
                         // Fire begin_checkout GTM event once when email is verified
                         // (also fires at blur if not yet fired and emailValidated becomes true)
                         
@@ -3620,9 +3770,9 @@ export default function Home() {
                           const data = await res.json();
                           setEmailValidated(data.valid);
                           if (!data.valid) {
-                            setStep4Errors(prev => ({ ...prev, email: 'We could not verify this email address. Please check for typos and try again.' }));
+                            setStep5Errors(prev => ({ ...prev, email: 'We could not verify this email address. Please check for typos and try again.' }));
                           } else {
-                            setStep4Errors(prev => ({ ...prev, email: undefined }));
+                            setStep5Errors(prev => ({ ...prev, email: undefined }));
                             // Fire GTM begin_checkout once email is verified
                             if (!beginCheckoutFired) {
                               sendGTMEvent('begin_checkout');
@@ -3663,7 +3813,7 @@ export default function Home() {
                           setEmailValidating(false);
                         }
                       }}
-                      className={`w-full h-12 px-3 bg-white border rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0 ${step4Errors.email ? 'border-[#F53900]' : 'border-[#D9D9D9]'}`}
+                      className={`w-full h-12 px-3 bg-white border rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0 ${step5Errors.email ? 'border-[#F53900]' : 'border-[#D9D9D9]'}`}
                     />
                     {emailValidating && (
                       <p className="mt-1 text-xs text-[#999] flex items-center gap-1">
@@ -3672,10 +3822,10 @@ export default function Home() {
                       </p>
                     )}
 
-                    {step4Errors.email && (
+                    {step5Errors.email && (
                       <p className="mt-1 text-sm text-[#F53900] flex items-center gap-1">
                         <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
-                        {step4Errors.email}
+                        {step5Errors.email}
                       </p>
                     )}
                     </div>
@@ -3685,7 +3835,7 @@ export default function Home() {
                       ref={mobileNumberRef}
                       type="tel"
                       value={mobileNumber}
-                      onChange={(e) => { handleMobileChange(e); setStep4Errors(prev => ({ ...prev, mobileNumber: undefined })); }}
+                      onChange={(e) => { handleMobileChange(e); setStep5Errors(prev => ({ ...prev, mobileNumber: undefined })); }}
                       placeholder="Enter your mobile number *"
                       required
                       onBlur={async (e) => {
@@ -3701,9 +3851,9 @@ export default function Home() {
                           const data = await res.json();
                           setMobileValidated(data.valid);
                           if (!data.valid) {
-                            setStep4Errors(prev => ({ ...prev, mobileNumber: 'We could not verify this phone number. Please make sure you entered all 10 digits correctly.' }));
+                            setStep5Errors(prev => ({ ...prev, mobileNumber: 'We could not verify this phone number. Please make sure you entered all 10 digits correctly.' }));
                           } else {
-                            setStep4Errors(prev => ({ ...prev, mobileNumber: undefined }));
+                            setStep5Errors(prev => ({ ...prev, mobileNumber: undefined }));
                           }
                         } catch {
                           setMobileValidated(true); // fail open
@@ -3711,7 +3861,7 @@ export default function Home() {
                           setMobileValidating(false);
                         }
                       }}
-                      className={`w-full h-12 px-3 bg-white border rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0 ${step4Errors.mobileNumber ? 'border-[#F53900]' : 'border-[#D9D9D9]'}`}
+                      className={`w-full h-12 px-3 bg-white border rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0 ${step5Errors.mobileNumber ? 'border-[#F53900]' : 'border-[#D9D9D9]'}`}
                     />
                     {mobileValidating && (
                       <p className="mt-1 text-xs text-[#999] flex items-center gap-1">
@@ -3720,10 +3870,10 @@ export default function Home() {
                       </p>
                     )}
 
-                    {step4Errors.mobileNumber && (
+                    {step5Errors.mobileNumber && (
                       <p className="mt-1 text-sm text-[#F53900] flex items-center gap-1">
                         <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
-                        {step4Errors.mobileNumber}
+                        {step5Errors.mobileNumber}
                       </p>
                     )}
                     </div>
@@ -3895,10 +4045,10 @@ export default function Home() {
                             id="payment-element"
                             className="w-full"
                           ></div>
-                          {step4Errors.card && (
+                          {step5Errors.card && (
                             <p className="mt-1 text-sm text-[#F53900] flex items-center gap-1">
                               <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/></svg>
-                              {step4Errors.card}
+                              {step5Errors.card}
                             </p>
                           )}
                           
