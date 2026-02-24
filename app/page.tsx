@@ -2820,11 +2820,8 @@ export default function Home() {
                   {hasPhone === true && (
                     <div className="space-y-2">
                       <label className="block text-sm text-[#080808]">
-                        Enter your current phone number:
+                        Enter your primary business number:
                       </label>
-                      <p className="text-xs text-[#585858] -mt-1">
-                        We'll check if we can transfer it to Voiply
-                      </p>
                       <div className="relative">
                         <input
                           ref={phoneNumberRef}
