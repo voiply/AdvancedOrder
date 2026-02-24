@@ -271,7 +271,7 @@ export default function Home() {
   // Step 4: Plan Selection
   const [selectedPhones, setSelectedPhones] = useState<{[phoneId: string]: number}>({});
   const [selectedPlan, setSelectedPlan] = useState<'3month' | 'annually' | '3year'>('annually');
-  const [ownDevice, setOwnDevice] = useState(false);
+  const [ownDevice, setOwnDevice] = useState(0);
   
   // Step 5: Payment
   const [smartyLoaded, setSmartyLoaded] = useState(false);
@@ -450,7 +450,7 @@ export default function Home() {
             setCanPort(session.canPort);
             setSelectedPlan(session.selectedPlan || 'annually');
             if (session.selectedPhones) setSelectedPhones(session.selectedPhones);
-            setOwnDevice(session.ownDevice);
+            setOwnDevice(typeof session.ownDevice === 'boolean' ? (session.ownDevice ? 1 : 0) : (session.ownDevice || 0));
             setOnlineFax(session.onlineFax || false);
             if (session.hasInternet !== undefined) setHasInternet(session.hasInternet);
             if (session.addInternetPackage !== undefined) setAddInternetPackage(session.addInternetPackage);
@@ -1299,6 +1299,11 @@ export default function Home() {
     return Object.values(selectedPhones).reduce((sum, qty) => sum + qty, 0);
   };
 
+  // Get total managed phones (cart phones + own devices)
+  const getTotalManagedPhones = () => {
+    return getTotalPhoneCount() + ownDevice;
+  };
+
   // Get total hardware cost for selected phones
   const getPhoneHardwarePrice = () => {
     return Object.entries(selectedPhones).reduce((total, [phoneId, qty]) => {
@@ -1308,16 +1313,16 @@ export default function Home() {
     }, 0);
   };
 
-  // Get managed desk phone monthly support cost ($5/mo per phone)
+  // Get managed desk phone monthly support cost ($5/mo per phone, includes own devices)
   const getManagedDeskPhonePrice = () => {
-    const totalPhones = getTotalPhoneCount();
+    const totalPhones = getTotalManagedPhones();
     const months = getPlanMonths();
     return totalPhones * 5 * months; // $5/mo per phone * plan months
   };
 
-  // Get managed desk phone price for tax (always full months)
+  // Get managed desk phone price for tax (always full months, includes own devices)
   const getManagedDeskPhonePriceForTax = (planOverride?: string) => {
-    const totalPhones = getTotalPhoneCount();
+    const totalPhones = getTotalManagedPhones();
     const plan = planOverride || selectedPlan;
     let months = 3;
     if (plan === 'annually') months = 12;
@@ -1331,7 +1336,7 @@ export default function Home() {
       ...prev,
       [phoneId]: (prev[phoneId] || 0) + 1
     }));
-    if (ownDevice) setOwnDevice(false);
+
   };
 
   // Remove phone from cart
@@ -1352,7 +1357,7 @@ export default function Home() {
 
   // Get phones summary string for webhooks/metadata
   const getPhonesSummary = () => {
-    if (ownDevice) return 'Own Equipment';
+    if (ownDevice > 0) return `Own Equipment (×${ownDevice})`;
     const phoneEntries = Object.entries(selectedPhones);
     if (phoneEntries.length === 0) return 'No Hardware';
     return phoneEntries.map(([id, qty]) => {
@@ -1527,7 +1532,7 @@ export default function Home() {
   const canProceedStep3 = selectedNewNumber !== '';
   
   // Step 4 is bundle selection
-  const canProceedStep4 = ownDevice || getTotalPhoneCount() > 0;
+  const canProceedStep4 = ownDevice > 0 || getTotalPhoneCount() > 0;
   
   // Step 5 is payment
   const canProceedStep5 = cardComplete;
@@ -2085,7 +2090,7 @@ export default function Home() {
           ? phoneNumber
           : 'N/A',
         plan: selectedPlan,
-        bundle: ownDevice ? 'Service Only' : getPhonesSummary(),
+        bundle: ownDevice > 0 ? 'Service Only' : getPhonesSummary(),
         address: addressComponents,
         email: email,
         name: `${firstName} ${lastName}`,
@@ -2320,7 +2325,7 @@ export default function Home() {
               customerId: finalCustomerId,
               orderId: orderDetails.orderNumber,
               primaryNumber,
-              product: ownDevice ? '' : (() => {
+              product: ownDevice > 0 ? '' : (() => {
                 const phoneEntries = Object.entries(selectedPhones);
                 if (phoneEntries.length === 0) return '';
                 return phoneEntries.map(([id, qty]) => {
@@ -3305,42 +3310,23 @@ export default function Home() {
                   })}
                 </div>
 
-                {/* Own Device Option */}
-                <div className={`relative border-2 rounded-xl p-3 md:p-6 transition-all cursor-pointer ${
-                  ownDevice 
+                {/* Own Device Option - with quantity controls */}
+                <div className={`relative border-2 rounded-xl p-3 md:p-6 transition-all ${
+                  ownDevice > 0
                     ? 'border-[#F53900] bg-[#FEEBE6]/30 shadow-[0_0_0_2px_#FEEBE6]' 
-                    : 'border-[#D9D9D9] bg-white hover:border-[#F53900]/50'
-                }`}
-                onClick={() => {
-                  setOwnDevice(!ownDevice);
-                  if (!ownDevice) {
-                    setSelectedPhones({});
-                  }
-                }}>
-                  {ownDevice && (
+                    : 'border-[#D9D9D9] bg-white'
+                }`}>
+                  {ownDevice > 0 && (
                     <div className="absolute top-3 md:top-4 right-3 md:right-4 bg-[#F53900] text-white text-xs px-3 py-1 rounded-full font-semibold">
-                      Selected
+                      {ownDevice} selected
                     </div>
                   )}
                   
                   <div className="flex items-start gap-3 md:gap-4">
-                    <input
-                      type="checkbox"
-                      checked={ownDevice}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        setOwnDevice(e.target.checked);
-                        if (e.target.checked) {
-                          setSelectedPhones({});
-                        }
-                      }}
-                      className="w-5 h-5 mt-0.5 md:mt-1 accent-[#F53900] cursor-pointer flex-shrink-0"
-                    />
-                    
                     <div className={`hidden md:flex w-12 h-12 rounded-full items-center justify-center flex-shrink-0 ${
-                      ownDevice ? 'bg-[#F53900]' : 'bg-[#F5F5F5]'
+                      ownDevice > 0 ? 'bg-[#F53900]' : 'bg-[#F5F5F5]'
                     }`}>
-                      <svg className={`w-6 h-6 ${ownDevice ? 'text-white' : 'text-[#585858]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className={`w-6 h-6 ${ownDevice > 0 ? 'text-white' : 'text-[#585858]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                       </svg>
                     </div>
@@ -3349,10 +3335,40 @@ export default function Home() {
                       <h3 className="text-sm md:text-base lg:text-lg font-bold text-[#080808] mb-1 md:mb-2">
                         I have my own VoIP phones
                       </h3>
-                      <p className="text-xs md:text-sm text-[#585858] mb-2 md:mb-3">
+                      <p className="text-xs md:text-sm text-[#585858] mb-3">
                         Already have compatible VoIP phones? We&#39;ll help you set them up.
                       </p>
-                      <div className="hidden md:flex items-center gap-2 text-xs text-[#585858]">
+                      
+                      {/* Quantity controls */}
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (ownDevice > 0) setOwnDevice(ownDevice - 1);
+                          }}
+                          disabled={ownDevice <= 0}
+                          className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all ${
+                            ownDevice <= 0
+                              ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed'
+                              : 'border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2] active:scale-95'
+                          }`}
+                        >
+                          <span className="text-lg font-bold leading-none">&minus;</span>
+                        </button>
+                        <span className="text-xl font-bold text-[#080808] w-8 text-center">{ownDevice}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOwnDevice(ownDevice + 1);
+
+                          }}
+                          className="w-9 h-9 rounded-full border-2 border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2] flex items-center justify-center transition-all active:scale-95"
+                        >
+                          <span className="text-lg font-bold leading-none">+</span>
+                        </button>
+                      </div>
+                      
+                      <div className="hidden md:flex items-center gap-2 text-xs text-[#585858] mt-3">
                         <svg className="w-4 h-4 text-[#17DB4E]" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                         </svg>
@@ -3433,7 +3449,7 @@ export default function Home() {
                       </div>
 
                       {/* Selected Phones - Hardware */}
-                      {!ownDevice && Object.entries(selectedPhones).map(([phoneId, qty]) => {
+                      {ownDevice === 0 && Object.entries(selectedPhones).map(([phoneId, qty]) => {
                         const phone = PHONES.find(p => p.id === phoneId);
                         if (!phone) return null;
                         return (
@@ -3451,12 +3467,12 @@ export default function Home() {
                         );
                       })}
 
-                      {/* Managed Desk Phone - recurring per phone */}
-                      {!ownDevice && getTotalPhoneCount() > 0 && (
+                      {/* Managed Desk Phone - recurring per phone (includes own devices) */}
+                      {getTotalManagedPhones() > 0 && (
                         <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
                           <div>
                             <p className="text-sm font-medium text-[#080808]">
-                              Managed Desk Phone{getTotalPhoneCount() > 1 ? ` ×${getTotalPhoneCount()}` : ''}
+                              Managed Desk Phone{getTotalManagedPhones() > 1 ? ` ×${getTotalManagedPhones()}` : ''}
                             </p>
                             <p className="text-xs text-[#999]">${(5).toFixed(2)}/mo per phone × {getPlanMonths()} mo</p>
                           </div>
@@ -3467,10 +3483,10 @@ export default function Home() {
                       )}
 
                       {/* Own Equipment */}
-                      {ownDevice && (
+                      {ownDevice > 0 && (
                         <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
-                          <p className="text-sm font-medium text-[#080808]">Own Equipment</p>
-                          <span className="text-sm font-bold text-[#17DB4E]">No hardware needed</span>
+                          <p className="text-sm font-medium text-[#080808]">Own Equipment{ownDevice > 1 ? ` ×${ownDevice}` : ''}</p>
+                          <span className="text-sm font-bold text-[#17DB4E]">No hardware cost</span>
                         </div>
                       )}
 
