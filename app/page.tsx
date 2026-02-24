@@ -319,9 +319,7 @@ export default function Home() {
   const [tempSuggestions, setTempSuggestions] = useState<any[]>([]);
   const [showTempSuggestions, setShowTempSuggestions] = useState(false);
   
-  // Protection Plan
-  const [protectionPlan, setProtectionPlan] = useState(false);
-  const [protectionPlanTerm, setProtectionPlanTerm] = useState<'3month' | 'annually' | '3year'>('annually');
+  // Protection Plan removed - not needed for business
   
   // Internet Package (when hasInternet === false)
   const [addInternetPackage, setAddInternetPackage] = useState(false);
@@ -336,11 +334,6 @@ export default function Home() {
   }, [hasInternet]);
   const [internetPackage, setInternetPackage] = useState('phone-only');
   const [internetDevice, setInternetDevice] = useState('rental');
-  
-  // Sync protection plan term with selected plan
-  useEffect(() => {
-    setProtectionPlanTerm(selectedPlan);
-  }, [selectedPlan]);
   
   // Online Fax
   const [onlineFax, setOnlineFax] = useState(false);
@@ -457,8 +450,6 @@ export default function Home() {
             setSelectedPlan(session.selectedPlan || 'annually');
             if (session.selectedPhones) setSelectedPhones(session.selectedPhones);
             setOwnDevice(session.ownDevice);
-            setProtectionPlan(session.protectionPlan);
-            setProtectionPlanTerm(session.protectionPlanTerm || 'annually');
             setOnlineFax(session.onlineFax || false);
             if (session.hasInternet !== undefined) setHasInternet(session.hasInternet);
             if (session.addInternetPackage !== undefined) setAddInternetPackage(session.addInternetPackage);
@@ -659,8 +650,6 @@ export default function Home() {
             selectedPlan,
             selectedPhones,
             ownDevice,
-            protectionPlan,
-            protectionPlanTerm,
             onlineFax,
             hasInternet,
             addInternetPackage,
@@ -698,7 +687,7 @@ export default function Home() {
   }, [sessionId, sessionLoaded, currentStep, firstName, lastName, email, mobileNumber, 
       address, country, addressComponents, billingSameAsShipping, billingAddress, billingCountry, billingComponents,
       hasPhone, phoneNumber, areaCode, selectedNewNumber, selectedPlan, selectedPhones, 
-      ownDevice, protectionPlan, protectionPlanTerm, onlineFax,
+      ownDevice, onlineFax,
       hasInternet, addInternetPackage, internetPackage, internetDevice, stripeCustomerId,
       numUsers, callMethod, numLocations, highCallVolume, needCallRecording]);
   
@@ -852,7 +841,7 @@ export default function Home() {
           const planPrice = getPlanPrice();
           const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
           const devicePrice = getPhoneHardwarePrice();
-          const protectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
+          const protectionPrice = 0;
           const shippingCost = getShippingCost();
           const currency = country === 'CA' ? 'cad' : 'usd';
           
@@ -941,7 +930,7 @@ export default function Home() {
           const planPrice = getPlanPrice();
           const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
           const devicePrice = getPhoneHardwarePrice();
-          const protectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
+          const protectionPrice = 0;
           const shippingCost = getShippingCost();
           
           // Calculate internet (NOT taxed)
@@ -993,7 +982,7 @@ export default function Home() {
     };
     
     updatePaymentIntent();
-  }, [currentStep, paymentIntentId, selectedPlan, selectedPhones, ownDevice, protectionPlan, protectionPlanTerm, hasInternet, addInternetPackage, internetPackage, internetDevice, onlineFax]);
+  }, [currentStep, paymentIntentId, selectedPlan, selectedPhones, ownDevice, hasInternet, addInternetPackage, internetPackage, internetDevice, onlineFax]);
   
   // Clean up Stripe when leaving Step 5
   useEffect(() => {
@@ -1371,20 +1360,6 @@ export default function Home() {
     }).join(', ');
   };
   
-  // Get protection plan price based on country and term
-  const getProtectionPlanPrice = () => {
-    if (country === 'CA') {
-      if (protectionPlanTerm === '3month') return 1.49 * 3;
-      if (protectionPlanTerm === 'annually') return 1.49 * 12;
-      if (protectionPlanTerm === '3year') return 1.49 * 36;
-      return 1.49 * 12;
-    }
-    if (protectionPlanTerm === '3month') return 3.33;
-    if (protectionPlanTerm === 'annually') return 11.88;
-    if (protectionPlanTerm === '3year') return 25.00;
-    return 11.88;
-  };
-  
   // Get online fax price based on country
   const getOnlineFaxPrice = () => {
     return country === 'CA' ? 6.95 : 5.00;
@@ -1402,7 +1377,7 @@ export default function Home() {
       const planPrice = getPlanPrice();
       const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
       const devicePrice = getPhoneHardwarePrice();
-      const protectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
+      const protectionPrice = 0;
       const shippingCost = getShippingCost();
       const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
             const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost;
@@ -1926,7 +1901,7 @@ export default function Home() {
       const planPrice = getPlanPrice();
       const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
       const devicePrice = getPhoneHardwarePrice();
-      const protectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
+      const protectionPrice = 0;
       const shippingCost = getShippingCost();
       
       let internetPrice = 0;
@@ -2020,8 +1995,6 @@ export default function Home() {
                     selectedPlan,
                     selectedPhones,
                     ownDevice,
-                    protectionPlan,
-                    protectionPlanTerm,
                     onlineFax,
                     paymentIntentId,
                     currentStep
@@ -2056,7 +2029,7 @@ export default function Home() {
       // Compute finalTotal outside the try block so it's available for pre-save and success branch
       const finalPlanPriceForTax = getPlanPriceForTax();
       const finalDevicePrice = getPhoneHardwarePrice();
-      const finalProtectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
+      const finalProtectionPrice = 0;
       const finalShippingCost = getShippingCost();
       let finalInternetPrice = 0;
       if (hasInternet === false && addInternetPackage) {
@@ -2384,7 +2357,7 @@ export default function Home() {
     
     // Generate cache key from current inputs including date
     const hardwareAmount = getPhoneHardwarePrice();
-    const protectionAmount = protectionPlan ? getProtectionPlanPrice() : 0;
+    const protectionAmount = 0;
     const shippingAmount = getShippingCost();
     const actualPlanPriceForTax = getPlanPriceForTax(planToCalculate);
     
@@ -2524,7 +2497,7 @@ export default function Home() {
       // Fetch for currently selected plan (will use cache if available)
       fetchTaxBreakdown(false);
     }
-  }, [selectedPlan, selectedPhones, ownDevice, protectionPlan, protectionPlanTerm]);
+  }, [selectedPlan, selectedPhones, ownDevice]);
   
   const progressPercentage = (() => {
     // Calculate total steps based on flow
@@ -3458,22 +3431,6 @@ export default function Home() {
                         <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
                       </div>
 
-                      {/* Service Plan */}
-                      <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
-                        <div>
-                          <p className="text-sm font-medium text-[#080808]">
-                            Voiply Business Plan ({selectedPlan === '3month' ? '3-Month' : selectedPlan === 'annually' ? '1-Year' : '3-Year'})
-                          </p>
-                          <p className="text-xs text-[#999]">
-                            $11.95/mo × {getUserCount()} user{getUserCount() !== 1 ? 's' : ''} × {getPlanMonths()} mo
-                            {couponApplied && selectedPlan === '3month' ? ' (1 mo free)' : ''}
-                          </p>
-                        </div>
-                        <span className="text-sm font-bold text-[#080808]">
-                          ${getPlanPrice().toFixed(2)}
-                        </span>
-                      </div>
-
                       {/* Selected Phones - Hardware */}
                       {!ownDevice && Object.entries(selectedPhones).map(([phoneId, qty]) => {
                         const phone = PHONES.find(p => p.id === phoneId);
@@ -3579,7 +3536,7 @@ export default function Home() {
                             if (calculatedTaxAmount !== null) return calculatedTaxAmount.toFixed(2);
                             const planPriceForTax = getPlanPriceForTax();
                             const devicePrice = getPhoneHardwarePrice();
-                            const protectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
+                            const protectionPrice = 0;
                             const shippingCost = getShippingCost();
                             const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
             const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost;
@@ -3596,19 +3553,60 @@ export default function Home() {
                         <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA]">
                           Select your plan for {getUserCount()} user{getUserCount() !== 1 ? 's' : ''}
                         </p>
-                        {needsPhonesStep && (
+                        <div className="flex items-center gap-3">
+                          {needsPhonesStep && (
+                            <button
+                              type="button"
+                              onClick={() => setCurrentStep(4)}
+                              className="flex items-center gap-1 text-xs text-[#F53900] hover:underline font-medium"
+                              title="Edit phone selection"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                              </svg>
+                              Edit phones
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* User quantity control */}
+                      <div className="flex items-center justify-between bg-[#F9F9F9] rounded-lg px-4 py-2.5 mb-3">
+                        <div className="flex items-center gap-2">
+                          <svg className="w-4 h-4 text-[#585858]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                          <span className="text-sm font-medium text-[#080808]">Users</span>
+                        </div>
+                        <div className="flex items-center gap-2">
                           <button
                             type="button"
-                            onClick={() => setCurrentStep(4)}
-                            className="flex items-center gap-1 text-xs text-[#F53900] hover:underline font-medium"
-                            title="Edit phone selection"
+                            onClick={() => {
+                              const current = getUserCount();
+                              if (current > 1) setNumUsers(String(current - 1));
+                            }}
+                            disabled={getUserCount() <= 1}
+                            className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
+                              getUserCount() <= 1 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFF5F2] hover:border-[#F53900]'
+                            }`}
                           >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                            </svg>
-                            Edit phones
+                            <span className="text-sm font-bold">−</span>
                           </button>
-                        )}
+                          <span className="text-base font-bold text-[#080808] w-8 text-center">{getUserCount()}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const current = getUserCount();
+                              if (current < 25) setNumUsers(String(current + 1));
+                            }}
+                            disabled={getUserCount() >= 25}
+                            className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
+                              getUserCount() >= 25 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFF5F2] hover:border-[#F53900]'
+                            }`}
+                          >
+                            <span className="text-sm font-bold">+</span>
+                          </button>
+                        </div>
                       </div>
                       <div className="space-y-2">
 
@@ -3692,29 +3690,6 @@ export default function Home() {
                         </button>
 
                       </div>
-                    </div>
-
-                    {/* Protection Plan - Simplified */}
-                    <div className={`rounded-xl border-2 p-4 transition-all ${protectionPlan ? 'border-[#F53900] bg-[#FFF5F2]' : 'border-[#E8E8E8] bg-white'}`}>
-                      <label className="flex items-start gap-3 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={protectionPlan}
-                          onChange={(e) => setProtectionPlan(e.target.checked)}
-                          className="w-5 h-5 mt-0.5 accent-[#F53900] cursor-pointer"
-                        />
-                        <div className="flex-1">
-                          <div className="flex justify-between items-start mb-1">
-                            <p className="text-sm font-semibold text-[#080808]">Protection Plan</p>
-                            <p className="text-sm font-bold text-[#080808]">
-                              ${getProtectionPlanPrice().toFixed(2)}{country === 'CA' ? ' CAD' : ''} / {protectionPlanTerm === '3month' ? '3-Month' : protectionPlanTerm === 'annually' ? 'Year' : '3-Year'}
-                            </p>
-                          </div>
-                          <p className="text-xs text-[#585858]">
-                            If your Voiply Adapter is damaged, we'll replace it for free. Without this plan, replacements cost $50.
-                          </p>
-                        </div>
-                      </label>
                     </div>
 
                     {/* Internet Package Upsell - Only show if hasInternet === false */}
@@ -3825,7 +3800,7 @@ export default function Home() {
                             const planPriceForTax = getPlanPriceForTax();
                             const devicePrice = getPhoneHardwarePrice();
                             const managedPhonePrice = getManagedDeskPhonePrice();
-                            const protectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
+                            const protectionPrice = 0;
                             const shippingCost = getShippingCost();
                             
                             // Calculate internet package pricing (NOT taxed)
@@ -3987,7 +3962,6 @@ export default function Home() {
                                   home_phone_number: hasPhone ? phoneNumber.replace(/\D/g, '') : '',
                                   selected_plan: selectedPlan,
                                   selected_bundle: ownDevice ? 'own_device' : JSON.stringify(selectedPhones),
-                                  protection_plan: String(protectionPlan),
                                   has_internet: String(hasInternet),
                                   phone_type: hasPhone ? 'existing_number' : 'new_number'
                                 }
