@@ -16,47 +16,127 @@ interface AddressComponents {
   zipCode: string;
 }
 
-interface Bundle {
+interface Phone {
   id: string;
   name: string;
   price: number;
   originalPrice: number;
-  features: string[];
+  category: string;
   image: string;
+  isFree?: boolean;
+  learnMoreUrl?: string;
 }
 
-const BUNDLES: Bundle[] = [
+const PHONES: Phone[] = [
   {
-    id: 'adapter',
-    name: 'Voiply Adapter',
+    id: 'yealink-t31p',
+    name: 'Yealink SIP-T31P',
     price: 0,
-    originalPrice: 39.99,
-    features: ['Plug & Play Install', 'Connects To Router', 'Use Any Analog Phone'],
-    image: 'https://0bf3cfc9bffb318dd3ae21430a09ef03.cdn.bubble.io/f1754928225293x382909957639600450/Image_11_08_2025_12_02_59-removebg-preview.png'
+    originalPrice: 75,
+    category: 'Desktop',
+    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e78c1ecff63dae1a12b3_yealinksip-t31p.avif',
+    isFree: true,
+    learnMoreUrl: '/business/phones/yealink-sip-t31p'
   },
   {
-    id: 'vtech',
-    name: 'Vtech Phone Set',
-    price: 104.95,
-    originalPrice: 119.99,
-    features: ['Digital Answering System', 'Blue Back-lit Keypad', 'Handset and base speakers'],
-    image: 'https://0bf3cfc9bffb318dd3ae21430a09ef03.cdn.bubble.io/cdn-cgi/image/w=384,h=265,f=auto,dpr=1.5,fit=contain/f1686914407578x331004508707592770/My%20project-1%20%281%29%20%281%29.webp'
+    id: 'yealink-t34w',
+    name: 'Yealink SIP-T34W',
+    price: 109.95,
+    originalPrice: 139,
+    category: 'Desktop',
+    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e7ec19b9ef0a6b00beb5_yealinksip-t34w.avif',
+    learnMoreUrl: '/business/phones/yealink-sip-t34w'
   },
   {
-    id: 'att',
-    name: 'AT&T Phone Set',
-    price: 134.95,
-    originalPrice: 159.99,
-    features: ['Quiet mode', '9 number speed dial', 'Large backlit base display'],
-    image: 'https://0bf3cfc9bffb318dd3ae21430a09ef03.cdn.bubble.io/f1686914243009x552991008720217000/ATT-CL84215-removebg-preview%20%281%29.webp'
+    id: 'yealink-t44w',
+    name: 'Yealink SIP-T44W',
+    price: 169.95,
+    originalPrice: 179,
+    category: 'Desktop',
+    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e7353febd8edf89ef21b_yealinksip-t44w.avif',
+    learnMoreUrl: '/business/phones/yealink-sip-t44w'
   },
   {
-    id: 'panasonic',
-    name: 'Panasonic Phone Set',
-    price: 144.95,
-    originalPrice: 149.99,
-    features: ['Noise Reduction', 'Call Block', 'Speakerphone'],
-    image: 'https://0bf3cfc9bffb318dd3ae21430a09ef03.cdn.bubble.io/f1754584018736x813363947252367500/d864e80a-04aa-40d5-b038-233244799dc4_orig-removebg-preview.png'
+    id: 'yealink-t54w',
+    name: 'Yealink SIP-T54W',
+    price: 255.95,
+    originalPrice: 279,
+    category: 'Receptionist',
+    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e728332c98dd46be3535_yealinksip-t54w.avif',
+    learnMoreUrl: '/business/phones/yealink-sip-t54w'
+  },
+  {
+    id: 'yealink-t57w',
+    name: 'Yealink SIP-T57W',
+    price: 319.95,
+    originalPrice: 359,
+    category: 'Desktop',
+    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e72d05c573cd3ed62118_yealinksip-t57w.avif',
+    learnMoreUrl: '/business/phones/yealink-sip-t57w'
+  },
+  {
+    id: 'yealink-t73w',
+    name: 'Yealink SIP Phone T73W',
+    price: 129.99,
+    originalPrice: 129.99,
+    category: 'Desktop',
+    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e79275fbf7b0160a4450_yealinksipphonet73w.avif',
+    learnMoreUrl: '/business/phones/yealink-sip-phone-t73w'
+  },
+  {
+    id: 'yealink-t74w',
+    name: 'Yealink SIP Phone T74W',
+    price: 174.99,
+    originalPrice: 174.99,
+    category: 'Desktop',
+    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e758d6f2d9eb7b05f047_yealinksipphonet74w.avif',
+    learnMoreUrl: '/business/phones/yealink-sip-phone-t74w'
+  },
+  {
+    id: 'yealink-t85w',
+    name: 'Yealink SIP Phone T85W',
+    price: 192.99,
+    originalPrice: 192.99,
+    category: 'Desktop',
+    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e75191c7da4a85d09eb8_yealinksipphonet85w.avif',
+    learnMoreUrl: '/business/phones/yealink-sip-phone-t85w'
+  },
+  {
+    id: 'yealink-w76',
+    name: 'Yealink W76',
+    price: 170.95,
+    originalPrice: 189,
+    category: 'Cordless',
+    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e81d51952c9a9db762e2_yealinkw76.avif',
+    learnMoreUrl: '/business/phones/yealink-w76'
+  },
+  {
+    id: 'yealink-wh62',
+    name: 'Yealink WH62',
+    price: 171.95,
+    originalPrice: 219,
+    category: 'Headset',
+    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e7e80bb0da0b69873991_yealinkwh62.avif',
+    learnMoreUrl: '/business/phones/yealink-wh62'
+  },
+  {
+    id: 'yealink-ax83h',
+    name: 'Yealink AX83H Wi-Fi Handset',
+    price: 117.99,
+    originalPrice: 117.99,
+    category: 'Handset',
+    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e763996d4561ba35f0df_yealinkax83hwi-fihandset.avif',
+    learnMoreUrl: '/business/phones/yealink-ax83h-wi-fi-handset'
+  },
+  {
+    id: 'grandstream-ht801',
+    name: 'Grandstream HT801',
+    price: 0,
+    originalPrice: 49,
+    category: 'Analog Adapter',
+    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e817aeeb4ed2aab3db4b_grandstreamht801.avif',
+    isFree: true,
+    learnMoreUrl: '/business/phones/grandstream-ht801'
   }
 ];
 
@@ -188,7 +268,7 @@ export default function Home() {
   const [zipHint, setZipHint] = useState('');
   
   // Step 4: Plan Selection
-  const [selectedBundle, setSelectedBundle] = useState<string | null>('adapter');
+  const [selectedPhones, setSelectedPhones] = useState<{[phoneId: string]: number}>({});
   const [selectedPlan, setSelectedPlan] = useState<'3month' | 'annually' | '3year'>('annually');
   const [ownDevice, setOwnDevice] = useState(false);
   
@@ -375,7 +455,7 @@ export default function Home() {
             setSelectedNewNumber(session.selectedNewNumber || '');
             setCanPort(session.canPort);
             setSelectedPlan(session.selectedPlan || 'annually');
-            setSelectedBundle(session.selectedBundle);
+            if (session.selectedPhones) setSelectedPhones(session.selectedPhones);
             setOwnDevice(session.ownDevice);
             setProtectionPlan(session.protectionPlan);
             setProtectionPlanTerm(session.protectionPlanTerm || 'annually');
@@ -458,7 +538,7 @@ export default function Home() {
           event: 'coupon_activated',
           coupon_type: '1_month_free',
           coupon_source: 'url_parameter',
-          coupon_value: 8.95
+          coupon_value: 11.95
         });
       }
     }
@@ -577,7 +657,7 @@ export default function Home() {
             selectedNewNumber,
             canPort,
             selectedPlan,
-            selectedBundle,
+            selectedPhones,
             ownDevice,
             protectionPlan,
             protectionPlanTerm,
@@ -617,7 +697,7 @@ export default function Home() {
     
   }, [sessionId, sessionLoaded, currentStep, firstName, lastName, email, mobileNumber, 
       address, country, addressComponents, billingSameAsShipping, billingAddress, billingCountry, billingComponents,
-      hasPhone, phoneNumber, areaCode, selectedNewNumber, selectedPlan, selectedBundle, 
+      hasPhone, phoneNumber, areaCode, selectedNewNumber, selectedPlan, selectedPhones, 
       ownDevice, protectionPlan, protectionPlanTerm, onlineFax,
       hasInternet, addInternetPackage, internetPackage, internetDevice, stripeCustomerId,
       numUsers, callMethod, numLocations, highCallVolume, needCallRecording]);
@@ -771,7 +851,7 @@ export default function Home() {
           // Calculate total amount
           const planPrice = getPlanPrice();
           const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
-          const devicePrice = ownDevice ? 0 : (BUNDLES.find(b => b.id === selectedBundle)?.price || 0);
+          const devicePrice = getPhoneHardwarePrice();
           const protectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
           const shippingCost = getShippingCost();
           const currency = country === 'CA' ? 'cad' : 'usd';
@@ -790,7 +870,8 @@ export default function Home() {
           
           // Tax phone service, device, protection, and shipping (NOT internet)
           // Use planPriceForTax to charge tax on all 3 months even if 1 month is free with coupon
-          const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost;
+          const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
+            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost;
           const taxes = taxableSubtotal * 0.47;
           // Add internet AFTER taxes (internet is not taxed)
           const total = taxableSubtotal + taxes + internetPrice;
@@ -859,7 +940,7 @@ export default function Home() {
           // Calculate total amount
           const planPrice = getPlanPrice();
           const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
-          const devicePrice = ownDevice ? 0 : (BUNDLES.find(b => b.id === selectedBundle)?.price || 0);
+          const devicePrice = getPhoneHardwarePrice();
           const protectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
           const shippingCost = getShippingCost();
           
@@ -877,7 +958,8 @@ export default function Home() {
           
           // Tax phone service, device, protection, and shipping (NOT internet)
           // Use planPriceForTax to charge tax on all 3 months even if 1 month is free with coupon
-          const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost;
+          const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
+            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost;
           const taxes = taxableSubtotal * 0.47;
           // Add internet AFTER taxes (internet is not taxed)
           const total = taxableSubtotal + taxes + internetPrice;
@@ -911,7 +993,7 @@ export default function Home() {
     };
     
     updatePaymentIntent();
-  }, [currentStep, paymentIntentId, selectedPlan, selectedBundle, ownDevice, protectionPlan, protectionPlanTerm, hasInternet, addInternetPackage, internetPackage, internetDevice, onlineFax]);
+  }, [currentStep, paymentIntentId, selectedPlan, selectedPhones, ownDevice, protectionPlan, protectionPlanTerm, hasInternet, addInternetPackage, internetPackage, internetDevice, onlineFax]);
   
   // Clean up Stripe when leaving Step 5
   useEffect(() => {
@@ -1167,7 +1249,7 @@ export default function Home() {
       (window as any).dataLayer.push({
         event: 'coupon_activated',
         coupon_type: '1_month_free',
-        coupon_value: 8.95
+        coupon_value: 11.95
       });
     }
     
@@ -1180,7 +1262,7 @@ export default function Home() {
           email: couponEmail,
           coupon_type: '1_month_free',
           coupon_source: 'exit_popup',
-          coupon_value: 8.95,
+          coupon_value: 11.95,
           plan_selected: '3month'
         }
       }]);
@@ -1188,63 +1270,114 @@ export default function Home() {
   };
   
   // Helper function to get plan price (accounts for coupon)
+  // Business Advanced Plan: $11.95/mo ($4 telco + $7.95 support)
   // NOTE: Coupon ONLY applies to 3-month plan
-  // If user switches to annual/3-year, coupon doesn't apply
-  // If they switch back to 3-month, coupon applies again
   const getPlanPrice = () => {
-    // Canadian pricing (CAD)
-    if (country === 'CA') {
-      if (selectedPlan === 'annually') return 119.50;
-      if (selectedPlan === '3year') return 358.50;
-      // 3-month plan CAD: $35.85 (no coupon for Canada yet)
-      if (selectedPlan === '3month') {
-        return 35.85;
-      }
-      return 35.85;
-    }
-    
-    // US pricing (USD)
-    if (selectedPlan === 'annually') return 89.50; // No coupon on annual
-    if (selectedPlan === '3year') return 268.50; // No coupon on 3-year
-    // 3-month plan: normal $26.85, with coupon $17.90 (1 month free)
-    // Coupon ONLY applies if both: selectedPlan === '3month' AND couponApplied === true
+    // $11.95/mo pricing
+    // 3-month: $35.85 ($11.95 * 3)
+    // Annual: $119.50 ($11.95 * 10, get 2 months free)
+    // 3-year: $358.50 ($11.95 * 30, get 6 months free)
+    if (selectedPlan === 'annually') return 119.50;
+    if (selectedPlan === '3year') return 358.50;
     if (selectedPlan === '3month') {
-      return couponApplied ? 17.90 : 26.85;
+      return couponApplied ? 23.90 : 35.85; // coupon = 1 month free ($11.95 off)
     }
-    return 26.85;
+    return 35.85;
   };
   
   // Get plan price for tax calculation (ALWAYS full price, even with coupon)
-  // When coupon is applied, customer pays for 2 months but taxes must be charged on all 3 months
   const getPlanPriceForTax = (planOverride?: string) => {
     const plan = planOverride || selectedPlan;
-    
-    // Canadian pricing (CAD)
-    if (country === 'CA') {
-      if (plan === 'annually') return 119.50;
-      if (plan === '3year') return 358.50;
-      if (plan === '3month') return 35.85; // Always full 3-month price for tax
-      return 35.85;
-    }
-    
-    // US pricing (USD)
-    if (plan === 'annually') return 89.50;
-    if (plan === '3year') return 268.50;
-    if (plan === '3month') return 26.85; // Always full 3-month price for tax ($8.95 * 3)
-    return 26.85;
+    if (plan === 'annually') return 119.50;
+    if (plan === '3year') return 358.50;
+    if (plan === '3month') return 35.85;
+    return 35.85;
+  };
+
+  // Get the plan months multiplier (for calculating managed desk phone costs)
+  const getPlanMonths = (planOverride?: string) => {
+    const plan = planOverride || selectedPlan;
+    if (plan === '3month') return 3;
+    if (plan === 'annually') return 10; // pay for 10, get 12
+    if (plan === '3year') return 30; // pay for 30, get 36
+    return 10;
+  };
+
+  // Get total number of desk phones in cart
+  const getTotalPhoneCount = () => {
+    return Object.values(selectedPhones).reduce((sum, qty) => sum + qty, 0);
+  };
+
+  // Get total hardware cost for selected phones
+  const getPhoneHardwarePrice = () => {
+    return Object.entries(selectedPhones).reduce((total, [phoneId, qty]) => {
+      const phone = PHONES.find(p => p.id === phoneId);
+      if (phone) return total + (phone.price * qty);
+      return total;
+    }, 0);
+  };
+
+  // Get managed desk phone monthly support cost ($5/mo per phone)
+  const getManagedDeskPhonePrice = () => {
+    const totalPhones = getTotalPhoneCount();
+    const months = getPlanMonths();
+    return totalPhones * 5 * months; // $5/mo per phone * plan months
+  };
+
+  // Get managed desk phone price for tax (always full months)
+  const getManagedDeskPhonePriceForTax = (planOverride?: string) => {
+    const totalPhones = getTotalPhoneCount();
+    const plan = planOverride || selectedPlan;
+    let months = 3;
+    if (plan === 'annually') months = 12;
+    if (plan === '3year') months = 36;
+    return totalPhones * 5 * months;
+  };
+
+  // Add phone to cart
+  const addPhoneToCart = (phoneId: string) => {
+    setSelectedPhones(prev => ({
+      ...prev,
+      [phoneId]: (prev[phoneId] || 0) + 1
+    }));
+    if (ownDevice) setOwnDevice(false);
+  };
+
+  // Remove phone from cart
+  const removePhoneFromCart = (phoneId: string) => {
+    setSelectedPhones(prev => {
+      const newCart = { ...prev };
+      if (newCart[phoneId] && newCart[phoneId] > 1) {
+        newCart[phoneId] = newCart[phoneId] - 1;
+      } else {
+        delete newCart[phoneId];
+      }
+      return newCart;
+    });
+  };
+
+  // Check if phones step should be shown (desk phones or both selected)
+  const needsPhonesStep = callMethod === 'desk-phones' || callMethod === 'both';
+
+  // Get phones summary string for webhooks/metadata
+  const getPhonesSummary = () => {
+    if (ownDevice) return 'Own Equipment';
+    const phoneEntries = Object.entries(selectedPhones);
+    if (phoneEntries.length === 0) return 'No Hardware';
+    return phoneEntries.map(([id, qty]) => {
+      const phone = PHONES.find(p => p.id === id);
+      return `${phone?.name || id} x${qty}`;
+    }).join(', ');
   };
   
   // Get protection plan price based on country and term
   const getProtectionPlanPrice = () => {
     if (country === 'CA') {
-      // CAD pricing: $1.49/mo
-      if (protectionPlanTerm === '3month') return 1.49 * 3; // $4.47 for 3 months
-      if (protectionPlanTerm === 'annually') return 1.49 * 12; // $17.88 for year
-      if (protectionPlanTerm === '3year') return 1.49 * 36; // $53.64 for 3 years
+      if (protectionPlanTerm === '3month') return 1.49 * 3;
+      if (protectionPlanTerm === 'annually') return 1.49 * 12;
+      if (protectionPlanTerm === '3year') return 1.49 * 36;
       return 1.49 * 12;
     }
-    
-    // USD pricing
     if (protectionPlanTerm === '3month') return 3.33;
     if (protectionPlanTerm === 'annually') return 11.88;
     if (protectionPlanTerm === '3year') return 25.00;
@@ -1258,7 +1391,6 @@ export default function Home() {
   
   // Get shipping cost based on country
   const getShippingCost = () => {
-    // Canada has flat rate shipping, US is free
     return country === 'CA' ? 14.99 : 0;
   };
   
@@ -1268,10 +1400,11 @@ export default function Home() {
       // Calculate total and tax
       const planPrice = getPlanPrice();
       const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
-      const devicePrice = ownDevice ? 0 : (BUNDLES.find(b => b.id === selectedBundle)?.price || 0);
+      const devicePrice = getPhoneHardwarePrice();
       const protectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
       const shippingCost = getShippingCost();
-      const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost;
+      const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
+            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost;
       const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
       const total = taxableSubtotal + taxes;
       
@@ -1417,7 +1550,7 @@ export default function Home() {
   const canProceedStep3 = selectedNewNumber !== '';
   
   // Step 4 is bundle selection
-  const canProceedStep4 = ownDevice || selectedBundle !== null;
+  const canProceedStep4 = ownDevice || getTotalPhoneCount() > 0;
   
   // Step 5 is payment
   const canProceedStep5 = cardComplete;
@@ -1525,8 +1658,12 @@ export default function Home() {
           throw new Error(msg);
         }
         
-        // Successfully reserved - proceed to bundle selection
-        setCurrentStep(4);
+        // Successfully reserved - proceed to phones or payment
+        if (needsPhonesStep) {
+          setCurrentStep(4);
+        } else {
+          setCurrentStep(5);
+        }
         
       } catch (error: any) {
         console.error('Error reserving number:', error);
@@ -1549,16 +1686,18 @@ export default function Home() {
       // Always go to business needs assessment
       setCurrentStep(2);
     } else if (currentStep === 2) {
-      // From business needs to number selection or bundles
+      // From business needs: go to number selection or phones/payment
       if (hasPhone === false) {
         setCurrentStep(3);
-      } else {
+      } else if (needsPhonesStep) {
         setCurrentStep(4);
+      } else {
+        setCurrentStep(5);
       }
     } else if (currentStep === 4) {
       // Send GTM add_to_cart event
       sendGTMEvent('add_to_cart');
-      // From bundles to payment
+      // From phones to payment
       setCurrentStep(5);
     }
   };
@@ -1571,14 +1710,20 @@ export default function Home() {
       // From number selection back to business needs
       setCurrentStep(2);
     } else if (currentStep === 4 && hasPhone === false) {
-      // From bundles back to number selection
+      // From phones back to number selection
       setCurrentStep(3);
     } else if (currentStep === 4 && hasPhone === true) {
-      // From bundles back to business needs (skip number selection)
+      // From phones back to business needs (skip number selection)
       setCurrentStep(2);
-    } else if (currentStep === 5) {
-      // From payment back to bundles
+    } else if (currentStep === 5 && needsPhonesStep) {
+      // From payment back to phones
       setCurrentStep(4);
+    } else if (currentStep === 5 && !needsPhonesStep && hasPhone === false) {
+      // From payment back to number selection (no phones step)
+      setCurrentStep(3);
+    } else if (currentStep === 5 && !needsPhonesStep) {
+      // From payment back to business needs
+      setCurrentStep(2);
     }
   };
   
@@ -1779,7 +1924,7 @@ export default function Home() {
       // STEP 2: Calculate expected total to verify payment intent
       const planPrice = getPlanPrice();
       const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
-      const devicePrice = ownDevice ? 0 : (BUNDLES.find(b => b.id === selectedBundle)?.price || 0);
+      const devicePrice = getPhoneHardwarePrice();
       const protectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
       const shippingCost = getShippingCost();
       
@@ -1794,7 +1939,8 @@ export default function Home() {
         internetPrice = packagePrice + deviceCost;
       }
       
-      const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost;
+      const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
+            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost;
       const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
       const expectedTotal = taxableSubtotal + taxes + internetPrice;
       
@@ -1871,7 +2017,7 @@ export default function Home() {
                     selectedNewNumber,
                     canPort,
                     selectedPlan,
-                    selectedBundle,
+                    selectedPhones,
                     ownDevice,
                     protectionPlan,
                     protectionPlanTerm,
@@ -1908,7 +2054,7 @@ export default function Home() {
       // This ensures the charge amount always matches what is displayed to the customer
       // Compute finalTotal outside the try block so it's available for pre-save and success branch
       const finalPlanPriceForTax = getPlanPriceForTax();
-      const finalDevicePrice = ownDevice ? 0 : (BUNDLES.find(b => b.id === selectedBundle)?.price || 0);
+      const finalDevicePrice = getPhoneHardwarePrice();
       const finalProtectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
       const finalShippingCost = getShippingCost();
       let finalInternetPrice = 0;
@@ -1964,7 +2110,7 @@ export default function Home() {
           ? phoneNumber
           : 'N/A',
         plan: selectedPlan,
-        bundle: ownDevice ? 'Service Only' : (BUNDLES.find(b => b.id === selectedBundle)?.name || 'N/A'),
+        bundle: ownDevice ? 'Service Only' : getPhonesSummary(),
         address: addressComponents,
         email: email,
         name: `${firstName} ${lastName}`,
@@ -2087,18 +2233,6 @@ export default function Home() {
         
         // Send order data to n8n webhook
         try {
-          // Map bundle ID to bundle name for webhook
-          const getBundleName = () => {
-            if (ownDevice) return '';
-            switch (selectedBundle) {
-              case 'adapter': return 'Voiply Adapter';
-              case 'panasonic': return 'Panasonic Bundle';
-              case 'att': return 'AT&T Bundle';
-              case 'vtech': return 'Vtech Bundle';
-              default: return '';
-            }
-          };
-          
           // Map plan to interval
           const getInterval = () => {
             if (selectedPlan === '3month') return 'quarter';
@@ -2138,7 +2272,7 @@ export default function Home() {
             postal_code: addressComponents.zipCode,
             shipping_method: '',
             state: addressComponents.state,
-            bundle: getBundleName(),
+            bundle: getPhonesSummary(),
             ...(onlineFax ? { fax: true } : {}),
             ...(hasInternet === false && addInternetPackage ? {
               internetorder: true,
@@ -2212,13 +2346,12 @@ export default function Home() {
               orderId: orderDetails.orderNumber,
               primaryNumber,
               product: ownDevice ? '' : (() => {
-                switch (selectedBundle) {
-                  case 'adapter': return 'Voiply Adapter';
-                  case 'panasonic': return 'Panasonic Bundle';
-                  case 'att': return 'AT&T Bundle';
-                  case 'vtech': return 'Vtech Bundle';
-                  default: return '';
-                }
+                const phoneEntries = Object.entries(selectedPhones);
+                if (phoneEntries.length === 0) return '';
+                return phoneEntries.map(([id, qty]) => {
+                  const phone = PHONES.find(p => p.id === id);
+                  return `${phone?.name || id} x${qty}`;
+                }).join(', ');
               })(),
               zip: addressComponents.zipCode,
               fullName: `${firstName} ${lastName}`.trim(),
@@ -2249,7 +2382,7 @@ export default function Home() {
     const planToCalculate = planOverride || selectedPlan;
     
     // Generate cache key from current inputs including date
-    const hardwareAmount = ownDevice ? 0 : (BUNDLES.find(b => b.id === selectedBundle)?.price || 0);
+    const hardwareAmount = getPhoneHardwarePrice();
     const protectionAmount = protectionPlan ? getProtectionPlanPrice() : 0;
     const shippingAmount = getShippingCost();
     const actualPlanPriceForTax = getPlanPriceForTax(planToCalculate);
@@ -2390,17 +2523,26 @@ export default function Home() {
       // Fetch for currently selected plan (will use cache if available)
       fetchTaxBreakdown(false);
     }
-  }, [selectedPlan, selectedBundle, ownDevice, protectionPlan, protectionPlanTerm]);
+  }, [selectedPlan, selectedPhones, ownDevice, protectionPlan, protectionPlanTerm]);
   
   const progressPercentage = (() => {
-    const totalSteps = hasPhone === false ? 4 : 3;
-    // Calculate actual step position based on current view
-    let actualStep = currentStep;
-    if (hasPhone === true && currentStep >= 3) {
-      // If skipping number selection, adjust step count
-      actualStep = currentStep - 1;
+    // Calculate total steps based on flow
+    let totalSteps = 2; // address + business needs always
+    if (hasPhone === false) totalSteps++; // number selection
+    if (needsPhonesStep) totalSteps++; // phone selection
+    totalSteps++; // payment always
+    
+    // Calculate actual position
+    let position = 0;
+    if (currentStep >= 1) position = 1; // address
+    if (currentStep >= 2) position = 2; // business needs
+    if (currentStep >= 3 && hasPhone === false) position = 3; // number selection
+    if (currentStep >= 4 && needsPhonesStep) {
+      position = hasPhone === false ? 4 : 3; // phone selection
     }
-    return (actualStep / totalSteps) * 100;
+    if (currentStep >= 5) position = totalSteps; // payment
+    
+    return (position / totalSteps) * 100;
   })();
 
   return (
@@ -2838,7 +2980,7 @@ export default function Home() {
                   >
                     <option value="" disabled>Select call method</option>
                     <option value="app-only">App-Only (Mobile & Desktop)</option>
-                    <option value="desk-phones">Desktop Phones</option>
+                    <option value="desk-phones">Desk Phones</option>
                     <option value="both">Both Apps and Desk Phones</option>
                   </select>
                 </div>
@@ -3037,167 +3179,161 @@ export default function Home() {
             <>
               <div className="mb-6 md:mb-8">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#080808] mb-2 leading-tight">
-                  Choose your phone equipment
+                  Select Your Desk Phones
                 </h1>
                 <p className="text-base md:text-lg text-[#585858] leading-tight">
-                  Get our adapter free, or add a phone set for the complete package
+                  Choose the phones your team needs. Each desk phone includes managed support ($5/mo).
                 </p>
               </div>
 
               <div className="space-y-6">
-                {/* Bundle Selection - Slider on mobile, 4-col grid on desktop */}
-                <div>
-                  {/* Swipe hint - mobile only */}
-                  <div className="flex items-center gap-2 mb-3 md:hidden">
-                    <svg className="w-4 h-4 text-[#F53900] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7M15 5l-7 7 7 7" />
-                    </svg>
-                    <span className="text-xs text-[#585858]">Swipe right to see more phone sets</span>
-                    <div className="flex gap-1 ml-auto items-center">
-                      {BUNDLES.map((b) => (
-                        <div key={b.id} className={`rounded-full transition-all duration-200 ${selectedBundle === b.id ? 'w-4 h-1.5 bg-[#F53900]' : 'w-1.5 h-1.5 bg-[#D9D9D9]'}`} />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Mobile: horizontal scroll */}
-                  <div className="md:hidden -mx-6 px-4">
-                    <div
-                      ref={bundleScrollRef}
-                      className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory"
-                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                    >
-                      <style jsx>{`div::-webkit-scrollbar { display: none; }`}</style>
-                      {BUNDLES.map((bundle) => (
-                        <div
-                          key={bundle.id}
-                          onClick={() => {
-                            if (bundle.id === 'adapter' || country === 'US') {
-                              setSelectedBundle(bundle.id);
-                              if (ownDevice) setOwnDevice(false);
-                            }
-                          }}
-                          className={`relative flex-shrink-0 w-[62vw] max-w-[260px] p-0 border rounded-xl transition-all overflow-hidden snap-center ${
-                            (bundle.id !== 'adapter' && country === 'CA')
-                              ? 'border-[#D9D9D9] opacity-60 cursor-not-allowed'
-                              : selectedBundle === bundle.id
-                                ? 'border-[#F53900] shadow-[0_0_0_2px_#FEEBE6] cursor-pointer'
-                                : 'border-[#D9D9D9] hover:border-[#F53900]/50 cursor-pointer'
-                          }`}
-                        >
-                          {/* Out of Stock Badge for Canadian customers */}
-                          {bundle.id !== 'adapter' && country === 'CA' && (
-                            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-[#666] text-white text-sm px-4 py-1 rounded-full">
-                              US Only
-                            </div>
-                          )}
-                          
-                          {/* Selected Badge */}
-                          {selectedBundle === bundle.id && (
-                            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-[#F53900] text-white text-sm px-4 py-1 rounded-full">
-                              Selected
-                            </div>
-                          )}
-                          
-                          {/* Bundle Image */}
-                          <div className="bg-gradient-to-b from-transparent to-[#d9d9d940] p-2">
-                            <div className="relative w-full aspect-[300/207] rounded-t-xl overflow-hidden">
-                              <img 
-                                src={bundle.image}
-                                alt={bundle.name}
-                                className="w-full h-full object-contain"
-                              />
-                            </div>
-                          </div>
-                          
-                          {/* Bundle Details */}
-                          <div className="p-4 md:p-6 space-y-3 md:space-y-4">
-                            <h3 className="text-lg md:text-xl font-bold text-[#080808]">{bundle.name}</h3>
-                            
-                            <div className="flex items-center gap-2">
-                              {bundle.price === 0 ? (
-                                <span className="bg-[#E5E5E5] text-[#080808] text-sm px-2 py-0.5 rounded-full font-medium">FREE</span>
-                              ) : (
-                                <span className="bg-[#E5E5E5] text-[#080808] text-sm px-2 py-0.5 rounded-full font-medium">${bundle.price}</span>
-                              )}
-                            </div>
-                            
-                            <div className="border-t border-[#D9D9D9] pt-4 space-y-2">
-                              {bundle.features.map((feature, idx) => (
-                                <div key={idx} className="flex items-start gap-2 text-sm text-[#3B3B3B]">
-                                  <svg className="w-4 h-4 text-[#F53900] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                                  </svg>
-                                  <span>{feature}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
+                {/* Cart Summary - sticky on mobile */}
+                {getTotalPhoneCount() > 0 && (
+                  <div className="bg-[#FFF5F2] border border-[#F53900]/20 rounded-xl p-4 md:sticky md:top-4 z-10">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-[#F53900] flex items-center justify-center">
+                          <span className="text-white text-sm font-bold">{getTotalPhoneCount()}</span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Desktop: 4-column grid */}
-                  <div className="hidden md:grid grid-cols-2 gap-4">
-                    {BUNDLES.map((bundle) => (
-                      <div
-                        key={bundle.id}
-                        onClick={() => {
-                          if (bundle.id === 'adapter' || country === 'US') {
-                            setSelectedBundle(bundle.id);
-                            if (ownDevice) setOwnDevice(false);
-                          }
-                        }}
-                        className={`relative p-0 border rounded-xl transition-all overflow-hidden ${
-                          (bundle.id !== 'adapter' && country === 'CA')
-                            ? 'border-[#D9D9D9] opacity-60 cursor-not-allowed'
-                            : selectedBundle === bundle.id
-                              ? 'border-[#F53900] shadow-[0_0_0_2px_#FEEBE6] cursor-pointer'
-                              : 'border-[#D9D9D9] hover:border-[#F53900]/50 cursor-pointer'
-                        }`}
-                      >
-                        {bundle.id !== 'adapter' && country === 'CA' && (
-                          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-[#666] text-white text-sm px-4 py-1 rounded-full">
-                            US Only
-                          </div>
-                        )}
-                        {selectedBundle === bundle.id && (
-                          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-[#F53900] text-white text-sm px-4 py-1 rounded-full">
-                            Selected
-                          </div>
-                        )}
-                        <div className="bg-gradient-to-b from-transparent to-[#d9d9d940] p-2">
-                          <div className="relative w-full aspect-[300/207] rounded-t-xl overflow-hidden">
-                            <img src={bundle.image} alt={bundle.name} className="w-full h-full object-contain" />
-                          </div>
-                        </div>
-                        <div className="p-4 space-y-3">
-                          <h3 className="text-base font-bold text-[#080808]">{bundle.name}</h3>
-                          <div className="flex items-center gap-2">
-                            {bundle.price === 0 ? (
-                              <span className="bg-[#E5E5E5] text-[#080808] text-sm px-2 py-0.5 rounded-full font-medium">FREE</span>
-                            ) : (
-                              <span className="bg-[#E5E5E5] text-[#080808] text-sm px-2 py-0.5 rounded-full font-medium">${bundle.price}</span>
-                            )}
-                          </div>
-                          <div className="border-t border-[#D9D9D9] pt-3 space-y-1.5">
-                            {bundle.features.map((feature, idx) => (
-                              <div key={idx} className="flex items-start gap-2 text-xs text-[#3B3B3B]">
-                                <svg className="w-3.5 h-3.5 text-[#F53900] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                                </svg>
-                                <span>{feature}</span>
-                              </div>
-                            ))}
-                          </div>
+                        <div>
+                          <p className="text-sm font-semibold text-[#080808]">
+                            {getTotalPhoneCount()} {getTotalPhoneCount() === 1 ? 'phone' : 'phones'} selected
+                          </p>
+                          <p className="text-xs text-[#585858]">
+                            Hardware: ${getPhoneHardwarePrice().toFixed(2)} + ${(getTotalPhoneCount() * 5).toFixed(2)}/mo support
+                          </p>
                         </div>
                       </div>
-                    ))}
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPhones({})}
+                        className="text-xs text-[#F53900] hover:underline font-medium"
+                      >
+                        Clear all
+                      </button>
+                    </div>
+                    {/* Cart items */}
+                    <div className="mt-3 pt-3 border-t border-[#F53900]/10 space-y-2">
+                      {Object.entries(selectedPhones).map(([phoneId, qty]) => {
+                        const phone = PHONES.find(p => p.id === phoneId);
+                        if (!phone) return null;
+                        return (
+                          <div key={phoneId} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <img src={phone.image} alt={phone.name} className="w-8 h-8 object-contain" />
+                              <span className="text-xs font-medium text-[#080808]">{phone.name}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button type="button" onClick={() => removePhoneFromCart(phoneId)}
+                                className="w-6 h-6 rounded-full border border-[#D9D9D9] flex items-center justify-center text-[#585858] hover:bg-[#F5F5F5]">
+                                <span className="text-xs font-bold">−</span>
+                              </button>
+                              <span className="text-sm font-semibold w-6 text-center">{qty}</span>
+                              <button type="button" onClick={() => addPhoneToCart(phoneId)}
+                                className="w-6 h-6 rounded-full border border-[#D9D9D9] flex items-center justify-center text-[#585858] hover:bg-[#F5F5F5]">
+                                <span className="text-xs font-bold">+</span>
+                              </button>
+                              <span className="text-xs font-semibold text-[#080808] w-16 text-right">
+                                {phone.isFree ? 'FREE' : `$${(phone.price * qty).toFixed(2)}`}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
+                )}
+
+                {/* Phone Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+                  {PHONES.map((phone) => {
+                    const qtyInCart = selectedPhones[phone.id] || 0;
+                    return (
+                      <div
+                        key={phone.id}
+                        className={`relative border rounded-xl overflow-hidden transition-all ${
+                          qtyInCart > 0
+                            ? 'border-[#F53900] shadow-[0_0_0_2px_#FEEBE6]'
+                            : 'border-[#D9D9D9] hover:border-[#F53900]/50'
+                        }`}
+                      >
+                        {/* Quantity badge */}
+                        {qtyInCart > 0 && (
+                          <div className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-[#F53900] flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">{qtyInCart}</span>
+                          </div>
+                        )}
+
+                        {/* Free badge */}
+                        {phone.isFree && (
+                          <div className="absolute top-2 left-2 z-10 bg-[#17DB4E] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            FREE
+                          </div>
+                        )}
+
+                        {/* Phone Image */}
+                        <div className="bg-gradient-to-b from-[#FAFAFA] to-[#F0F0F0] p-3 md:p-4">
+                          <div className="relative w-full aspect-square">
+                            <img
+                              src={phone.image}
+                              alt={phone.name}
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Phone Details */}
+                        <div className="p-3 md:p-4 space-y-2">
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wider text-[#999] font-medium">{phone.category}</p>
+                            <h3 className="text-xs md:text-sm font-bold text-[#080808] leading-tight mt-0.5">{phone.name}</h3>
+                          </div>
+
+                          <div className="flex items-center gap-1.5">
+                            {phone.isFree ? (
+                              <>
+                                <span className="text-xs text-[#999] line-through">${phone.originalPrice}</span>
+                                <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
+                              </>
+                            ) : (
+                              <>
+                                {phone.originalPrice > phone.price && (
+                                  <span className="text-xs text-[#999] line-through">${phone.originalPrice}</span>
+                                )}
+                                <span className="text-sm font-bold text-[#080808]">${phone.price.toFixed(2)}</span>
+                              </>
+                            )}
+                          </div>
+
+                          {/* Add to cart / quantity controls */}
+                          {qtyInCart === 0 ? (
+                            <button
+                              type="button"
+                              onClick={() => addPhoneToCart(phone.id)}
+                              className="w-full py-2 rounded-lg text-xs font-semibold bg-[#F53900] text-white hover:bg-[#d63300] transition-colors"
+                            >
+                              Add to Cart
+                            </button>
+                          ) : (
+                            <div className="flex items-center justify-between bg-[#F5F5F5] rounded-lg py-1 px-2">
+                              <button type="button" onClick={() => removePhoneFromCart(phone.id)}
+                                className="w-7 h-7 rounded-full bg-white border border-[#D9D9D9] flex items-center justify-center hover:bg-[#FFF5F2] transition-colors">
+                                <span className="text-sm font-bold text-[#585858]">−</span>
+                              </button>
+                              <span className="text-sm font-bold text-[#080808]">{qtyInCart}</span>
+                              <button type="button" onClick={() => addPhoneToCart(phone.id)}
+                                className="w-7 h-7 rounded-full bg-white border border-[#D9D9D9] flex items-center justify-center hover:bg-[#FFF5F2] transition-colors">
+                                <span className="text-sm font-bold text-[#585858]">+</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
 
-                {/* Own Device Option - Compact Mobile Design */}
+                {/* Own Device Option */}
                 <div className={`relative border-2 rounded-xl p-3 md:p-6 transition-all cursor-pointer ${
                   ownDevice 
                     ? 'border-[#F53900] bg-[#FEEBE6]/30 shadow-[0_0_0_2px_#FEEBE6]' 
@@ -3206,10 +3342,9 @@ export default function Home() {
                 onClick={() => {
                   setOwnDevice(!ownDevice);
                   if (!ownDevice) {
-                    setSelectedBundle('');
+                    setSelectedPhones({});
                   }
                 }}>
-                  {/* Selected Badge */}
                   {ownDevice && (
                     <div className="absolute top-3 md:top-4 right-3 md:right-4 bg-[#F53900] text-white text-xs px-3 py-1 rounded-full font-semibold">
                       Selected
@@ -3217,7 +3352,6 @@ export default function Home() {
                   )}
                   
                   <div className="flex items-start gap-3 md:gap-4">
-                    {/* Checkbox */}
                     <input
                       type="checkbox"
                       checked={ownDevice}
@@ -3225,13 +3359,12 @@ export default function Home() {
                         e.stopPropagation();
                         setOwnDevice(e.target.checked);
                         if (e.target.checked) {
-                          setSelectedBundle('');
+                          setSelectedPhones({});
                         }
                       }}
                       className="w-5 h-5 mt-0.5 md:mt-1 accent-[#F53900] cursor-pointer flex-shrink-0"
                     />
                     
-                    {/* Icon - Hidden on Mobile */}
                     <div className={`hidden md:flex w-12 h-12 rounded-full items-center justify-center flex-shrink-0 ${
                       ownDevice ? 'bg-[#F53900]' : 'bg-[#F5F5F5]'
                     }`}>
@@ -3240,20 +3373,19 @@ export default function Home() {
                       </svg>
                     </div>
                     
-                    {/* Content */}
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm md:text-base lg:text-lg font-bold text-[#080808] mb-1 md:mb-2">
-                        I have my own equipment
+                        I have my own VoIP phones
                       </h3>
                       <p className="text-xs md:text-sm text-[#585858] mb-2 md:mb-3">
-                        Already have a compatible adapter? We'll email setup instructions.
+                        Already have compatible VoIP phones? We&#39;ll help you set them up.
                       </p>
                       <div className="hidden md:flex items-center gap-2 text-xs text-[#585858]">
                         <svg className="w-4 h-4 text-[#17DB4E]" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
                         </svg>
                         <span className="font-medium">Not sure if yours is compatible?</span>
-                        <span>We're happy to help - just ask!</span>
+                        <span>We&#39;re happy to help - just ask!</span>
                       </div>
                     </div>
                   </div>
@@ -3328,21 +3460,45 @@ export default function Home() {
                         <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
                       </div>
 
-                      {/* Voiply Adapter */}
-                      <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
-                        <p className="text-sm font-medium text-[#080808]">Voiply Adapter</p>
-                        <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
-                      </div>
+                      {/* Selected Phones - Hardware */}
+                      {!ownDevice && Object.entries(selectedPhones).map(([phoneId, qty]) => {
+                        const phone = PHONES.find(p => p.id === phoneId);
+                        if (!phone) return null;
+                        return (
+                          <div key={phoneId} className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
+                            <div>
+                              <p className="text-sm font-medium text-[#080808]">
+                                {phone.name}{qty > 1 ? ` ×${qty}` : ''}
+                              </p>
+                              <p className="text-xs text-[#999]">Hardware</p>
+                            </div>
+                            <span className={`text-sm font-bold ${phone.isFree ? 'text-[#17DB4E]' : 'text-[#080808]'}`}>
+                              {phone.isFree ? 'FREE' : `$${(phone.price * qty).toFixed(2)}`}
+                            </span>
+                          </div>
+                        );
+                      })}
 
-                      {/* Phone Set - only if phone bundle selected */}
-                      {!ownDevice && selectedBundle && ['vtech', 'att', 'panasonic'].includes(selectedBundle) && (
+                      {/* Managed Desk Phone - recurring per phone */}
+                      {!ownDevice && getTotalPhoneCount() > 0 && (
                         <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
-                          <p className="text-sm font-medium text-[#080808]">
-                            {BUNDLES.find(b => b.id === selectedBundle)?.name || 'Phone Set'}
-                          </p>
+                          <div>
+                            <p className="text-sm font-medium text-[#080808]">
+                              Managed Desk Phone{getTotalPhoneCount() > 1 ? ` ×${getTotalPhoneCount()}` : ''}
+                            </p>
+                            <p className="text-xs text-[#999]">${(5).toFixed(2)}/mo per phone × {getPlanMonths()} mo</p>
+                          </div>
                           <span className="text-sm font-bold text-[#080808]">
-                            ${BUNDLES.find(b => b.id === selectedBundle)?.price.toFixed(2)}{country === 'CA' ? ' CAD' : ''}
+                            ${getManagedDeskPhonePrice().toFixed(2)}
                           </span>
+                        </div>
+                      )}
+
+                      {/* Own Equipment */}
+                      {ownDevice && (
+                        <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
+                          <p className="text-sm font-medium text-[#080808]">Own Equipment</p>
+                          <span className="text-sm font-bold text-[#17DB4E]">No hardware needed</span>
                         </div>
                       )}
 
@@ -3408,10 +3564,11 @@ export default function Home() {
                           ${(() => {
                             if (calculatedTaxAmount !== null) return calculatedTaxAmount.toFixed(2);
                             const planPriceForTax = getPlanPriceForTax();
-                            const devicePrice = ownDevice ? 0 : (BUNDLES.find(b => b.id === selectedBundle)?.price || 0);
+                            const devicePrice = getPhoneHardwarePrice();
                             const protectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
                             const shippingCost = getShippingCost();
-                            const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost;
+                            const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
+            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost;
                             return (taxableSubtotal * 0.47).toFixed(2);
                           })()}{country === 'CA' ? ' CAD' : ''}
                         </span>
@@ -3441,14 +3598,14 @@ export default function Home() {
                                 <span className="text-[9px] font-bold text-white bg-[#17DB4E] px-1.5 py-0.5 rounded-full">1 MONTH FREE</span>
                               )}
                             </div>
-                            <p className="text-xs text-[#999] mt-0.5">{country === 'CA' ? '$11.95 CAD' : couponApplied ? '$5.97' : '$8.95'}/mo</p>
+                            <p className="text-xs text-[#999] mt-0.5">{couponApplied ? '$7.97' : '$11.95'}/mo</p>
                           </div>
                           <div className="text-right">
-                            {country !== 'CA' && couponApplied && (
-                              <p className="text-xs text-[#CCC] line-through">$26.85</p>
+                            {couponApplied && (
+                              <p className="text-xs text-[#CCC] line-through">$35.85</p>
                             )}
                             <span className={`text-base font-bold ${selectedPlan === '3month' ? 'text-[#F53900]' : 'text-[#080808]'}`}>
-                              {country === 'CA' ? '$35.85' : couponApplied ? '$17.90' : '$26.85'}
+                              {couponApplied ? '$23.90' : '$35.85'}
                             </span>
                           </div>
                         </button>
@@ -3468,12 +3625,12 @@ export default function Home() {
                               <span className={`text-sm font-semibold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>1-Year</span>
                               <span className="text-[9px] font-bold text-white bg-[#17DB4E] px-1.5 py-0.5 rounded-full">MOST POPULAR</span>
                             </div>
-                            <p className="text-xs text-[#999] mt-0.5">12 months for the price of 10 · {country === 'CA' ? '$9.96 CAD' : '$7.46'}/mo</p>
+                            <p className="text-xs text-[#999] mt-0.5">12 months for the price of 10 · $9.95/mo</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-[#CCC] line-through">{country === 'CA' ? '$143.40' : '$107.40'}</p>
+                            <p className="text-xs text-[#CCC] line-through">$143.40</p>
                             <span className={`text-base font-bold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>
-                              {country === 'CA' ? '$119.50' : '$89.50'}
+                              $119.50
                             </span>
                           </div>
                         </button>
@@ -3493,12 +3650,12 @@ export default function Home() {
                               <span className={`text-sm font-semibold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>3-Year</span>
                               <span className="text-[9px] font-bold text-white bg-[#7C5CF6] px-1.5 py-0.5 rounded-full">LOCK IN YOUR RATE</span>
                             </div>
-                            <p className="text-xs text-[#999] mt-0.5">36 months for the price of 30 · {country === 'CA' ? '$9.96 CAD' : '$7.46'}/mo</p>
+                            <p className="text-xs text-[#999] mt-0.5">36 months for the price of 30 · $9.96/mo</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-[#CCC] line-through">{country === 'CA' ? '$430.20' : '$359.64'}</p>
+                            <p className="text-xs text-[#CCC] line-through">$430.20</p>
                             <span className={`text-base font-bold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>
-                              {country === 'CA' ? '$358.50' : '$268.50'}
+                              $358.50
                             </span>
                           </div>
                         </button>
@@ -3634,8 +3791,9 @@ export default function Home() {
                         <p className="text-lg md:text-xl font-bold text-[#080808]">
                           ${(() => {
                             const planPrice = getPlanPrice();
-                            const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
-                            const devicePrice = ownDevice ? 0 : (BUNDLES.find(b => b.id === selectedBundle)?.price || 0);
+                            const planPriceForTax = getPlanPriceForTax();
+                            const devicePrice = getPhoneHardwarePrice();
+                            const managedPhonePrice = getManagedDeskPhonePrice();
                             const protectionPrice = protectionPlan ? getProtectionPlanPrice() : 0;
                             const shippingCost = getShippingCost();
                             
@@ -3651,10 +3809,11 @@ export default function Home() {
                               internetPrice = packagePrice + deviceCost;
                             }
                             
-                            // Use API-calculated tax when available, fallback to 0.47
-                            const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost;
+                            // Use API-calculated tax when available, fallback to estimate
+                            const managedDeskPhonePriceTax = getManagedDeskPhonePriceForTax();
+                            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePriceTax + protectionPrice + shippingCost;
                             const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
-                            const total = taxableSubtotal + taxes + internetPrice;
+                            const total = planPrice + devicePrice + managedPhonePrice + protectionPrice + shippingCost + taxes + internetPrice;
                             return total.toFixed(2);
                           })()}{country === 'CA' ? ' CAD' : ''}
                         </p>
@@ -3796,7 +3955,7 @@ export default function Home() {
                                   mobile_number: mobileNumber.replace(/\D/g, ''),
                                   home_phone_number: hasPhone ? phoneNumber.replace(/\D/g, '') : '',
                                   selected_plan: selectedPlan,
-                                  selected_bundle: selectedBundle || (ownDevice ? 'own_device' : 'none'),
+                                  selected_bundle: ownDevice ? 'own_device' : JSON.stringify(selectedPhones),
                                   protection_plan: String(protectionPlan),
                                   has_internet: String(hasInternet),
                                   phone_type: hasPhone ? 'existing_number' : 'new_number'
