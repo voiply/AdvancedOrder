@@ -251,6 +251,8 @@ export default function Home() {
   const [availableNumbers, setAvailableNumbers] = useState<string[]>([]);
   const [loadingNumbers, setLoadingNumbers] = useState(false);
   const [selectedNewNumber, setSelectedNewNumber] = useState('');
+  const [numberType, setNumberType] = useState<'local' | 'toll_free'>('local');
+  const [numberKeyword, setNumberKeyword] = useState('');
   const [reservingNumber, setReservingNumber] = useState(false);
   const [reservationError, setReservationError] = useState('');
   const [beginCheckoutFired, setBeginCheckoutFired] = useState(false);
@@ -448,6 +450,7 @@ export default function Home() {
             setPhoneNumber(session.phoneNumber || '');
             setAreaCode(session.areaCode || '412');
             setSelectedNewNumber(session.selectedNewNumber || '');
+            if (session.numberType) setNumberType(session.numberType);
             setCanPort(session.canPort);
             setSelectedPlan(session.selectedPlan || 'annually');
             if (session.selectedPhones) setSelectedPhones(session.selectedPhones);
@@ -648,6 +651,7 @@ export default function Home() {
             phoneNumber,
             areaCode,
             selectedNewNumber,
+            numberType,
             canPort,
             selectedPlan,
             selectedPhones,
@@ -688,7 +692,7 @@ export default function Home() {
     
   }, [sessionId, sessionLoaded, currentStep, firstName, lastName, email, mobileNumber, 
       address, country, addressComponents, billingSameAsShipping, billingAddress, billingCountry, billingComponents,
-      hasPhone, phoneNumber, areaCode, selectedNewNumber, selectedPlan, selectedPhones, 
+      hasPhone, phoneNumber, areaCode, selectedNewNumber, numberType, selectedPlan, selectedPhones, 
       ownDevice, onlineFax,
       hasInternet, addInternetPackage, internetPackage, internetDevice, stripeCustomerId,
       numUsers, callMethod, numLocations, highCallVolume, needCallRecording]);
@@ -1418,14 +1422,18 @@ export default function Home() {
   };
   
   // Fetch available numbers from Telnyx
-  const fetchAvailableNumbers = async (code: string) => {
-    if (code.length !== 3) return;
+  const fetchAvailableNumbers = async (code: string, type: 'local' | 'toll_free' = 'local', keyword: string = '') => {
+    if (type === 'local' && code.length !== 3) return;
     
     setLoadingNumbers(true);
     setReservationError('');
     setSelectedNewNumber('');
     try {
-      const response = await fetch(`${basePath}/api/available-numbers?area_code=${code}`);
+      const params = new URLSearchParams({ type });
+      if (type === 'local') params.set('area_code', code);
+      if (keyword.trim()) params.set('keyword', keyword.trim());
+      
+      const response = await fetch(`${basePath}/api/available-numbers?${params.toString()}`);
       const data = await response.json();
       
       if (response.ok) {
@@ -1444,10 +1452,14 @@ export default function Home() {
   
   // Fetch numbers when entering step 3 (new number selection)
   useEffect(() => {
-    if (currentStep === 3 && hasPhone === false && areaCode.length === 3) {
-      fetchAvailableNumbers(areaCode);
+    if (currentStep === 3 && hasPhone === false) {
+      if (numberType === 'local' && areaCode.length === 3) {
+        fetchAvailableNumbers(areaCode, 'local', numberKeyword);
+      } else if (numberType === 'toll_free') {
+        fetchAvailableNumbers('', 'toll_free', numberKeyword);
+      }
     }
-  }, [currentStep, hasPhone, areaCode]);
+  }, [currentStep, hasPhone, areaCode, numberType]);
   
   // Auto-select first number when available numbers change
   useEffect(() => {
@@ -3089,18 +3101,51 @@ export default function Home() {
                   Select your new number
                 </h1>
                 <p className="text-base md:text-lg text-[#585858] leading-tight">
-                  Choose a phone number from the available options
+                  Choose a local or toll-free number for your business
                 </p>
               </div>
 
-              <div className="space-y-6">
-                {/* Area Code Input */}
+              <div className="space-y-5">
+                {/* Local / Toll-Free Toggle */}
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => { setNumberType('local'); setAvailableNumbers([]); setSelectedNewNumber(''); }}
+                    className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 transition-all ${
+                      numberType === 'local'
+                        ? 'border-[#F53900] bg-[#FFF5F2] text-[#F53900]'
+                        : 'border-[#E8E8E8] bg-white text-[#585858] hover:border-[#F53900]/50'
+                    }`}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span className={`text-sm font-semibold ${numberType === 'local' ? 'text-[#F53900]' : 'text-[#080808]'}`}>Local Number</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setNumberType('toll_free'); setAvailableNumbers([]); setSelectedNewNumber(''); }}
+                    className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 transition-all ${
+                      numberType === 'toll_free'
+                        ? 'border-[#F53900] bg-[#FFF5F2] text-[#F53900]'
+                        : 'border-[#E8E8E8] bg-white text-[#585858] hover:border-[#F53900]/50'
+                    }`}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span className={`text-sm font-semibold ${numberType === 'toll_free' ? 'text-[#F53900]' : 'text-[#080808]'}`}>Toll-Free Number</span>
+                  </button>
+                </div>
+
+                {/* Search Controls */}
                 <div className="bg-gradient-to-b from-transparent to-[#d9d9d926] p-4 md:p-6 space-y-3">
-                  <label className="block text-sm text-[#080808] font-medium">
-                    Enter your preferred area code:
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
+                  {numberType === 'local' && (
+                    <div>
+                      <label className="block text-sm text-[#080808] font-medium mb-1.5">
+                        Area code
+                      </label>
                       <input
                         type="text"
                         value={areaCode}
@@ -3108,18 +3153,56 @@ export default function Home() {
                         placeholder="412"
                         inputMode="numeric"
                         maxLength={3}
-                        className="w-[100px] md:w-[120px] h-12 md:h-14 px-3 md:px-4 bg-white border border-[#D9D9D9] rounded-lg text-xl md:text-2xl font-semibold text-[#080808] text-center tracking-[6px] placeholder-[#BDBDBD] focus:outline-none focus:border-[#F53900] focus:ring-0 focus:border-[#F53900] transition-all"
+                        className="w-[100px] md:w-[120px] h-12 px-3 bg-white border border-[#D9D9D9] rounded-lg text-xl font-semibold text-[#080808] text-center tracking-[6px] placeholder-[#BDBDBD] focus:outline-none focus:border-[#F53900] focus:ring-0 transition-all"
                       />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-[#585858]">
-                        Enter a 3-digit area code to see available phone numbers
-                      </p>
+                  )}
+                  
+                  <div>
+                    <label className="block text-sm text-[#080808] font-medium mb-1.5">
+                      Search by keyword <span className="text-[#999] font-normal">(optional)</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={numberKeyword}
+                        onChange={(e) => setNumberKeyword(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (numberType === 'local' && areaCode.length === 3) {
+                              fetchAvailableNumbers(areaCode, 'local', numberKeyword);
+                            } else if (numberType === 'toll_free') {
+                              fetchAvailableNumbers('', 'toll_free', numberKeyword);
+                            }
+                          }
+                        }}
+                        placeholder={numberType === 'toll_free' ? 'e.g. 800, 888, or digits like 1234' : 'e.g. digits like 7000 or 1234'}
+                        className="flex-1 h-12 px-3 bg-white border border-[#D9D9D9] rounded-lg text-sm text-[#080808] placeholder-[#BDBDBD] focus:outline-none focus:border-[#F53900] focus:ring-0 transition-all"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (numberType === 'local' && areaCode.length === 3) {
+                            fetchAvailableNumbers(areaCode, 'local', numberKeyword);
+                          } else if (numberType === 'toll_free') {
+                            fetchAvailableNumbers('', 'toll_free', numberKeyword);
+                          }
+                        }}
+                        disabled={numberType === 'local' && areaCode.length !== 3}
+                        className={`h-12 px-5 rounded-lg text-sm font-semibold transition-all ${
+                          (numberType === 'toll_free' || areaCode.length === 3)
+                            ? 'bg-[#F53900] text-white hover:bg-[#d63300] cursor-pointer'
+                            : 'bg-[#E8E8E8] text-[#999] cursor-not-allowed'
+                        }`}
+                      >
+                        Search
+                      </button>
                     </div>
                   </div>
                 </div>
 
-                {/* Available Numbers Grid - 2 columns x 5 rows */}
+                {/* Available Numbers Grid */}
                 <div className="space-y-2">
                   {loadingNumbers ? (
                     <div className="flex items-center justify-center py-12">
