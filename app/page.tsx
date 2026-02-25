@@ -1405,8 +1405,8 @@ export default function Home() {
         user_region: addressComponents.state || undefined,
         user_postal: addressComponents.zipCode || undefined,
         user_country: country || undefined,
-        product: 'home',
-        plan: 'home',
+        product: 'advanced',
+        plan: 'advanced',
         quantity: '1',
         total: total.toFixed(2),
         tax: taxes.toFixed(2),
@@ -2223,6 +2223,38 @@ export default function Home() {
           transaction_id: orderDetails.orderNumber,
           value: orderTotal.toFixed(2)
         });
+
+        // Persist GTM purchase event data to localStorage.
+        // Fired on the thank you page — same clean-page strategy as the n8n webhook.
+        // GA4 requires transaction_id and purchase fields inside an ecommerce object.
+        const gtmTax = calculatedTaxAmount !== null ? calculatedTaxAmount : finalTaxes;
+        const pendingGTMPurchase = {
+          event: 'purchase',
+          user_firstname: firstName || undefined,
+          user_lastname: lastName || undefined,
+          user_email: email || undefined,
+          user_phone: mobileNumber || undefined,
+          user_city: orderDetails.address?.city || undefined,
+          user_region: orderDetails.address?.state || undefined,
+          user_postal: orderDetails.address?.zipCode || undefined,
+          user_country: country || undefined,
+          product: 'advanced',
+          plan: 'advanced',
+          ecommerce: {
+            transaction_id: String(orderDetails.orderNumber),
+            value: parseFloat(orderTotal.toFixed(2)),
+            tax: parseFloat(gtmTax.toFixed(2)),
+            currency: country === 'CA' ? 'CAD' : 'USD',
+            items: [{
+              item_id: 'advanced',
+              item_name: 'Voiply Advanced Business',
+              item_category: 'advanced',
+              quantity: getUserCount(),
+              price: parseFloat(orderTotal.toFixed(2)),
+            }],
+          },
+        };
+        localStorage.setItem('pendingGTMPurchase', JSON.stringify(pendingGTMPurchase));
         
         // Send order data to n8n webhook
         try {
