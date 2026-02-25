@@ -240,7 +240,7 @@ export default function Home() {
   const [hasInternet, setHasInternet] = useState<boolean | null>(null);
   
   // Step 2: Business Needs Assessment
-  const [numUsers, setNumUsers] = useState('');
+  const [numUsers, setNumUsers] = useState('1');
   const [callMethod, setCallMethod] = useState('');
   const [numLocations, setNumLocations] = useState('');
   const [highCallVolume, setHighCallVolume] = useState('');
@@ -1526,7 +1526,7 @@ export default function Home() {
     hasInternet !== null;
   
   // Step 2 is business needs assessment
-  const canProceedStep2 = numUsers !== '' && callMethod !== '' && numLocations !== '' && highCallVolume !== '' && needCallRecording !== '';
+  const canProceedStep2 = numUsers !== '' && callMethod !== '' && highCallVolume !== '';
   
   // Step 3 is number selection (only shown if hasPhone === false)  
   const canProceedStep3 = selectedNewNumber !== '';
@@ -2926,63 +2926,120 @@ export default function Home() {
               </div>
 
               <div className="space-y-6 md:space-y-8">
-                {/* How many users need a phone number? */}
+                {/* How many users need a phone number? - Slider */}
                 <div>
-                  <label className="block text-sm font-medium text-[#080808] mb-2">
+                  <label className="block text-sm font-medium text-[#080808] mb-4">
                     How many users need a phone number?
                   </label>
-                  <select
-                    value={numUsers}
-                    onChange={(e) => setNumUsers(e.target.value)}
-                    className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0 appearance-none cursor-pointer"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23585858' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
-                  >
-                    <option value="" disabled>Select number of users</option>
-                    {Array.from({ length: 25 }, (_, i) => i + 1).map(n => (
-                      <option key={n} value={String(n)}>{n}</option>
-                    ))}
-                  </select>
+                  <div className="bg-[#F9F9F9] rounded-xl p-5 md:p-6">
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const current = parseInt(numUsers) || 1;
+                            if (current > 1) setNumUsers(String(current - 1));
+                          }}
+                          disabled={!numUsers || parseInt(numUsers) <= 1}
+                          className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${
+                            !numUsers || parseInt(numUsers) <= 1
+                              ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed'
+                              : 'border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2] active:scale-95'
+                          }`}
+                        >
+                          <span className="text-xl font-bold leading-none">−</span>
+                        </button>
+                        <div className="text-center min-w-[80px]">
+                          <span className="text-4xl font-bold text-[#F53900]">{numUsers || '1'}</span>
+                          <p className="text-xs text-[#999] mt-0.5">user{(!numUsers || numUsers === '1') ? '' : 's'}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const current = parseInt(numUsers) || 0;
+                            if (current < 25) setNumUsers(String(current + 1));
+                          }}
+                          disabled={parseInt(numUsers) >= 25}
+                          className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${
+                            parseInt(numUsers) >= 25
+                              ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed'
+                              : 'border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2] active:scale-95'
+                          }`}
+                        >
+                          <span className="text-xl font-bold leading-none">+</span>
+                        </button>
+                      </div>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="25"
+                      value={numUsers || '1'}
+                      onChange={(e) => setNumUsers(e.target.value)}
+                      className="w-full h-2 bg-[#E8E8E8] rounded-full appearance-none cursor-pointer accent-[#F53900]"
+                      style={{
+                        background: `linear-gradient(to right, #F53900 0%, #F53900 ${((parseInt(numUsers || '1') - 1) / 24) * 100}%, #E8E8E8 ${((parseInt(numUsers || '1') - 1) / 24) * 100}%, #E8E8E8 100%)`
+                      }}
+                    />
+                    <div className="flex justify-between text-xs text-[#999] mt-1">
+                      <span>1</span>
+                      <span>5</span>
+                      <span>10</span>
+                      <span>15</span>
+                      <span>20</span>
+                      <span>25</span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* How will your team make and receive calls? */}
+                {/* How will your team make and receive calls? - Card selection */}
                 <div>
-                  <label className="block text-sm font-medium text-[#080808] mb-2">
+                  <label className="block text-sm font-medium text-[#080808] mb-3">
                     How will your team make and receive calls?
                   </label>
-                  <select
-                    value={callMethod}
-                    onChange={(e) => setCallMethod(e.target.value)}
-                    className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0 appearance-none cursor-pointer"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23585858' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
-                  >
-                    <option value="" disabled>Select call method</option>
-                    <option value="app-only">App-Only (Mobile & Desktop)</option>
-                    <option value="desk-phones">Desk Phones</option>
-                    <option value="both">Both Apps and Desk Phones</option>
-                  </select>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { value: 'app-only', label: 'Mobile App', icon: (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                      )},
+                      { value: 'desk-phones', label: 'Desk Phone', icon: (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                      )},
+                      { value: 'both', label: 'Both', icon: (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      )}
+                    ].map(option => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => setCallMethod(option.value)}
+                        className={`flex flex-col items-center gap-2 py-4 px-3 rounded-xl border-2 transition-all ${
+                          callMethod === option.value
+                            ? 'border-[#F53900] bg-[#FFF5F2] text-[#F53900]'
+                            : 'border-[#E8E8E8] bg-white text-[#585858] hover:border-[#F53900]/50'
+                        }`}
+                      >
+                        <div className={callMethod === option.value ? 'text-[#F53900]' : 'text-[#585858]'}>
+                          {option.icon}
+                        </div>
+                        <span className={`text-sm font-semibold ${callMethod === option.value ? 'text-[#F53900]' : 'text-[#080808]'}`}>
+                          {option.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                {/* How many locations do you have? */}
+                {/* What type of business calling do you do? */}
                 <div>
                   <label className="block text-sm font-medium text-[#080808] mb-2">
-                    How many locations do you have?
-                  </label>
-                  <select
-                    value={numLocations}
-                    onChange={(e) => setNumLocations(e.target.value)}
-                    className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0 appearance-none cursor-pointer"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23585858' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
-                  >
-                    <option value="" disabled>Select number of locations</option>
-                    <option value="one">One location</option>
-                    <option value="multiple">Multiple locations</option>
-                  </select>
-                </div>
-
-                {/* Will your team handle a high volume of calls? */}
-                <div>
-                  <label className="block text-sm font-medium text-[#080808] mb-2">
-                    Will your team handle a high volume of inbound or outbound calls?
+                    What type of business calling do you do?
                   </label>
                   <select
                     value={highCallVolume}
@@ -2990,27 +3047,10 @@ export default function Home() {
                     className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0 appearance-none cursor-pointer"
                     style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23585858' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
                   >
-                    <option value="" disabled>Select call volume</option>
-                    <option value="standard">No, standard business use</option>
-                    <option value="high-volume">Yes, we handle high call volumes</option>
-                    <option value="call-center">Yes, we operate a call center</option>
-                  </select>
-                </div>
-
-                {/* Do you need call recording for compliance? */}
-                <div>
-                  <label className="block text-sm font-medium text-[#080808] mb-2">
-                    Do you need call recording for compliance?
-                  </label>
-                  <select
-                    value={needCallRecording}
-                    onChange={(e) => setNeedCallRecording(e.target.value)}
-                    className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0 appearance-none cursor-pointer"
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23585858' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
-                  >
-                    <option value="" disabled>Select an option</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="" disabled>Select call type</option>
+                    <option value="standard">Standard business use</option>
+                    <option value="high-volume">High call volumes</option>
+                    <option value="call-center">Call center operations</option>
                   </select>
                 </div>
 
