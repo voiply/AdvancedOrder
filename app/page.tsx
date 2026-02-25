@@ -355,6 +355,7 @@ export default function Home() {
   
   // Tax breakdown - Multi-entry cache
   const [showTaxModal, setShowTaxModal] = useState(false);
+  const [showManagedPhoneModal, setShowManagedPhoneModal] = useState(false);
   const [taxBreakdown, setTaxBreakdown] = useState<any>(null);
   const [loadingTax, setLoadingTax] = useState(false);
   const [taxError, setTaxError] = useState('');
@@ -3511,9 +3512,19 @@ export default function Home() {
                       {getTotalManagedPhones() > 0 && (
                         <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
                           <div>
-                            <p className="text-sm font-medium text-[#080808]">
-                              Managed Desk Phone{getTotalManagedPhones() > 1 ? ` ×${getTotalManagedPhones()}` : ''}
-                            </p>
+                            <div className="flex items-center gap-1.5">
+                              <p className="text-sm font-medium text-[#080808]">
+                                Managed Desk Phone{getTotalManagedPhones() > 1 ? ` ×${getTotalManagedPhones()}` : ''}
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => setShowManagedPhoneModal(true)}
+                                title="What's included?"
+                                className="w-4 h-4 rounded-full bg-[#E8E8E8] hover:bg-[#D9D9D9] flex items-center justify-center transition-colors flex-shrink-0"
+                              >
+                                <span className="text-[9px] font-bold text-[#666] leading-none">?</span>
+                              </button>
+                            </div>
                             <p className="text-xs text-[#999]">${(5).toFixed(2)}/mo per phone × {getPlanMonths()} mo</p>
                           </div>
                           <span className="text-sm font-bold text-[#080808]">
@@ -4418,6 +4429,56 @@ export default function Home() {
         </main>
       </div>
       
+      {/* Managed Desk Phone Info Modal */}
+      {showManagedPhoneModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowManagedPhoneModal(false)}>
+          <div className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-white border-b border-[#D9D9D9] p-4 md:p-6 flex justify-between items-center">
+              <h2 className="text-xl md:text-2xl font-bold text-[#080808]">Managed Desk Phone Support</h2>
+              <button
+                onClick={() => setShowManagedPhoneModal(false)}
+                className="text-[#585858] hover:text-[#080808] transition-colors w-10 h-10 flex items-center justify-center rounded-full bg-[#F53900] hover:bg-[#d93100]"
+              >
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="p-4 md:p-6 space-y-4">
+              <p className="text-sm text-[#585858]">
+                For just $5/mo per phone, our Managed Desk Phone service ensures your team stays connected and productive with full white-glove support.
+              </p>
+              
+              <div className="space-y-3">
+                {[
+                  { icon: '🔧', title: 'Full Phone Provisioning & Setup', desc: 'We configure and set up each phone remotely so it\'s ready to use out of the box.' },
+                  { icon: '🔄', title: 'Firmware & Software Updates', desc: 'We keep your phones up to date with the latest firmware and security patches.' },
+                  { icon: '🛡️', title: 'Ongoing Technical Support', desc: 'Unlimited access to our support team for troubleshooting, configuration changes, and questions.' },
+                  { icon: '📞', title: 'Feature Configuration', desc: 'We set up speed dials, BLF keys, call parking, paging groups, and other advanced features.' },
+                  { icon: '🔁', title: 'Device Replacement Assistance', desc: 'If a phone has issues, we help diagnose and get you back online fast.' },
+                  { icon: '☁️', title: 'Cloud Management Portal', desc: 'Your phones are managed through our cloud platform for quick, remote changes anytime.' },
+                ].map((item, i) => (
+                  <div key={i} className="flex gap-3 bg-[#F9F9F9] rounded-lg p-3">
+                    <span className="text-lg flex-shrink-0">{item.icon}</span>
+                    <div>
+                      <p className="text-sm font-semibold text-[#080808]">{item.title}</p>
+                      <p className="text-xs text-[#585858] mt-0.5">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="bg-[#FFF5F2] rounded-lg p-3 border border-[#FEEBE6]">
+                <p className="text-xs text-[#585858]">
+                  <span className="font-semibold text-[#F53900]">Applies to all phones</span> — whether you purchase from us or bring your own compatible VoIP phones.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Tax Breakdown Modal */}
       {showTaxModal && taxBreakdown && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowTaxModal(false)}>
