@@ -26,6 +26,40 @@ export default function OrderConfirmation() {
       console.error('Could not parse lastOrder from localStorage', e);
     }
 
+    // Fire GTM purchase event.
+    // pendingGTMPurchase is written by the checkout page before redirecting.
+    // Delete from localStorage first (primary guard), sessionStorage flag as secondary.
+    try {
+      const gtmRaw = localStorage.getItem('pendingGTMPurchase');
+      if (gtmRaw) {
+        const gtmData = JSON.parse(gtmRaw);
+        const transactionId = gtmData.ecommerce?.transaction_id;
+
+        // Always clear localStorage first
+        localStorage.removeItem('pendingGTMPurchase');
+
+        if (!transactionId) {
+          console.error('[GTM] pendingGTMPurchase missing ecommerce.transaction_id — raw:', JSON.stringify(gtmData));
+        } else {
+          const gtmSessionKey = `gtm_purchase_sent_${transactionId}`;
+
+          if (!sessionStorage.getItem(gtmSessionKey)) {
+            sessionStorage.setItem(gtmSessionKey, '1');
+
+            // Clear ecommerce before pushing — prevents data bleed from previous events
+            (window as any).dataLayer = (window as any).dataLayer || [];
+            (window as any).dataLayer.push({ ecommerce: null });
+            (window as any).dataLayer.push(gtmData);
+            console.log('[GTM] purchase event pushed for order', transactionId);
+          } else {
+            console.warn('[GTM] sessionStorage guard blocked duplicate purchase for order', transactionId);
+          }
+        }
+      }
+    } catch (e) {
+      console.error('[GTM] Error reading pendingGTMPurchase:', e);
+    }
+
     setLoaded(true);
 
     return () => window.removeEventListener('popstate', preventBack);
