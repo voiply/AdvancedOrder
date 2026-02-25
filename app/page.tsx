@@ -4468,7 +4468,7 @@ export default function Home() {
               </div>
               
               <p className="text-xs text-[#999] pt-1">
-                Applies to all phones — purchased from us or bring your own.
+                Applies to all phones, whether purchased from us or bring your own.
               </p>
             </div>
           </div>
