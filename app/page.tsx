@@ -4447,33 +4447,29 @@ export default function Home() {
             
             <div className="p-4 md:p-6 space-y-4">
               <p className="text-sm text-[#585858]">
-                For just $5/mo per phone, our Managed Desk Phone service ensures your team stays connected and productive with full white-glove support.
+                For $5/mo per phone, we handle the setup and ongoing management so your team can focus on business.
               </p>
               
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {[
-                  { icon: '🔧', title: 'Full Phone Provisioning & Setup', desc: 'We configure and set up each phone remotely so it\'s ready to use out of the box.' },
-                  { icon: '🔄', title: 'Firmware & Software Updates', desc: 'We keep your phones up to date with the latest firmware and security patches.' },
-                  { icon: '🛡️', title: 'Ongoing Technical Support', desc: 'Unlimited access to our support team for troubleshooting, configuration changes, and questions.' },
-                  { icon: '📞', title: 'Feature Configuration', desc: 'We set up speed dials, BLF keys, call parking, paging groups, and other advanced features.' },
-                  { icon: '🔁', title: 'Device Replacement Assistance', desc: 'If a phone has issues, we help diagnose and get you back online fast.' },
-                  { icon: '☁️', title: 'Cloud Management Portal', desc: 'Your phones are managed through our cloud platform for quick, remote changes anytime.' },
+                  'Phone provisioning & remote setup',
+                  'Firmware & security updates',
+                  'Feature configuration (BLF keys, speed dials, call parking)',
+                  'Ongoing troubleshooting & technical support',
+                  'Cloud-managed for quick remote changes',
                 ].map((item, i) => (
-                  <div key={i} className="flex gap-3 bg-[#F9F9F9] rounded-lg p-3">
-                    <span className="text-lg flex-shrink-0">{item.icon}</span>
-                    <div>
-                      <p className="text-sm font-semibold text-[#080808]">{item.title}</p>
-                      <p className="text-xs text-[#585858] mt-0.5">{item.desc}</p>
-                    </div>
+                  <div key={i} className="flex items-start gap-2.5">
+                    <svg className="w-4 h-4 text-[#17DB4E] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                    <span className="text-sm text-[#080808]">{item}</span>
                   </div>
                 ))}
               </div>
               
-              <div className="bg-[#FFF5F2] rounded-lg p-3 border border-[#FEEBE6]">
-                <p className="text-xs text-[#585858]">
-                  <span className="font-semibold text-[#F53900]">Applies to all phones</span> — whether you purchase from us or bring your own compatible VoIP phones.
-                </p>
-              </div>
+              <p className="text-xs text-[#999] pt-1">
+                Applies to all phones — purchased from us or bring your own.
+              </p>
             </div>
           </div>
         </div>
