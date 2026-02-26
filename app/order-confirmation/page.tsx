@@ -7,13 +7,44 @@ const basePath = '/business-advanced-checkout';
 export default function OrderConfirmation() {
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const [loaded, setLoaded] = useState(false);
+  const [redirectError, setRedirectError] = useState('');
 
   useEffect(() => {
-    // Mobile debug console — only loads when ?debug=1 is in the URL
     // Prevent back navigation
     window.history.pushState(null, '', window.location.href);
     const preventBack = () => window.history.pushState(null, '', window.location.href);
     window.addEventListener('popstate', preventBack);
+
+    // ── 3D Secure redirect handling ────────────────────────────────────
+    // After a full-page 3DS redirect, Stripe appends redirect_status,
+    // payment_intent, and payment_intent_client_secret to the URL.
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectStatus = urlParams.get('redirect_status');
+    const returnedPaymentIntent = urlParams.get('payment_intent');
+
+    if (redirectStatus && redirectStatus !== 'succeeded') {
+      // 3DS failed or was cancelled — redirect back to checkout with error
+      const errorMsg = redirectStatus === 'requires_payment_method'
+        ? 'Your bank could not verify your card. Please try again with a different card.'
+        : 'Authentication was not completed. Please try again.';
+      // Clean up pre-saved data
+      localStorage.removeItem('pendingWebhook');
+      localStorage.removeItem('pendingMetadataUpdate');
+      localStorage.removeItem('pendingGTMPurchase');
+      // Redirect back to checkout with error message
+      window.location.href = `${basePath}?3ds_error=${encodeURIComponent(errorMsg)}`;
+      return;
+    }
+
+    // Strip Stripe params from URL without reloading
+    if (returnedPaymentIntent) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete('payment_intent');
+      cleanUrl.searchParams.delete('payment_intent_client_secret');
+      cleanUrl.searchParams.delete('redirect_status');
+      window.history.replaceState({}, '', cleanUrl.toString());
+    }
+    // ────────────────────────────────────────────────────────────────────
 
     // Load order details from localStorage (set by checkout page before redirect)
     try {
@@ -26,38 +57,80 @@ export default function OrderConfirmation() {
       console.error('Could not parse lastOrder from localStorage', e);
     }
 
-    // Fire GTM purchase event.
-    // pendingGTMPurchase is written by the checkout page before redirecting.
-    // Delete from localStorage first (primary guard), sessionStorage flag as secondary.
+    // ── Fire pending GTM purchase event ─────────────────────────────────
     try {
       const gtmRaw = localStorage.getItem('pendingGTMPurchase');
       if (gtmRaw) {
         const gtmData = JSON.parse(gtmRaw);
         const transactionId = gtmData.ecommerce?.transaction_id;
 
-        // Always clear localStorage first
         localStorage.removeItem('pendingGTMPurchase');
 
         if (!transactionId) {
-          console.error('[GTM] pendingGTMPurchase missing ecommerce.transaction_id — raw:', JSON.stringify(gtmData));
+          console.error('[GTM] pendingGTMPurchase missing ecommerce.transaction_id');
         } else {
           const gtmSessionKey = `gtm_purchase_sent_${transactionId}`;
-
           if (!sessionStorage.getItem(gtmSessionKey)) {
             sessionStorage.setItem(gtmSessionKey, '1');
-
-            // Clear ecommerce before pushing — prevents data bleed from previous events
             (window as any).dataLayer = (window as any).dataLayer || [];
             (window as any).dataLayer.push({ ecommerce: null });
             (window as any).dataLayer.push(gtmData);
             console.log('[GTM] purchase event pushed for order', transactionId);
           } else {
-            console.warn('[GTM] sessionStorage guard blocked duplicate purchase for order', transactionId);
+            console.warn('[GTM] duplicate blocked for order', transactionId);
           }
         }
       }
     } catch (e) {
       console.error('[GTM] Error reading pendingGTMPurchase:', e);
+    }
+
+    // ── Fire pending n8n webhook ────────────────────────────────────────
+    try {
+      const webhookRaw = localStorage.getItem('pendingWebhook');
+      if (webhookRaw) {
+        const webhookData = JSON.parse(webhookRaw);
+        localStorage.removeItem('pendingWebhook');
+
+        const webhookSessionKey = `webhook_sent_${webhookData.orderId}`;
+        if (!sessionStorage.getItem(webhookSessionKey)) {
+          sessionStorage.setItem(webhookSessionKey, '1');
+          fetch('https://voiply.app.n8n.cloud/webhook/6aceed8e-b47d-4b24-84ac-8e948357fed6', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(webhookData)
+          }).catch(e => console.error('[Webhook] n8n error:', e));
+          console.log('[Webhook] n8n fired for order', webhookData.orderId);
+        } else {
+          console.warn('[Webhook] duplicate blocked for order', webhookData.orderId);
+        }
+      }
+    } catch (e) {
+      console.error('[Webhook] Error reading pendingWebhook:', e);
+    }
+
+    // ── Fire pending Stripe metadata update ─────────────────────────────
+    try {
+      const metaRaw = localStorage.getItem('pendingMetadataUpdate');
+      if (metaRaw) {
+        const metaData = JSON.parse(metaRaw);
+        localStorage.removeItem('pendingMetadataUpdate');
+
+        const metaSessionKey = `metadata_sent_${metaData.orderId}`;
+        if (!sessionStorage.getItem(metaSessionKey)) {
+          sessionStorage.setItem(metaSessionKey, '1');
+          fetch(`${basePath}/api/update-customer-metadata`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(metaData)
+          }).catch(e => console.error('[Metadata] update error:', e));
+          console.log('[Metadata] Stripe customer update fired for', metaData.customerId);
+        } else {
+          console.warn('[Metadata] duplicate blocked for order', metaData.orderId);
+        }
+      }
+    } catch (e) {
+      console.error('[Metadata] Error reading pendingMetadataUpdate:', e);
     }
 
     setLoaded(true);
@@ -72,7 +145,6 @@ export default function OrderConfirmation() {
     window.location.href = basePath;
   };
 
-  // Show nothing until client-side hydration is done (avoids SSR mismatch flash)
   if (!loaded) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#FEEBE6] to-white flex items-center justify-center">
