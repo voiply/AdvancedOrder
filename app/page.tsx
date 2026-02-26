@@ -413,6 +413,17 @@ export default function Home() {
       }
       // ──────────────────────────────────────────────────────────────────────
 
+      // ── Handle 3DS error redirect from order-confirmation page ────────────
+      const threeDsError = urlParams.get('3ds_error');
+      if (threeDsError) {
+        setPaymentError({ type: 'auth', message: decodeURIComponent(threeDsError) });
+        setCurrentStep(5);
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete('3ds_error');
+        window.history.replaceState({}, '', cleanUrl.toString());
+      }
+      // ──────────────────────────────────────────────────────────────────────
+
       // Check URL for session ID
       const urlSessionId = urlParams.get('session');
       
@@ -2115,6 +2126,124 @@ export default function Home() {
         internetDevice: (hasInternet === false && addInternetPackage) ? internetDevice : null,
       };
       localStorage.setItem('lastOrder', JSON.stringify(preSaveOrderDetails));
+
+      // ── Pre-save webhook + metadata + GTM for 3DS redirect resilience ────
+      // If Stripe triggers a full-page 3DS redirect, code after confirmPayment
+      // never runs. These are picked up by the order-confirmation page.
+
+      // Pending n8n webhook
+      const getPreSaveInterval = () => {
+        if (selectedPlan === '3month') return 'quarter';
+        if (selectedPlan === 'annually') return 'year';
+        if (selectedPlan === '3year') return '3year';
+        return 'year';
+      };
+      const getPreSavePhoneDigits = () => {
+        let pd = '';
+        if (hasPhone === false && selectedNewNumber) pd = selectedNewNumber.replace(/\D/g, '');
+        else if (hasPhone === true && phoneNumber) pd = phoneNumber.replace(/\D/g, '');
+        return pd.length > 10 ? pd.slice(-10) : pd;
+      };
+      const pendingWebhook = {
+        plan: 'residential',
+        phoneNumber: getPreSavePhoneDigits(),
+        customerId: finalCustomerId,
+        orderId: preSaveOrderDetails.orderNumber,
+        userCount: String(getUserCount()),
+        version: typeof window !== 'undefined' && window.location.hostname.includes('voiply.com') ? 'prod' : 'dev',
+        interval: getPreSaveInterval(),
+        newNumber: hasPhone === false,
+        email: email,
+        address_1: addressComponents.street,
+        address_2: address2 || '',
+        city: addressComponents.city,
+        country: country,
+        name: `${firstName} ${lastName}`,
+        postal_code: addressComponents.zipCode,
+        shipping_method: '',
+        state: addressComponents.state,
+        bundle: getPhonesSummary(),
+        ...(onlineFax ? { fax: true } : {}),
+        ...(hasInternet === false && addInternetPackage ? {
+          internetorder: true,
+          internetrental: internetDevice === 'rental',
+          internetbundle: internetPackage === 'unlimited-5g' ? 'unlimited' : 'phone-only'
+        } : {})
+      };
+      localStorage.setItem('pendingWebhook', JSON.stringify(pendingWebhook));
+
+      // Pending Stripe customer metadata update
+      const preSavePrimaryNumber = getPreSavePhoneDigits();
+      const preSaveBillingAddr = billingSameAsShipping ? {
+        line1: addressComponents.street,
+        line2: address2 || '',
+        city: addressComponents.city,
+        state: addressComponents.state,
+        postal_code: addressComponents.zipCode,
+        country: country === 'CA' ? 'CA' : 'US',
+      } : {
+        line1: billingComponents.street,
+        line2: billingAddress2 || '',
+        city: billingComponents.city,
+        state: billingComponents.state,
+        postal_code: billingComponents.zipCode,
+        country: billingCountry === 'CA' ? 'CA' : 'US',
+      };
+      const preSaveShippingAddr = {
+        name: `${firstName} ${lastName}`.trim(),
+        line1: addressComponents.street,
+        line2: address2 || '',
+        city: addressComponents.city,
+        state: addressComponents.state,
+        postal_code: addressComponents.zipCode,
+        country: country === 'CA' ? 'CA' : 'US',
+      };
+      const pendingMetadataUpdate = {
+        customerId: finalCustomerId,
+        orderId: preSaveOrderDetails.orderNumber,
+        primaryNumber: preSavePrimaryNumber,
+        product: ownDevice > 0 ? '' : (() => {
+          const phoneEntries = Object.entries(selectedPhones);
+          if (phoneEntries.length === 0) return '';
+          return phoneEntries.map(([id, qty]) => {
+            const phone = PHONES.find(p => p.id === id);
+            return `${phone?.name || id} x${qty}`;
+          }).join(', ');
+        })(),
+        billingAddress: preSaveBillingAddr,
+        shippingAddress: preSaveShippingAddr,
+      };
+      localStorage.setItem('pendingMetadataUpdate', JSON.stringify(pendingMetadataUpdate));
+
+      // Pending GTM purchase event (GA4 ecommerce)
+      const preSaveGtmTax = calculatedTaxAmount !== null ? calculatedTaxAmount : finalTaxes;
+      const pendingGTMPurchasePreSave = {
+        event: 'purchase',
+        user_firstname: firstName || undefined,
+        user_lastname: lastName || undefined,
+        user_email: email || undefined,
+        user_phone: mobileNumber || undefined,
+        user_city: addressComponents.city || undefined,
+        user_region: addressComponents.state || undefined,
+        user_postal: addressComponents.zipCode || undefined,
+        user_country: country || undefined,
+        product: 'advanced',
+        plan: 'advanced',
+        ecommerce: {
+          transaction_id: String(preSaveOrderDetails.orderNumber),
+          value: parseFloat(finalTotal.toFixed(2)),
+          tax: parseFloat(preSaveGtmTax.toFixed(2)),
+          currency: country === 'CA' ? 'CAD' : 'USD',
+          items: [{
+            item_id: 'advanced',
+            item_name: 'Voiply Advanced Business',
+            item_category: 'advanced',
+            quantity: getUserCount(),
+            price: parseFloat(finalTotal.toFixed(2)),
+          }],
+        },
+      };
+      localStorage.setItem('pendingGTMPurchase', JSON.stringify(pendingGTMPurchasePreSave));
       // ──────────────────────────────────────────────────────────────────────
 
       // Confirm the payment with Stripe
