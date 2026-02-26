@@ -5,7 +5,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { amount, currency = 'usd', email, name, phone, address, submission_id, plan } = body;
     
-    // Amount validation
     if (!amount || amount <= 0) {
       return NextResponse.json(
         { error: 'Valid amount is required' },
@@ -13,7 +12,6 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Maximum order amount ($1,000) - prevents fraudulent large charges
     const MAX_AMOUNT = 1000;
     if (amount > MAX_AMOUNT) {
       return NextResponse.json(
@@ -22,7 +20,6 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Minimum amount ($1) - prevents zero-dollar orders
     if (amount < 1) {
       return NextResponse.json(
         { error: 'Amount below minimum' },
@@ -31,8 +28,6 @@ export async function POST(request: NextRequest) {
     }
     
     // Get Stripe Secret key from environment variable
-    // Primary: check if Stripe_Secret is a live key (most reliable)
-    // Fallback: check host/referer headers for voiply.com
     const liveKey = process.env.Stripe_Secret || '';
     const devKey = process.env.Stripe_Secret_Dev || process.env.Stripe_Secret || '';
     const host = request.headers.get('host') || '';
@@ -56,7 +51,6 @@ export async function POST(request: NextRequest) {
     // If email provided, look up or create customer
     if (email) {
       try {
-        // Search for existing customer by email
         const searchUrl = `https://api.stripe.com/v1/customers/search?query=email:'${encodeURIComponent(email)}'`;
         
         const searchResponse = await fetch(searchUrl, {
@@ -70,10 +64,8 @@ export async function POST(request: NextRequest) {
           const searchData = await searchResponse.json();
           
           if (searchData.data && searchData.data.length > 0) {
-            // Customer exists, use their ID
             customerId = searchData.data[0].id;
           } else {
-            // Customer doesn't exist, create new one
             const createCustomerUrl = 'https://api.stripe.com/v1/customers';
             const customerBody = new URLSearchParams({
               email: email,
@@ -107,24 +99,20 @@ export async function POST(request: NextRequest) {
         }
       } catch (error) {
         console.error('Error looking up/creating customer:', error);
-        // Continue without customer ID
       }
     }
     
     // Create Payment Intent
     const stripeUrl = 'https://api.stripe.com/v1/payment_intents';
-    
-    // Stripe expects amount in cents
     const amountInCents = Math.round(amount * 100);
     
     const formBody = new URLSearchParams({
       amount: amountInCents.toString(),
       currency: currency,
       'payment_method_types[]': 'card',
-      'setup_future_usage': 'off_session', // Attach payment method to customer after payment
+      'setup_future_usage': 'off_session',
     });
     
-    // Add customer if we have one
     if (customerId) {
       formBody.append('customer', customerId);
     }
@@ -133,18 +121,17 @@ export async function POST(request: NextRequest) {
     if (plan) {
       let description = '';
       if (plan === '3month') {
-        description = '3-Month Home';
+        description = '3-Month Advanced';
       } else if (plan === 'annually') {
-        description = 'Annually Home';
+        description = 'Annually Advanced';
       } else if (plan === '3year') {
-        description = '3-Year Home';
+        description = '3-Year Advanced';
       }
       if (description) {
         formBody.append('description', description);
       }
     }
     
-    // Add submission_id to metadata if provided
     if (submission_id) {
       formBody.append('metadata[submission_id]', submission_id);
     }
