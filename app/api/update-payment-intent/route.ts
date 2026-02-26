@@ -20,8 +20,6 @@ export async function POST(request: NextRequest) {
     }
     
     // Get Stripe Secret key from environment variable
-    // Primary: check if Stripe_Secret is a live key (most reliable)
-    // Fallback: check host/referer headers for voiply.com
     const liveKey = process.env.Stripe_Secret || '';
     const devKey = process.env.Stripe_Secret_Dev || process.env.Stripe_Secret || '';
     const host = request.headers.get('host') || '';
@@ -42,8 +40,6 @@ export async function POST(request: NextRequest) {
     
     // Update Payment Intent with new amount
     const stripeUrl = `https://api.stripe.com/v1/payment_intents/${paymentIntentId}`;
-    
-    // Stripe expects amount in cents
     const amountInCents = Math.round(amount * 100);
     
     const formBody = new URLSearchParams({
@@ -54,18 +50,17 @@ export async function POST(request: NextRequest) {
     if (plan) {
       let description = '';
       if (plan === '3month') {
-        description = '3-Month Home';
+        description = '3-Month Advanced';
       } else if (plan === 'annually') {
-        description = 'Annually Home';
+        description = 'Annually Advanced';
       } else if (plan === '3year') {
-        description = '3-Year Home';
+        description = '3-Year Advanced';
       }
       if (description) {
         formBody.append('description', description);
       }
     }
     
-    // Add submission_id to metadata if provided
     if (submission_id) {
       formBody.append('metadata[submission_id]', submission_id);
     }
