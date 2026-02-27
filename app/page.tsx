@@ -1348,11 +1348,12 @@ export default function Home() {
 
   // Add phone to cart
   const addPhoneToCart = (phoneId: string) => {
+    // Total managed phones (cart + BYO) can't exceed number of users
+    if (getTotalManagedPhones() >= getUserCount()) return;
     setSelectedPhones(prev => ({
       ...prev,
       [phoneId]: (prev[phoneId] || 0) + 1
     }));
-
   };
 
   // Remove phone from cart
@@ -3509,7 +3510,8 @@ export default function Home() {
                               </button>
                               <span className="text-sm font-semibold w-6 text-center">{qty}</span>
                               <button type="button" onClick={() => addPhoneToCart(phoneId)}
-                                className="w-6 h-6 rounded-full border border-[#D9D9D9] flex items-center justify-center text-[#585858] hover:bg-[#F5F5F5]">
+                                disabled={getTotalManagedPhones() >= getUserCount()}
+                                className={`w-6 h-6 rounded-full border flex items-center justify-center ${getTotalManagedPhones() >= getUserCount() ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#F5F5F5]'}`}>
                                 <span className="text-xs font-bold">+</span>
                               </button>
                               <span className="text-xs font-semibold text-[#080808] w-16 text-right">
@@ -3589,9 +3591,10 @@ export default function Home() {
                             <button
                               type="button"
                               onClick={() => addPhoneToCart(phone.id)}
-                              className="w-full py-2 rounded-lg text-xs font-semibold bg-[#F53900] text-white hover:bg-[#d63300] transition-colors"
+                              disabled={getTotalManagedPhones() >= getUserCount()}
+                              className={`w-full py-2 rounded-lg text-xs font-semibold transition-colors ${getTotalManagedPhones() >= getUserCount() ? 'bg-[#D9D9D9] text-white cursor-not-allowed' : 'bg-[#F53900] text-white hover:bg-[#d63300]'}`}
                             >
-                              Add to Cart
+                              {getTotalManagedPhones() >= getUserCount() ? `Limit: ${getUserCount()} user${getUserCount() > 1 ? 's' : ''}` : 'Add to Cart'}
                             </button>
                           ) : (
                             <div className="flex items-center justify-between bg-[#F5F5F5] rounded-lg py-1 px-2">
@@ -3601,8 +3604,9 @@ export default function Home() {
                               </button>
                               <span className="text-sm font-bold text-[#080808]">{qtyInCart}</span>
                               <button type="button" onClick={() => addPhoneToCart(phone.id)}
-                                className="w-7 h-7 rounded-full bg-white border border-[#D9D9D9] flex items-center justify-center hover:bg-[#FFF5F2] transition-colors">
-                                <span className="text-sm font-bold text-[#585858]">+</span>
+                                disabled={getTotalManagedPhones() >= getUserCount()}
+                                className={`w-7 h-7 rounded-full bg-white border flex items-center justify-center transition-colors ${getTotalManagedPhones() >= getUserCount() ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] hover:bg-[#FFF5F2] text-[#585858]'}`}>
+                                <span className="text-sm font-bold">+</span>
                               </button>
                             </div>
                           )}
@@ -3661,10 +3665,12 @@ export default function Home() {
                         <button
                           type="button"
                           onClick={() => {
+                            if (getTotalManagedPhones() >= getUserCount()) return;
                             setOwnDevice(ownDevice + 1);
 
                           }}
-                          className="w-9 h-9 rounded-full border-2 border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2] flex items-center justify-center transition-all active:scale-95"
+                          disabled={getTotalManagedPhones() >= getUserCount()}
+                          className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all active:scale-95 ${getTotalManagedPhones() >= getUserCount() ? 'border-[#D9D9D9] text-[#CCC] cursor-not-allowed' : 'border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2]'}`}
                         >
                           <span className="text-lg font-bold leading-none">+</span>
                         </button>
