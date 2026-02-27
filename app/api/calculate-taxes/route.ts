@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { zip, duration, hardwareAmount, support, telco, telcoHardware, protection, extensions = 1, locations = 1, plan = '' } = body;
+    const { zip, duration, hardwareAmount, support, telco, telcoHardware, protection, extensions = 1, locations = 1, plan = '', userCount = 1 } = body;
 
     // Validate inputs
     if (!zip || !duration) {
@@ -121,24 +121,23 @@ export async function POST(request: Request) {
       chargeAmount += tax_amount * extensions;
     }
 
-    // 911 and Regulatory fees — apply when ANY telco is present
-    const hasTelco = (telco && telco > 0) || (telcoHardware && telcoHardware > 0);
-    if (hasTelco) {
+    // 911 Fee — only when hardware phones present (per location)
+    if (telcoHardware && telcoHardware > 0 && has911Surcharge) {
       let quantity = locations || 1;
 
-      // 911 Fee (per location)
-      if (has911Surcharge) {
-        // V001-19 for 911
-        let data911 = GetTaxRequestData(0, locations, quantity, 'V001', '19');
-        data_tax.push(...data911);
+      // V001-19 for 911 surcharge lookup
+      let data911 = GetTaxRequestData(0, locations, quantity, 'V001', '19');
+      data_tax.push(...data911);
 
-        // V001-15 for our fees
-        data911 = GetTaxRequestData(fee911, locations, quantity, 'V001', '15');
-        data_tax.push(...data911);
-      }
+      // V001-15 for our E911 fee ($1.50/mo per location)
+      data911 = GetTaxRequestData(fee911, locations, quantity, 'V001', '15');
+      data_tax.push(...data911);
+    }
 
-      // Regulatory fee (V001-15)
-      const dataReg = GetTaxRequestData(feeRegulatory, locations, extensions, 'V001', '15');
+    // Regulatory fee — applies per user (V001-15)
+    const hasTelco = (telco && telco > 0) || (telcoHardware && telcoHardware > 0);
+    if (hasTelco) {
+      const dataReg = GetTaxRequestData(feeRegulatory, locations, userCount, 'V001', '15');
       data_tax.push(...dataReg);
     }
 
@@ -328,12 +327,12 @@ export async function POST(request: Request) {
       // Add 911 and Regulatory fees to breakdown (matching Azure logic)
       const hasTelcoForBreakdown = (telco && telco > 0) || (telcoHardware && telcoHardware > 0);
       if (hasTelcoForBreakdown) {
-        let quantity = extensions;
         const currency = 'usd';
         let feeRegulatory = fees.feeRegulatory[currency];
         let fee911 = fees.fee911[currency];
 
-        if (has911Surcharge) {
+        // E911 — only when hardware phones present ($1.50/mo × months × locations)
+        if (telcoHardware && telcoHardware > 0 && has911Surcharge) {
           const e911Amount = duration !== 'month' 
             ? fee911 * monthsMultiplier * locations 
             : fee911 * locations;
@@ -345,9 +344,10 @@ export async function POST(request: Request) {
           });
         }
 
+        // Regulatory — per user ($2.25/mo × months × userCount)
         const feeRegValue = duration !== 'month' 
-          ? feeRegulatory * monthsMultiplier * quantity 
-          : feeRegulatory * quantity;
+          ? feeRegulatory * monthsMultiplier * userCount 
+          : feeRegulatory * userCount;
         
         taxBreakup.push({
           description: 'Regulatory, Compliance and Intellectual Property Fee',
