@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { zip, duration, hardwareAmount, support, telco, protection, extensions = 1, locations = 1, plan = '' } = body;
+    const { zip, duration, hardwareAmount, support, telco, telcoHardware, protection, extensions = 1, locations = 1, plan = '' } = body;
 
     // Validate inputs
     if (!zip || !duration) {
@@ -105,16 +105,28 @@ export async function POST(request: Request) {
       chargeAmount += tax_amount * extensions;
     }
 
-    // Telco services (V001-7)
+    // Telco for app-only users (V001-7)
     if (telco && telco > 0) {
-      // Round to 2 decimals BEFORE GetTaxRequestData (matching Azure function)
       const tax_amount = parseFloat((telco * callingTaxPercentage).toFixed(2));
-      let quantity = locations || 1;
-      
       const data = GetTaxRequestData(tax_amount, locations, extensions, 'V001', '7');
       data_tax.push(...data);
+      chargeAmount += tax_amount * extensions;
+    }
 
-      // 911 Fee
+    // Telco for hardware users (V001-15)
+    if (telcoHardware && telcoHardware > 0) {
+      const tax_amount = parseFloat((telcoHardware * callingTaxPercentage).toFixed(2));
+      const data = GetTaxRequestData(tax_amount, locations, extensions, 'V001', '15');
+      data_tax.push(...data);
+      chargeAmount += tax_amount * extensions;
+    }
+
+    // 911 and Regulatory fees — apply when ANY telco is present
+    const hasTelco = (telco && telco > 0) || (telcoHardware && telcoHardware > 0);
+    if (hasTelco) {
+      let quantity = locations || 1;
+
+      // 911 Fee (per location)
       if (has911Surcharge) {
         // V001-19 for 911
         let data911 = GetTaxRequestData(0, locations, quantity, 'V001', '19');
@@ -128,8 +140,6 @@ export async function POST(request: Request) {
       // Regulatory fee (V001-15)
       const dataReg = GetTaxRequestData(feeRegulatory, locations, extensions, 'V001', '15');
       data_tax.push(...dataReg);
-      
-      chargeAmount += tax_amount * extensions;
     }
 
     // Hardware (G001-2)
@@ -316,7 +326,8 @@ export async function POST(request: Request) {
       const taxBreakup: any[] = [...servicesTaxBreakup, ...hardwareTaxBreakup];
 
       // Add 911 and Regulatory fees to breakdown (matching Azure logic)
-      if (telco && telco > 0) {
+      const hasTelcoForBreakdown = (telco && telco > 0) || (telcoHardware && telcoHardware > 0);
+      if (hasTelcoForBreakdown) {
         let quantity = extensions;
         const currency = 'usd';
         let feeRegulatory = fees.feeRegulatory[currency];
