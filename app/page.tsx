@@ -2553,6 +2553,8 @@ export default function Home() {
       protection: protectionAmount,
       shipping: shippingAmount,
       planPrice: actualPlanPriceForTax,
+      numUsers: getUserCount(),
+      managedPhones: getTotalManagedPhones(),
       country
     });
     
@@ -2583,18 +2585,24 @@ export default function Home() {
       // Map planToCalculate to duration (matching Azure function)
       const duration = planToCalculate === '3month' ? 'quarter' : planToCalculate === 'annually' ? 'year' : '3year';
       
-      // Calculate actual monthly rate from plan
+      // Calculate actual monthly rate from plan (per user)
       const monthsMultiplier = duration === 'quarter' ? 3 : duration === 'year' ? 12 : 36;
       const actualMonthlyRate = actualPlanPriceForTax / monthsMultiplier;
+      const numUsers = getUserCount();
+      const totalManagedPhones = getTotalManagedPhones();
+      const hasHardware = totalManagedPhones > 0;
       
-      // Get plan price as monthly amount for telco (for CSI tax calculation)
-      // Use fixed $3 USD / $4 CAD rate for telco (V001-7)
+      // Use fixed $3 USD / $4 CAD rate for telco per user (V001-7)
       const telcoMonthlyRate = country === 'CA' ? 4.00 : 3.00;
       
-      // Calculate remaining amount (difference between actual and telco rate)
-      // This goes to support (C001-14) along with shipping
+      // Total telco = rate × number of users (each user is a line)
+      const telcoTotal = telcoMonthlyRate * numUsers;
+      
+      // Support = (plan minus telco) × users + managed desk phone + shipping
+      // Managed desk phone ($5/mo per phone) is a service fee taxed under support
       const remainingMonthlyRate = actualMonthlyRate - telcoMonthlyRate;
-      const supportMonthlyRate = remainingMonthlyRate + (shippingAmount / monthsMultiplier);
+      const managedDeskPhoneMonthly = totalManagedPhones * 5;
+      const supportTotal = (remainingMonthlyRate * numUsers) + managedDeskPhoneMonthly + (shippingAmount / monthsMultiplier);
       
       const response = await fetch(`${basePath}/api/calculate-taxes`, {
         method: 'POST',
@@ -2605,12 +2613,12 @@ export default function Home() {
           zip: addressComponents.zipCode,
           duration,
           hardwareAmount,
-          support: supportMonthlyRate, // Remaining telco + shipping (C001-14)
-          telco: telcoMonthlyRate, // Fixed $3 USD / $4 CAD (V001-7)
+          support: supportTotal, // Total monthly support across all users + managed phones + shipping (C001-14)
+          telco: telcoTotal, // Total monthly telco across all users (V001-7)
           protection: protectionAmount,
-          extensions: 1, // Number of lines
-          locations: 1, // Number of locations
-          plan: selectedPlan, // Plan name for 911 surcharge logic
+          extensions: 1, // Already multiplied by numUsers above
+          locations: 1, // Single business location for 911
+          plan: hasHardware ? selectedPlan : 'advanced', // 'advanced' disables E911 for app-only users
         }),
       });
       
@@ -2677,7 +2685,7 @@ export default function Home() {
       // Fetch for currently selected plan (will use cache if available)
       fetchTaxBreakdown(false);
     }
-  }, [selectedPlan, selectedPhones, ownDevice]);
+  }, [selectedPlan, selectedPhones, ownDevice, numUsers]);
   
   const progressPercentage = (() => {
     // Calculate total steps based on flow
