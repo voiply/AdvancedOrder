@@ -2589,18 +2589,25 @@ export default function Home() {
       const monthsMultiplier = duration === 'quarter' ? 3 : duration === 'year' ? 12 : 36;
       const actualMonthlyRate = actualPlanPriceForTax / monthsMultiplier;
       const numUsers = getUserCount();
-      const totalManagedPhones = getTotalManagedPhones();
-      const hasHardware = totalManagedPhones > 0;
+      const totalManagedPhones = getTotalManagedPhones(); // desk phones + BYO
       
-      // Use fixed $3 USD / $4 CAD rate for telco per user (V001-7)
-      const telcoMonthlyRate = country === 'CA' ? 4.00 : 3.00;
+      // Split users into two telco categories:
+      // - Hardware users: users with a desk phone or BYO device → V001-15
+      // - App-only users: remaining users with no hardware → V001-7
+      // Hardware users = min(totalManagedPhones, numUsers) — can't exceed total users
+      const hardwareUsers = Math.min(totalManagedPhones, numUsers);
+      const appOnlyUsers = numUsers - hardwareUsers;
       
-      // Total telco = rate × number of users (each user is a line)
-      const telcoTotal = telcoMonthlyRate * numUsers;
+      // Fixed $4/mo per user for telco regardless of category
+      const telcoPerUser = 4.00;
       
-      // Support = (plan minus telco) × users + managed desk phone + shipping
-      // Managed desk phone ($5/mo per phone) is a service fee taxed under support
-      const remainingMonthlyRate = actualMonthlyRate - telcoMonthlyRate;
+      // V001-7: app-only users telco
+      const telcoAppOnly = telcoPerUser * appOnlyUsers;
+      // V001-15: hardware users telco
+      const telcoHardwareTotal = telcoPerUser * hardwareUsers;
+      
+      // Support = (plan rate minus telco) × all users + managed desk phone ($5/mo each) + shipping
+      const remainingMonthlyRate = actualMonthlyRate - telcoPerUser;
       const managedDeskPhoneMonthly = totalManagedPhones * 5;
       const supportTotal = (remainingMonthlyRate * numUsers) + managedDeskPhoneMonthly + (shippingAmount / monthsMultiplier);
       
@@ -2613,12 +2620,13 @@ export default function Home() {
           zip: addressComponents.zipCode,
           duration,
           hardwareAmount,
-          support: supportTotal, // Total monthly support across all users + managed phones + shipping (C001-14)
-          telco: telcoTotal, // Total monthly telco across all users (V001-7)
+          support: supportTotal, // Monthly support total: (plan-telco)×users + $5×phones + shipping (C001-14)
+          telco: telcoAppOnly, // App-only users: $4/mo × qty (V001-7)
+          telcoHardware: telcoHardwareTotal, // Hardware users: $4/mo × qty (V001-15)
           protection: protectionAmount,
-          extensions: 1, // Already multiplied by numUsers above
-          locations: 1, // Single business location for 911
-          plan: hasHardware ? selectedPlan : 'advanced', // 'advanced' disables E911 for app-only users
+          extensions: 1, // Already multiplied into totals above
+          locations: 1, // 1 business location for E911
+          plan: selectedPlan, // E911 always applies (plan name won't contain 'advanced')
         }),
       });
       
