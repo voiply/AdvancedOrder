@@ -2625,8 +2625,9 @@ export default function Home() {
           telcoHardware: telcoHardwareTotal, // Hardware users: $4/mo × qty (V001-15)
           protection: protectionAmount,
           extensions: 1, // Already multiplied into totals above
-          locations: 1, // 1 business location for E911
-          plan: selectedPlan, // E911 always applies (plan name won't contain 'advanced')
+          locations: 1, // 1 business location for E911 (only charged when hardware present)
+          userCount: numUsers, // For regulatory fee ($2.25/mo per user)
+          plan: selectedPlan, // Plan name for 911 surcharge logic
         }),
       });
       
