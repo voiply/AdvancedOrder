@@ -17,6 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "@opennextjs/cloudflare": "^1.6.5",
+    "@stripe/stripe-js": "^8.9.0",
     "@types/node": "^25.2.3",
     "@types/react": "^19.2.14",
     "logrocket": "^12.0.0",
