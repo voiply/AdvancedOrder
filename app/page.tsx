@@ -305,6 +305,27 @@ export default function Home() {
   const [showTaxModal, setShowTaxModal] = useState(false);
   const [showManagedPhoneModal, setShowManagedPhoneModal] = useState(false);
   const [showSalesBooking, setShowSalesBooking] = useState(false);
+  const meetingsRef = useRef<HTMLDivElement>(null);
+
+  // Reload HubSpot meetings embed every time showSalesBooking becomes true
+  useEffect(() => {
+    if (!showSalesBooking || !meetingsRef.current) return;
+    // Clear any previous iframe
+    meetingsRef.current.innerHTML = '';
+    // Create fresh container
+    const container = document.createElement('div');
+    container.className = 'meetings-iframe-container';
+    container.setAttribute('data-src', 'https://meetings.hubspot.com/jazzy-talanghate/jazzy-talanghate?embed=true');
+    meetingsRef.current.appendChild(container);
+    // Remove any existing HubSpot script
+    const oldScript = document.querySelector('script[src*="MeetingsEmbedCode"]');
+    if (oldScript) oldScript.remove();
+    // Inject fresh script
+    const script = document.createElement('script');
+    script.src = 'https://static.hsappstatic.net/MeetingsEmbed/ex/MeetingsEmbedCode.js';
+    script.type = 'text/javascript';
+    document.body.appendChild(script);
+  }, [showSalesBooking]);
   const [taxBreakdown, setTaxBreakdown] = useState<any>(null);
   const [loadingTax, setLoadingTax] = useState(false);
   const [taxError, setTaxError] = useState('');
@@ -3068,11 +3089,7 @@ export default function Home() {
                   For {highCallVolume === 'call-center' ? 'call center operations' : 'high call volumes'}, our team will design a solution tailored to your needs.
                 </p>
               </div>
-              <div className="meetings-iframe-container" data-src="https://meetings.hubspot.com/jazzy-talanghate/jazzy-talanghate?embed=true" style={{ minHeight: '700px' }}></div>
-              <Script
-                src="https://static.hsappstatic.net/MeetingsEmbed/ex/MeetingsEmbedCode.js"
-                strategy="afterInteractive"
-              />
+              <div ref={meetingsRef} style={{ minHeight: '700px' }}></div>
               <div className="flex justify-center mt-6">
                 <button
                   type="button"
