@@ -3862,7 +3862,7 @@ export default function Home() {
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA]">
-                          Your plan
+                          Your plan for {getUserCount()} user{getUserCount() !== 1 ? 's' : ''}
                         </p>
                       </div>
                       
@@ -3919,38 +3919,49 @@ export default function Home() {
                             {premierUsers > 0 && (
                               <div className="bg-[#FFFBF5] rounded-xl px-4 py-3 border border-[#F59E0B]/15">
                                 <div className="flex items-center justify-between">
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <div className="w-2 h-2 rounded-full bg-[#F59E0B]"></div>
-                                      <span className="text-sm font-semibold text-[#080808]">Premier Plan</span>
-                                    </div>
-                                    <p className="text-xs text-[#999] ml-4 mt-0.5">$16.95/mo per user</p>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-[#F59E0B]"></div>
+                                    <span className="text-sm font-semibold text-[#080808]">Premier Plan</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setCurrentStep(4)}
+                                      title="Edit phone selection"
+                                      className="w-5 h-5 rounded-full bg-[#F59E0B]/10 hover:bg-[#F59E0B]/20 flex items-center justify-center transition-colors"
+                                    >
+                                      <svg className="w-3 h-3 text-[#F59E0B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                      </svg>
+                                    </button>
                                   </div>
                                   <div className="flex items-center gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => setCurrentStep(4)}
+                                      className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]`}
+                                    >
+                                      <span className="text-sm font-bold">−</span>
+                                    </button>
                                     <span className="text-base font-bold text-[#080808] w-8 text-center">{premierUsers}</span>
                                     <button
                                       type="button"
                                       onClick={() => setCurrentStep(4)}
-                                      className="text-[10px] text-[#F53900] hover:underline font-medium whitespace-nowrap"
+                                      className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
+                                        getUserCount() >= 100 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'
+                                      }`}
                                     >
-                                      Edit phones
+                                      <span className="text-sm font-bold">+</span>
                                     </button>
                                   </div>
                                 </div>
+                                <p className="text-xs text-[#999] ml-4 mt-0.5">$16.95/mo per user</p>
                               </div>
                             )}
 
-                            {/* Total users summary */}
-                            <div className="flex justify-between items-center px-1 pt-1">
-                              <span className="text-xs text-[#999]">Total users</span>
-                              <span className="text-xs font-bold text-[#080808]">{getUserCount()}</span>
-                            </div>
                           </div>
                         );
                       })()}
+                      <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA] mb-2">Payment terms</p>
                       <div className="space-y-2">
-
-                        {/* 3-Month */}
                         <button
                           type="button"
                           onClick={() => setSelectedPlan('3month')}
@@ -4408,14 +4419,6 @@ export default function Home() {
                         </div>
                       ) : (
                         <div className="space-y-3 mt-3">
-                          <select
-                            value={country}
-                            onChange={(e) => setCountry(e.target.value)}
-                            className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0"
-                          >
-                            <option value="US">United States</option>
-                            <option value="CA">Canada</option>
-                          </select>
                           <div className="relative">
                             <input
                               type="text"
@@ -4446,6 +4449,59 @@ export default function Home() {
                             placeholder="Apt, suite, unit, building, floor, etc."
                             className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0"
                           />
+                          <div className="flex gap-3">
+                            <input
+                              type="text"
+                              placeholder="City"
+                              value={tempAddressComponents.city}
+                              onChange={(e) => setTempAddressComponents(prev => ({ ...prev, city: e.target.value }))}
+                              style={{width: "40%"}}
+                              className="h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0"
+                            />
+                            {country === "US" ? (
+                              <select
+                                value={tempAddressComponents.state}
+                                onChange={(e) => setTempAddressComponents(prev => ({ ...prev, state: e.target.value }))}
+                                style={{width: "25%"}}
+                                className="h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0"
+                              >
+                                <option value="">State</option>
+                                {US_STATES.map(state => (
+                                  <option key={state.code} value={state.code}>{state.code}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              <select
+                                value={tempAddressComponents.state}
+                                onChange={(e) => setTempAddressComponents(prev => ({ ...prev, state: e.target.value }))}
+                                style={{width: "25%"}}
+                                className="h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0"
+                              >
+                                <option value="">Province</option>
+                                {CANADIAN_PROVINCES.map(province => (
+                                  <option key={province.code} value={province.code}>{province.code}</option>
+                                ))}
+                              </select>
+                            )}
+                            <input
+                              type="text"
+                              placeholder={country === "CA" ? "Postal Code" : "Zip Code"}
+                              value={tempAddressComponents.zipCode}
+                              onChange={(e) => setTempAddressComponents(prev => ({ ...prev, zipCode: e.target.value }))}
+                              inputMode={country === "CA" ? "text" : "numeric"}
+                              maxLength={country === "CA" ? 7 : 5}
+                              style={{width: "35%"}}
+                              className="h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0"
+                            />
+                          </div>
+                          <select
+                            value={country}
+                            onChange={(e) => setCountry(e.target.value)}
+                            className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0"
+                          >
+                            <option value="US">United States</option>
+                            <option value="CA">Canada</option>
+                          </select>
                           <div className="flex gap-2">
                             <button
                               type="button"
@@ -4489,14 +4545,6 @@ export default function Home() {
                       {/* Show billing address form if not same as shipping */}
                       {!billingSameAsShipping && (
                         <div className="space-y-3 pl-8">
-                          <select
-                            value={billingCountry}
-                            onChange={(e) => setBillingCountry(e.target.value)}
-                            className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0"
-                          >
-                            <option value="US">United States</option>
-                            <option value="CA">Canada</option>
-                          </select>
                           <div className="relative">
                             <input
                               type="text"
@@ -4527,6 +4575,59 @@ export default function Home() {
                             placeholder="Apt, suite, unit, building, floor, etc."
                             className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0"
                           />
+                          <div className="flex gap-3">
+                            <input
+                              type="text"
+                              placeholder="City"
+                              value={billingComponents.city}
+                              onChange={(e) => setBillingComponents(prev => ({ ...prev, city: e.target.value }))}
+                              style={{width: "40%"}}
+                              className="h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0"
+                            />
+                            {billingCountry === 'US' ? (
+                              <select
+                                value={billingComponents.state}
+                                onChange={(e) => setBillingComponents(prev => ({ ...prev, state: e.target.value }))}
+                                style={{width: "25%"}}
+                                className="h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0"
+                              >
+                                <option value="">State</option>
+                                {US_STATES.map(state => (
+                                  <option key={state.code} value={state.code}>{state.code}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              <select
+                                value={billingComponents.state}
+                                onChange={(e) => setBillingComponents(prev => ({ ...prev, state: e.target.value }))}
+                                style={{width: "25%"}}
+                                className="h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0"
+                              >
+                                <option value="">Province</option>
+                                {CANADIAN_PROVINCES.map(province => (
+                                  <option key={province.code} value={province.code}>{province.code}</option>
+                                ))}
+                              </select>
+                            )}
+                            <input
+                              type="text"
+                              placeholder={billingCountry === 'CA' ? 'Postal Code' : 'Zip Code'}
+                              value={billingComponents.zipCode}
+                              onChange={(e) => setBillingComponents(prev => ({ ...prev, zipCode: e.target.value }))}
+                              inputMode={billingCountry === 'CA' ? 'text' : 'numeric'}
+                              maxLength={billingCountry === 'CA' ? 7 : 5}
+                              style={{width: "35%"}}
+                              className="h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] placeholder-[#A5A5A5] focus:outline-none focus:border-[#F53900] focus:ring-0"
+                            />
+                          </div>
+                          <select
+                            value={billingCountry}
+                            onChange={(e) => { setBillingCountry(e.target.value); setBillingComponents(prev => ({ ...prev, state: '', zipCode: '' })); }}
+                            className="w-full h-12 px-3 bg-white border border-[#D9D9D9] rounded text-base text-[#080808] focus:outline-none focus:border-[#F53900] focus:ring-0"
+                          >
+                            <option value="US">United States</option>
+                            <option value="CA">Canada</option>
+                          </select>
                         </div>
                       )}
                     </div>
