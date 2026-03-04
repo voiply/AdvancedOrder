@@ -1501,7 +1501,8 @@ export default function Home() {
     hasInternet !== null;
   
   // Step 2 is business needs assessment
-  const canProceedStep2 = numUsers !== '' && callMethod !== '' && highCallVolume !== '';
+  const needsSalesCall = getUserCount() >= 100 || highCallVolume === 'high-volume' || highCallVolume === 'call-center';
+  const canProceedStep2 = needsSalesCall || (numUsers !== '' && callMethod !== '' && highCallVolume !== '');
   
   // Step 3 is number selection (only shown if hasPhone === false)  
   const canProceedStep3 = selectedNewNumber !== '';
@@ -1644,7 +1645,7 @@ export default function Home() {
       setCurrentStep(2);
     } else if (currentStep === 2) {
       // High call volume or call center → redirect to sales booking
-      if (highCallVolume === 'high-volume' || highCallVolume === 'call-center' || getUserCount() >= 100) {
+      if (needsSalesCall) {
         setShowSalesBooking(true);
         return;
       }
@@ -3219,7 +3220,7 @@ export default function Home() {
                 </div>
 
                 {/* High call volume / call center message */}
-                {(highCallVolume === 'high-volume' || highCallVolume === 'call-center' || getUserCount() >= 100) && (
+                {needsSalesCall && (
                   <div className="bg-[#FFF5F2] border border-[#F53900]/20 rounded-xl p-4 text-center">
                     <p className="text-sm font-semibold text-[#080808] mb-1">Customized solution needed</p>
                     <p className="text-xs text-[#585858]">
@@ -3249,7 +3250,7 @@ export default function Home() {
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                   >
-                    {(highCallVolume === 'high-volume' || highCallVolume === 'call-center' || getUserCount() >= 100) ? 'Book a Sales Call' : 'Continue'}
+                    {needsSalesCall ? 'Book a Sales Call' : 'Continue'}
                   </button>
                 </div>
               </div>
