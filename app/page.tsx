@@ -996,113 +996,89 @@ export default function Home() {
   // Initialize Stripe Elements with Payment Element
   // Uses loadStripe() (module-level singleton) for PCI compliance.
   useEffect(() => {
-    if (currentStep === 5 && clientSecret && typeof window !== 'undefined' && !stripe) {
-      (async () => {
+    if (currentStep !== 5 || !clientSecret || stripe) return;
+
+    const initElement = async () => {
       try {
         setPaymentElementError(false);
         setPaymentElementReady(false);
-        
+
         const stripeInstance = await getStripePromise();
         if (!stripeInstance) throw new Error('Stripe failed to load');
         setStripe(stripeInstance);
-        
-        // Create Payment Element with client secret and locale
+
         const elementsInstance = stripeInstance.elements({
           clientSecret,
           locale: country === 'CA' ? 'en-CA' : 'en-US',
           appearance: { theme: 'stripe' },
         });
         setElements(elementsInstance);
-        
+
         const paymentEl = elementsInstance.create('payment', {
           layout: { type: 'accordion', defaultCollapsed: false, radios: false, spacedAccordionItems: true },
+          paymentMethodOrder: ['card'],
           fields: {
             billingDetails: {
               name: 'never', email: 'never', phone: 'never',
-              address: {
-                country: 'never',
-                postalCode: 'never'
-              }
+              address: { country: 'never', postalCode: 'never' }
             }
           }
         });
-        
-        let errorTimeoutId: NodeJS.Timeout | null = null;
-        let pollingIntervalId: NodeJS.Timeout | null = null;
-        let readyFired = false;
-        
-        // Verification function - checks if element is actually loaded
-        const verifyElementLoaded = () => {
-          const container = document.getElementById('payment-element');
-          const hasIframe = container?.querySelector('iframe') !== null;
-          const hasContent = container && container.children.length > 0;
-          
-          return hasIframe || hasContent;
-        };
-        
-        // Start polling to verify element loaded
-        pollingIntervalId = setInterval(() => {
-          if (verifyElementLoaded()) {
-            if (pollingIntervalId) clearInterval(pollingIntervalId);
-            if (errorTimeoutId) clearTimeout(errorTimeoutId);
-            setPaymentElementReady(true);
-            setPaymentElementError(false);
-            setLoadingPaymentIntent(false);
-          }
-        }, 500); // Check every 500ms
-        
-        // Set up timeout to detect if element fails to load
-        errorTimeoutId = setTimeout(() => {
-          console.error('Payment element timeout - checking final state');
-          
-          // Do final verification before showing error
-          if (verifyElementLoaded() || readyFired) {
-            setPaymentElementReady(true);
-            setPaymentElementError(false);
-          } else {
-            console.error('Payment element genuinely failed to load');
-            setPaymentElementError(true);
-          }
-          
-          if (pollingIntervalId) clearInterval(pollingIntervalId);
-          setLoadingPaymentIntent(false);
-        }, 12000); // 12 second timeout (longer for mobile)
-        
-        // Mount the payment element (mount() is void, not a Promise)
-        try {
-          paymentEl.mount('#payment-element');
-        } catch (mountError: any) {
-          console.error('Payment element mount error:', mountError);
-          if (errorTimeoutId) clearTimeout(errorTimeoutId);
-          if (pollingIntervalId) clearInterval(pollingIntervalId);
-          setPaymentElementError(true);
-          setLoadingPaymentIntent(false);
-        }
-        
         setPaymentElement(paymentEl);
-        
-        // Listen for successful load (ready event)
+
         paymentEl.on('ready', () => {
-          readyFired = true;
-          if (errorTimeoutId) clearTimeout(errorTimeoutId);
-          if (pollingIntervalId) clearInterval(pollingIntervalId);
           setPaymentElementReady(true);
           setPaymentElementError(false);
           setLoadingPaymentIntent(false);
         });
-        
+
         paymentEl.on('change', (event: any) => {
           setCardComplete(event.complete);
           if (event.complete) setStep5Errors(prev => ({ ...prev, card: undefined }));
         });
-        
+
+        paymentEl.on('loaderror', () => {
+          console.error('Stripe loaderror');
+          setPaymentElementError(true);
+          setLoadingPaymentIntent(false);
+        });
+
+        // Wait for React to flush #payment-element div to DOM before mounting
+        const tryMount = (attempts: number) => {
+          if (document.getElementById('payment-element')) {
+            try { paymentEl.mount('#payment-element'); }
+            catch (e: any) {
+              console.error('Mount error:', e);
+              setPaymentElementError(true);
+              setLoadingPaymentIntent(false);
+            }
+          } else if (attempts > 0) {
+            setTimeout(() => tryMount(attempts - 1), 100);
+          } else {
+            setPaymentElementError(true);
+            setLoadingPaymentIntent(false);
+          }
+        };
+        tryMount(30);
+
+        // Safety timeout
+        let isReady = false;
+        paymentEl.on('ready', () => { isReady = true; });
+        setTimeout(() => {
+          if (!isReady) {
+            setPaymentElementError(true);
+            setLoadingPaymentIntent(false);
+          }
+        }, 20000);
+
       } catch (error) {
         console.error('Error initializing Stripe:', error);
         setPaymentElementError(true);
         setLoadingPaymentIntent(false);
       }
-      })();
-    }
+    };
+
+    initElement();
   }, [currentStep, clientSecret, stripe, country]);
   
   // Detect country from IP address on initial load
