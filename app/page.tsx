@@ -1662,7 +1662,7 @@ export default function Home() {
       setCurrentStep(2);
     } else if (currentStep === 2) {
       // High call volume or call center → redirect to sales booking
-      if (highCallVolume === 'high-volume' || highCallVolume === 'call-center') {
+      if (highCallVolume === 'high-volume' || highCallVolume === 'call-center' || getUserCount() >= 100) {
         setShowSalesBooking(true);
         return;
       }
@@ -3086,7 +3086,9 @@ export default function Home() {
                   Book a call with our sales team
                 </h1>
                 <p className="text-base md:text-lg text-[#585858] leading-tight">
-                  For {highCallVolume === 'call-center' ? 'call center operations' : 'high call volumes'}, our team will design a solution tailored to your needs.
+                  {getUserCount() >= 100
+                    ? 'For teams of 100+ users, our team will design a solution tailored to your needs.'
+                    : `For ${highCallVolume === 'call-center' ? 'call center operations' : 'high call volumes'}, our team will design a solution tailored to your needs.`}
                 </p>
               </div>
               <div ref={meetingsRef} style={{ minHeight: '700px' }}></div>
@@ -3145,11 +3147,11 @@ export default function Home() {
                           type="button"
                           onClick={() => {
                             const current = parseInt(numUsers) || 0;
-                            if (current < 25) setNumUsers(String(current + 1));
+                            if (current < 100) setNumUsers(String(current + 1));
                           }}
-                          disabled={parseInt(numUsers) >= 25}
+                          disabled={parseInt(numUsers) >= 100}
                           className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${
-                            parseInt(numUsers) >= 25
+                            parseInt(numUsers) >= 100
                               ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed'
                               : 'border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2] active:scale-95'
                           }`}
@@ -3161,21 +3163,20 @@ export default function Home() {
                     <input
                       type="range"
                       min="1"
-                      max="25"
+                      max="100"
                       value={numUsers || '1'}
                       onChange={(e) => setNumUsers(e.target.value)}
                       className="w-full h-2 bg-[#E8E8E8] rounded-full appearance-none cursor-pointer accent-[#F53900]"
                       style={{
-                        background: `linear-gradient(to right, #F53900 0%, #F53900 ${((parseInt(numUsers || '1') - 1) / 24) * 100}%, #E8E8E8 ${((parseInt(numUsers || '1') - 1) / 24) * 100}%, #E8E8E8 100%)`
+                        background: `linear-gradient(to right, #F53900 0%, #F53900 ${((parseInt(numUsers || '1') - 1) / 99) * 100}%, #E8E8E8 ${((parseInt(numUsers || '1') - 1) / 99) * 100}%, #E8E8E8 100%)`
                       }}
                     />
                     <div className="flex justify-between text-xs text-[#999] mt-1">
                       <span>1</span>
-                      <span>5</span>
-                      <span>10</span>
-                      <span>15</span>
-                      <span>20</span>
                       <span>25</span>
+                      <span>50</span>
+                      <span>75</span>
+                      <span>100</span>
                     </div>
                   </div>
                 </div>
@@ -3243,11 +3244,13 @@ export default function Home() {
                 </div>
 
                 {/* High call volume / call center message */}
-                {(highCallVolume === 'high-volume' || highCallVolume === 'call-center') && (
+                {(highCallVolume === 'high-volume' || highCallVolume === 'call-center' || getUserCount() >= 100) && (
                   <div className="bg-[#FFF5F2] border border-[#F53900]/20 rounded-xl p-4 text-center">
                     <p className="text-sm font-semibold text-[#080808] mb-1">Customized solution needed</p>
                     <p className="text-xs text-[#585858]">
-                      For {highCallVolume === 'call-center' ? 'call center operations' : 'high call volumes'}, our team will design a solution tailored to your needs. Book a quick call to get started.
+                      {getUserCount() >= 100
+                        ? 'For teams of 100+ users, our team will design a solution tailored to your needs. Book a quick call to get started.'
+                        : `For ${highCallVolume === 'call-center' ? 'call center operations' : 'high call volumes'}, our team will design a solution tailored to your needs. Book a quick call to get started.`}
                     </p>
                   </div>
                 )}
@@ -3271,7 +3274,7 @@ export default function Home() {
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                   >
-                    {(highCallVolume === 'high-volume' || highCallVolume === 'call-center') ? 'Book a Sales Call' : 'Continue'}
+                    {(highCallVolume === 'high-volume' || highCallVolume === 'call-center' || getUserCount() >= 100) ? 'Book a Sales Call' : 'Continue'}
                   </button>
                 </div>
               </div>
@@ -3773,30 +3776,43 @@ export default function Home() {
                         );
                       })}
 
-                      {/* Managed Desk Phone - recurring per phone (includes own devices) */}
-                      {getTotalManagedPhones() > 0 && (
-                        <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
-                          <div>
-                            <div className="flex items-center gap-1.5">
-                              <p className="text-sm font-medium text-[#080808]">
-                                Managed Desk Phone{getTotalManagedPhones() > 1 ? ` ×${getTotalManagedPhones()}` : ''}
-                              </p>
-                              <button
-                                type="button"
-                                onClick={() => setShowManagedPhoneModal(true)}
-                                title="What's included?"
-                                className="w-4 h-4 rounded-full bg-[#E8E8E8] hover:bg-[#D9D9D9] flex items-center justify-center transition-colors flex-shrink-0"
-                              >
-                                <span className="text-[9px] font-bold text-[#666] leading-none">?</span>
-                              </button>
-                            </div>
-                            <p className="text-xs text-[#999]">${(5).toFixed(2)}/mo per phone × {getPlanMonths()} mo</p>
-                          </div>
-                          <span className="text-sm font-bold text-[#080808]">
-                            ${getManagedDeskPhonePrice().toFixed(2)}
-                          </span>
-                        </div>
-                      )}
+                      {/* Plan breakdown: Advanced vs Premier */}
+                      {(() => {
+                        const totalManaged = getTotalManagedPhones();
+                        const premierUsers = Math.min(totalManaged, getUserCount());
+                        const advancedUsers = getUserCount() - premierUsers;
+                        const months = getPlanMonths();
+                        return (
+                          <>
+                            {advancedUsers > 0 && (
+                              <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
+                                <div>
+                                  <p className="text-sm font-medium text-[#080808]">
+                                    Advanced Plan{advancedUsers > 1 ? ` ×${advancedUsers}` : ''}
+                                  </p>
+                                  <p className="text-xs text-[#999]">App only · $11.95/mo × {months} mo</p>
+                                </div>
+                                <span className="text-sm font-bold text-[#080808]">
+                                  ${(advancedUsers * 11.95 * months).toFixed(2)}
+                                </span>
+                              </div>
+                            )}
+                            {premierUsers > 0 && (
+                              <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
+                                <div>
+                                  <p className="text-sm font-medium text-[#080808]">
+                                    Premier Plan{premierUsers > 1 ? ` ×${premierUsers}` : ''}
+                                  </p>
+                                  <p className="text-xs text-[#999]">Includes desk phone · $16.95/mo × {months} mo</p>
+                                </div>
+                                <span className="text-sm font-bold text-[#080808]">
+                                  ${(premierUsers * 16.95 * months).toFixed(2)}
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
 
                       {/* Own Equipment */}
                       {ownDevice > 0 && (
@@ -3930,11 +3946,11 @@ export default function Home() {
                             type="button"
                             onClick={() => {
                               const current = getUserCount();
-                              if (current < 25) setNumUsers(String(current + 1));
+                              if (current < 100) setNumUsers(String(current + 1));
                             }}
-                            disabled={getUserCount() >= 25}
+                            disabled={getUserCount() >= 100}
                             className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
-                              getUserCount() >= 25 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFF5F2] hover:border-[#F53900]'
+                              getUserCount() >= 100 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFF5F2] hover:border-[#F53900]'
                             }`}
                           >
                             <span className="text-sm font-bold">+</span>
@@ -3991,7 +4007,7 @@ export default function Home() {
                                 <span className="text-[9px] font-bold text-white bg-[#17DB4E] px-1.5 py-0.5 rounded-full">1 MONTH FREE</span>
                               )}
                             </div>
-                            <p className="text-xs text-[#999] mt-0.5">{couponApplied ? '$7.97' : '$11.95'}/mo per user</p>
+                            <p className="text-xs text-[#999] mt-0.5">{couponApplied ? '1 month free applied' : '3 months'}</p>
                           </div>
                           <div className="text-right">
                             {couponApplied && (
@@ -4018,7 +4034,7 @@ export default function Home() {
                               <span className={`text-sm font-semibold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>1-Year</span>
                               <span className="text-[9px] font-bold text-white bg-[#17DB4E] px-1.5 py-0.5 rounded-full">MOST POPULAR</span>
                             </div>
-                            <p className="text-xs text-[#999] mt-0.5">12 months for the price of 10 · $9.95/mo per user</p>
+                            <p className="text-xs text-[#999] mt-0.5">12 months for the price of 10</p>
                           </div>
                           <div className="text-right">
                             <p className="text-xs text-[#CCC] line-through">${(143.40 * getUserCount()).toFixed(2)}</p>
@@ -4043,7 +4059,7 @@ export default function Home() {
                               <span className={`text-sm font-semibold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>3-Year</span>
                               <span className="text-[9px] font-bold text-white bg-[#7C5CF6] px-1.5 py-0.5 rounded-full">LOCK IN YOUR RATE</span>
                             </div>
-                            <p className="text-xs text-[#999] mt-0.5">36 months for the price of 30 · $9.96/mo per user</p>
+                            <p className="text-xs text-[#999] mt-0.5">36 months for the price of 30</p>
                           </div>
                           <div className="text-right">
                             <p className="text-xs text-[#CCC] line-through">${(430.20 * getUserCount()).toFixed(2)}</p>
