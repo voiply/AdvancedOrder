@@ -32,47 +32,11 @@ const PHONES: Phone[] = [
     id: 'yealink-t31p',
     name: 'Yealink SIP-T31P',
     price: 0,
-    originalPrice: 75,
+    originalPrice: 0,
     category: 'Desktop',
     image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e78c1ecff63dae1a12b3_yealinksip-t31p.avif',
     isFree: true,
     learnMoreUrl: '/business/phones/yealink-sip-t31p'
-  },
-  {
-    id: 'yealink-t34w',
-    name: 'Yealink SIP-T34W',
-    price: 109.95,
-    originalPrice: 139,
-    category: 'Desktop',
-    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e7ec19b9ef0a6b00beb5_yealinksip-t34w.avif',
-    learnMoreUrl: '/business/phones/yealink-sip-t34w'
-  },
-  {
-    id: 'yealink-t44w',
-    name: 'Yealink SIP-T44W',
-    price: 169.95,
-    originalPrice: 179,
-    category: 'Desktop',
-    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e7353febd8edf89ef21b_yealinksip-t44w.avif',
-    learnMoreUrl: '/business/phones/yealink-sip-t44w'
-  },
-  {
-    id: 'yealink-t54w',
-    name: 'Yealink SIP-T54W',
-    price: 255.95,
-    originalPrice: 279,
-    category: 'Receptionist',
-    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e728332c98dd46be3535_yealinksip-t54w.avif',
-    learnMoreUrl: '/business/phones/yealink-sip-t54w'
-  },
-  {
-    id: 'yealink-t57w',
-    name: 'Yealink SIP-T57W',
-    price: 319.95,
-    originalPrice: 359,
-    category: 'Desktop',
-    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e72d05c573cd3ed62118_yealinksip-t57w.avif',
-    learnMoreUrl: '/business/phones/yealink-sip-t57w'
   },
   {
     id: 'yealink-t73w',
@@ -102,24 +66,6 @@ const PHONES: Phone[] = [
     learnMoreUrl: '/business/phones/yealink-sip-phone-t85w'
   },
   {
-    id: 'yealink-w76',
-    name: 'Yealink W76',
-    price: 170.95,
-    originalPrice: 189,
-    category: 'Cordless',
-    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e81d51952c9a9db762e2_yealinkw76.avif',
-    learnMoreUrl: '/business/phones/yealink-w76'
-  },
-  {
-    id: 'yealink-wh62',
-    name: 'Yealink WH62',
-    price: 171.95,
-    originalPrice: 219,
-    category: 'Headset',
-    image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e7e80bb0da0b69873991_yealinkwh62.avif',
-    learnMoreUrl: '/business/phones/yealink-wh62'
-  },
-  {
     id: 'yealink-ax83h',
     name: 'Yealink AX83H Wi-Fi Handset',
     price: 117.99,
@@ -132,7 +78,7 @@ const PHONES: Phone[] = [
     id: 'grandstream-ht801',
     name: 'Grandstream HT801',
     price: 0,
-    originalPrice: 49,
+    originalPrice: 0,
     category: 'Analog Adapter',
     image: 'https://cdn.prod.website-files.com/638501673ebc933690eb0762/6985e817aeeb4ed2aab3db4b_grandstreamht801.avif',
     isFree: true,
@@ -1693,6 +1639,11 @@ export default function Home() {
       // Always go to business needs assessment
       setCurrentStep(2);
     } else if (currentStep === 2) {
+      // High call volume or call center → redirect to sales booking
+      if (highCallVolume === 'high-volume' || highCallVolume === 'call-center') {
+        window.open('https://meetings.hubspot.com/djohainah/djohainah-naya-sharief', '_blank');
+        return;
+      }
       // From business needs: go to number selection or phones/payment
       if (hasPhone === false) {
         setCurrentStep(3);
@@ -3118,10 +3069,10 @@ export default function Home() {
               </div>
 
               <div className="space-y-6 md:space-y-8">
-                {/* How many users need a phone number? - Slider */}
+                {/* How many users need phone service? - Slider */}
                 <div>
                   <label className="block text-sm font-medium text-[#080808] mb-4">
-                    How many users need a phone number?
+                    How many users need phone service?
                   </label>
                   <div className="bg-[#F9F9F9] rounded-xl p-5 md:p-6">
                     <div className="flex items-center justify-center mb-4">
@@ -3246,6 +3197,16 @@ export default function Home() {
                   </select>
                 </div>
 
+                {/* High call volume / call center message */}
+                {(highCallVolume === 'high-volume' || highCallVolume === 'call-center') && (
+                  <div className="bg-[#FFF5F2] border border-[#F53900]/20 rounded-xl p-4 text-center">
+                    <p className="text-sm font-semibold text-[#080808] mb-1">Customized solution needed</p>
+                    <p className="text-xs text-[#585858]">
+                      For {highCallVolume === 'call-center' ? 'call center operations' : 'high call volumes'}, our team will design a solution tailored to your needs. Book a quick call to get started.
+                    </p>
+                  </div>
+                )}
+
                 {/* Navigation Buttons */}
                 <div className="flex justify-center gap-3">
                   <button
@@ -3265,7 +3226,7 @@ export default function Home() {
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                   >
-                    Continue
+                    {(highCallVolume === 'high-volume' || highCallVolume === 'call-center') ? 'Book a Sales Call' : 'Continue'}
                   </button>
                 </div>
               </div>
@@ -3462,7 +3423,7 @@ export default function Home() {
                   Select Your Desk Phones
                 </h1>
                 <p className="text-base md:text-lg text-[#585858] leading-tight">
-                  Choose the phones your team needs. Each desk phone includes managed support ($5/mo).
+                  Choose the phones your team needs.
                 </p>
               </div>
 
@@ -3480,7 +3441,7 @@ export default function Home() {
                             {getTotalPhoneCount()} {getTotalPhoneCount() === 1 ? 'phone' : 'phones'} selected
                           </p>
                           <p className="text-xs text-[#585858]">
-                            Hardware: ${getPhoneHardwarePrice().toFixed(2)} + ${(getTotalPhoneCount() * 5).toFixed(2)}/mo support
+                            Hardware: ${getPhoneHardwarePrice().toFixed(2)}
                           </p>
                         </div>
                       </div>
@@ -3525,35 +3486,35 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Phone Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+                {/* Phone Grid - 6 phones, bigger tiles */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   {PHONES.map((phone) => {
                     const qtyInCart = selectedPhones[phone.id] || 0;
                     return (
                       <div
                         key={phone.id}
-                        className={`relative border rounded-xl overflow-hidden transition-all ${
+                        className={`relative border-2 rounded-2xl overflow-hidden transition-all ${
                           qtyInCart > 0
                             ? 'border-[#F53900] shadow-[0_0_0_2px_#FEEBE6]'
-                            : 'border-[#D9D9D9] hover:border-[#F53900]/50'
+                            : 'border-[#E8E8E8] hover:border-[#F53900]/50'
                         }`}
                       >
                         {/* Quantity badge */}
                         {qtyInCart > 0 && (
-                          <div className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-[#F53900] flex items-center justify-center">
-                            <span className="text-white text-xs font-bold">{qtyInCart}</span>
+                          <div className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-[#F53900] flex items-center justify-center">
+                            <span className="text-white text-sm font-bold">{qtyInCart}</span>
                           </div>
                         )}
 
                         {/* Free badge */}
                         {phone.isFree && (
-                          <div className="absolute top-2 left-2 z-10 bg-[#17DB4E] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          <div className="absolute top-3 left-3 z-10 bg-[#17DB4E] text-white text-xs font-bold px-2.5 py-1 rounded-full">
                             FREE
                           </div>
                         )}
 
                         {/* Phone Image */}
-                        <div className="bg-gradient-to-b from-[#FAFAFA] to-[#F0F0F0] p-3 md:p-4">
+                        <div className="bg-gradient-to-b from-[#FAFAFA] to-[#F0F0F0] p-6 md:p-8">
                           <div className="relative w-full aspect-square">
                             <img
                               src={phone.image}
@@ -3564,25 +3525,17 @@ export default function Home() {
                         </div>
 
                         {/* Phone Details */}
-                        <div className="p-3 md:p-4 space-y-2">
+                        <div className="p-4 md:p-5 space-y-3">
                           <div>
                             <p className="text-[10px] uppercase tracking-wider text-[#999] font-medium">{phone.category}</p>
-                            <h3 className="text-xs md:text-sm font-bold text-[#080808] leading-tight mt-0.5">{phone.name}</h3>
+                            <h3 className="text-sm md:text-base font-bold text-[#080808] leading-tight mt-0.5">{phone.name}</h3>
                           </div>
 
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center">
                             {phone.isFree ? (
-                              <>
-                                <span className="text-xs text-[#999] line-through">${phone.originalPrice}</span>
-                                <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
-                              </>
+                              <span className="text-base font-bold text-[#17DB4E]">FREE</span>
                             ) : (
-                              <>
-                                {phone.originalPrice > phone.price && (
-                                  <span className="text-xs text-[#999] line-through">${phone.originalPrice}</span>
-                                )}
-                                <span className="text-sm font-bold text-[#080808]">${phone.price.toFixed(2)}</span>
-                              </>
+                              <span className="text-base font-bold text-[#080808]">${phone.price.toFixed(2)}</span>
                             )}
                           </div>
 
@@ -3592,20 +3545,20 @@ export default function Home() {
                               type="button"
                               onClick={() => addPhoneToCart(phone.id)}
                               disabled={getTotalManagedPhones() >= getUserCount()}
-                              className={`w-full py-2 rounded-lg text-xs font-semibold transition-colors ${getTotalManagedPhones() >= getUserCount() ? 'bg-[#D9D9D9] text-white cursor-not-allowed' : 'bg-[#F53900] text-white hover:bg-[#d63300]'}`}
+                              className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-colors ${getTotalManagedPhones() >= getUserCount() ? 'bg-[#D9D9D9] text-white cursor-not-allowed' : 'bg-[#F53900] text-white hover:bg-[#d63300]'}`}
                             >
                               {getTotalManagedPhones() >= getUserCount() ? `Limit: ${getUserCount()} user${getUserCount() > 1 ? 's' : ''}` : 'Add to Cart'}
                             </button>
                           ) : (
-                            <div className="flex items-center justify-between bg-[#F5F5F5] rounded-lg py-1 px-2">
+                            <div className="flex items-center justify-between bg-[#F5F5F5] rounded-lg py-1.5 px-3">
                               <button type="button" onClick={() => removePhoneFromCart(phone.id)}
-                                className="w-7 h-7 rounded-full bg-white border border-[#D9D9D9] flex items-center justify-center hover:bg-[#FFF5F2] transition-colors">
+                                className="w-8 h-8 rounded-full bg-white border border-[#D9D9D9] flex items-center justify-center hover:bg-[#FFF5F2] transition-colors">
                                 <span className="text-sm font-bold text-[#585858]">−</span>
                               </button>
-                              <span className="text-sm font-bold text-[#080808]">{qtyInCart}</span>
+                              <span className="text-base font-bold text-[#080808]">{qtyInCart}</span>
                               <button type="button" onClick={() => addPhoneToCart(phone.id)}
                                 disabled={getTotalManagedPhones() >= getUserCount()}
-                                className={`w-7 h-7 rounded-full bg-white border flex items-center justify-center transition-colors ${getTotalManagedPhones() >= getUserCount() ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] hover:bg-[#FFF5F2] text-[#585858]'}`}>
+                                className={`w-8 h-8 rounded-full bg-white border flex items-center justify-center transition-colors ${getTotalManagedPhones() >= getUserCount() ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] hover:bg-[#FFF5F2] text-[#585858]'}`}>
                                 <span className="text-sm font-bold">+</span>
                               </button>
                             </div>
@@ -3906,7 +3859,7 @@ export default function Home() {
                       </div>
                       
                       {/* User quantity control */}
-                      <div className="flex items-center justify-between bg-[#F9F9F9] rounded-lg px-4 py-2.5 mb-3">
+                      <div className="flex items-center justify-between bg-[#F9F9F9] rounded-lg px-4 py-2.5 mb-1">
                         <div className="flex items-center gap-2">
                           <svg className="w-4 h-4 text-[#585858]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -3942,6 +3895,37 @@ export default function Home() {
                             <span className="text-sm font-bold">+</span>
                           </button>
                         </div>
+                      </div>
+                      
+                      {/* User breakdown: Advanced (app only) vs Premier (desk phone) */}
+                      <div className="px-4 pb-3 space-y-1">
+                        {(() => {
+                          const totalManaged = getTotalManagedPhones();
+                          const premierUsers = Math.min(totalManaged, getUserCount());
+                          const advancedUsers = getUserCount() - premierUsers;
+                          return (
+                            <>
+                              {advancedUsers > 0 && (
+                                <div className="flex justify-between items-center">
+                                  <div className="flex items-center gap-1.5">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#F53900]"></div>
+                                    <span className="text-xs text-[#585858]">Advanced (app only)</span>
+                                  </div>
+                                  <span className="text-xs font-semibold text-[#080808]">{advancedUsers}</span>
+                                </div>
+                              )}
+                              {premierUsers > 0 && (
+                                <div className="flex justify-between items-center">
+                                  <div className="flex items-center gap-1.5">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]"></div>
+                                    <span className="text-xs text-[#585858]">Premier (desk phone)</span>
+                                  </div>
+                                  <span className="text-xs font-semibold text-[#080808]">{premierUsers}</span>
+                                </div>
+                              )}
+                            </>
+                          );
+                        })()}
                       </div>
                       <div className="space-y-2">
 
