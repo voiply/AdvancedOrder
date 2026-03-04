@@ -3,6 +3,20 @@
 import { useState, useEffect, useRef } from 'react';
 import Script from 'next/script';
 import LogRocket from 'logrocket';
+import { loadStripe } from '@stripe/stripe-js';
+
+// ── Stripe singleton — must be module-level so it's never recreated on re-render ──
+let stripePromise: Promise<any> | null = null;
+const getStripePromise = () => {
+  if (!stripePromise && typeof window !== 'undefined') {
+    const isProduction = window.location.hostname.includes('voiply.com');
+    const publishableKey = isProduction
+      ? 'pk_live_D6rvZlsemkyp8H52V8TiP4YY'
+      : 'pk_test_xUOr3G0ru1UKcGvNOCg1nRUN';
+    stripePromise = loadStripe(publishableKey);
+  }
+  return stripePromise;
+};
 
 // Base path from next.config.ts - must match the mount path in Webflow Cloud
 const basePath = '/business-advanced-checkout';
@@ -225,7 +239,6 @@ export default function Home() {
   const [smartyLoaded, setSmartyLoaded] = useState(false);
   const [smartySuggestions, setSmartySuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [stripeLoaded, setStripeLoaded] = useState(false);
   const [cardComplete, setCardComplete] = useState(false);
   const [stripe, setStripe] = useState<any>(null);
   const [elements, setElements] = useState<any>(null);
@@ -981,39 +994,31 @@ export default function Home() {
   }, [currentStep]);
   
   // Initialize Stripe Elements with Payment Element
+  // Uses loadStripe() (module-level singleton) for PCI compliance.
   useEffect(() => {
-    if (currentStep === 5 && stripeLoaded && clientSecret && typeof window !== 'undefined' && !stripe) {
+    if (currentStep === 5 && clientSecret && typeof window !== 'undefined' && !stripe) {
+      (async () => {
       try {
         setPaymentElementError(false);
         setPaymentElementReady(false);
         
-        const isProduction = window.location.hostname.includes('voiply.com');
-        const publishableKey = isProduction
-          ? 'pk_live_D6rvZlsemkyp8H52V8TiP4YY'
-          : 'pk_test_xUOr3G0ru1UKcGvNOCg1nRUN';
-        const stripeInstance = (window as any).Stripe(publishableKey);
+        const stripeInstance = await getStripePromise();
+        if (!stripeInstance) throw new Error('Stripe failed to load');
         setStripe(stripeInstance);
         
         // Create Payment Element with client secret and locale
         const elementsInstance = stripeInstance.elements({
-          clientSecret: clientSecret,
-          locale: country === 'CA' ? 'en-CA' : 'en-US'
+          clientSecret,
+          locale: country === 'CA' ? 'en-CA' : 'en-US',
+          appearance: { theme: 'stripe' },
         });
         setElements(elementsInstance);
         
         const paymentEl = elementsInstance.create('payment', {
-          layout: {
-            type: 'accordion',
-            defaultCollapsed: false,
-            radios: false,
-            spacedAccordionItems: true
-          },
-          paymentMethodOrder: ['card'],
+          layout: { type: 'accordion', defaultCollapsed: false, radios: false, spacedAccordionItems: true },
           fields: {
             billingDetails: {
-              name: 'never',
-              email: 'never',
-              phone: 'never',
+              name: 'never', email: 'never', phone: 'never',
               address: {
                 country: 'never',
                 postalCode: 'never'
@@ -1096,8 +1101,9 @@ export default function Home() {
         setPaymentElementError(true);
         setLoadingPaymentIntent(false);
       }
+      })();
     }
-  }, [currentStep, stripeLoaded, clientSecret, stripe, country]);
+  }, [currentStep, clientSecret, stripe, country]);
   
   // Detect country from IP address on initial load
   useEffect(() => {
@@ -2692,14 +2698,7 @@ export default function Home() {
 
   return (
     <>
-      {/* Stripe SDK - Only load on Step 5 (payment page) */}
-      {currentStep === 5 && (
-        <Script 
-          src="https://js.stripe.com/v3/"
-          strategy="lazyOnload"
-          onLoad={() => setStripeLoaded(true)}
-        />
-      )}
+      {/* Stripe SDK loaded via loadStripe() from @stripe/stripe-js — PCI compliant */}
       
       <div className="min-h-screen bg-white flex flex-col">
         {/* Header */}
