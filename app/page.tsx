@@ -304,6 +304,7 @@ export default function Home() {
   // Tax breakdown - Multi-entry cache
   const [showTaxModal, setShowTaxModal] = useState(false);
   const [showManagedPhoneModal, setShowManagedPhoneModal] = useState(false);
+  const [showSalesBooking, setShowSalesBooking] = useState(false);
   const [taxBreakdown, setTaxBreakdown] = useState<any>(null);
   const [loadingTax, setLoadingTax] = useState(false);
   const [taxError, setTaxError] = useState('');
@@ -1641,7 +1642,7 @@ export default function Home() {
     } else if (currentStep === 2) {
       // High call volume or call center → redirect to sales booking
       if (highCallVolume === 'high-volume' || highCallVolume === 'call-center') {
-        window.open('https://meetings.hubspot.com/djohainah/djohainah-naya-sharief', '_blank');
+        setShowSalesBooking(true);
         return;
       }
       // From business needs: go to number selection or phones/payment
@@ -3057,7 +3058,34 @@ export default function Home() {
           )}
 
           {/* Step 2: Business Needs Assessment */}
-          {currentStep === 2 && (
+          {currentStep === 2 && showSalesBooking && (
+            <>
+              <div className="mb-6 md:mb-8">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#080808] mb-2 leading-tight">
+                  Book a call with our sales team
+                </h1>
+                <p className="text-base md:text-lg text-[#585858] leading-tight">
+                  For {highCallVolume === 'call-center' ? 'call center operations' : 'high call volumes'}, our team will design a solution tailored to your needs.
+                </p>
+              </div>
+              <div className="meetings-iframe-container" data-src="https://meetings.hubspot.com/jazzy-talanghate/jazzy-talanghate?embed=true" style={{ minHeight: '700px' }}></div>
+              <Script
+                src="https://static.hsappstatic.net/MeetingsEmbed/ex/MeetingsEmbedCode.js"
+                strategy="afterInteractive"
+              />
+              <div className="flex justify-center mt-6">
+                <button
+                  type="button"
+                  onClick={() => setShowSalesBooking(false)}
+                  className="w-full max-w-[200px] h-12 md:h-14 rounded-[5px] text-base md:text-lg font-semibold transition-colors border border-[#D9D9D9] text-[#585858] hover:bg-gray-50 cursor-pointer"
+                >
+                  Back
+                </button>
+              </div>
+            </>
+          )}
+
+          {currentStep === 2 && !showSalesBooking && (
             <>
               <div className="mb-6 md:mb-8">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#080808] mb-2 leading-tight">
