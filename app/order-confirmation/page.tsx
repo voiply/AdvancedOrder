@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import LogRocket from 'logrocket';
+LogRocket.init('uyjcld/voiply-checkout');
 
 const basePath = '/business-advanced-checkout';
 
@@ -50,11 +52,37 @@ export default function OrderConfirmation() {
     try {
       const savedOrder = localStorage.getItem('lastOrder');
       if (savedOrder) {
-        setOrderDetails(JSON.parse(savedOrder));
+        const order = JSON.parse(savedOrder);
+        setOrderDetails(order);
         localStorage.removeItem('lastOrder');
+        // Identify user in LogRocket so session is tagged with customer info
+        if (order.email) {
+          LogRocket.identify(order.email, {
+            name: order.name || '',
+            email: order.email,
+            plan: order.plan || '',
+          });
+        }
       }
     } catch (e) {
       console.error('Could not parse lastOrder from localStorage', e);
+    }
+
+    // Set payment method as default on customer — fire silently, non-blocking
+    try {
+      const savedOrder = localStorage.getItem('lastOrder');
+      const order = savedOrder ? JSON.parse(savedOrder) : null;
+      const piId = order?.paymentIntentId || new URLSearchParams(window.location.search).get('payment_intent');
+      const custId = order?.customerId;
+      if (piId && custId) {
+        fetch(`${basePath}/api/set-default-payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentIntentId: piId, customerId: custId })
+        }).catch(e => console.error('set-default-payment error:', e));
+      }
+    } catch (e) {
+      console.error('set-default-payment setup error:', e);
     }
 
     // ── Fire pending GTM purchase event ─────────────────────────────────
@@ -95,18 +123,20 @@ export default function OrderConfirmation() {
         const webhookSessionKey = `webhook_sent_${webhookData.orderId}`;
         if (!sessionStorage.getItem(webhookSessionKey)) {
           sessionStorage.setItem(webhookSessionKey, '1');
-          fetch('https://voiply.app.n8n.cloud/webhook/6aceed8e-b47d-4b24-84ac-8e948357fed6', {
+          fetch(`${basePath}/api/confirm-order`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(webhookData)
-          }).catch(e => console.error('[Webhook] n8n error:', e));
-          console.log('[Webhook] n8n fired for order', webhookData.orderId);
+          }).then(res => {
+            if (!res.ok) console.error('[confirm-order] Server returned', res.status, 'for order', webhookData.orderId);
+            else console.log('[confirm-order] Webhook delivered for order', webhookData.orderId);
+          }).catch(e => console.error('[confirm-order] Fetch error for order', webhookData.orderId, e));
         } else {
-          console.warn('[Webhook] duplicate blocked for order', webhookData.orderId);
+          console.warn('[confirm-order] sessionStorage guard blocked duplicate for order', webhookData.orderId);
         }
       }
     } catch (e) {
-      console.error('[Webhook] Error reading pendingWebhook:', e);
+      console.error('[confirm-order] Error reading pendingWebhook:', e);
     }
 
     // ── Fire pending Stripe metadata update ─────────────────────────────
