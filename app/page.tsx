@@ -3594,73 +3594,84 @@ export default function Home() {
                 </div>
 
                 {/* Own Device Option - with quantity controls */}
-                <div className={`relative border-2 rounded-xl p-3 md:p-6 transition-all ${
+                <div className={`relative border-2 rounded-2xl overflow-hidden transition-all ${
                   ownDevice > 0
                     ? 'border-[#F53900] bg-[#FEEBE6]/30 shadow-[0_0_0_2px_#FEEBE6]' 
-                    : 'border-[#D9D9D9] bg-white'
+                    : 'border-[#E8E8E8] bg-white hover:border-[#F53900]/50'
                 }`}>
-                  {ownDevice > 0 && (
-                    <div className="absolute top-3 md:top-4 right-3 md:right-4 bg-[#F53900] text-white text-xs px-3 py-1 rounded-full font-semibold">
-                      {ownDevice} selected
-                    </div>
-                  )}
-                  
-                  <div className="flex items-start gap-3 md:gap-4">
-                    <div className={`hidden md:flex w-12 h-12 rounded-full items-center justify-center flex-shrink-0 ${
-                      ownDevice > 0 ? 'bg-[#F53900]' : 'bg-[#F5F5F5]'
-                    }`}>
-                      <svg className={`w-6 h-6 ${ownDevice > 0 ? 'text-white' : 'text-[#585858]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                      </svg>
-                    </div>
+                  <div className="p-5 md:p-6">
+                    {ownDevice > 0 && (
+                      <div className="absolute top-4 right-4 bg-[#F53900] text-white text-xs px-3 py-1 rounded-full font-semibold">
+                        {ownDevice} selected
+                      </div>
+                    )}
                     
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm md:text-base lg:text-lg font-bold text-[#080808] mb-1 md:mb-2">
-                        I have my own VoIP phones
-                      </h3>
-                      <p className="text-xs md:text-sm text-[#585858] mb-3">
-                        Already have compatible VoIP phones? We&#39;ll help you set them up.
-                      </p>
-                      
-                      {/* Quantity controls */}
-                      <div className="flex items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (ownDevice > 0) setOwnDevice(ownDevice - 1);
-                          }}
-                          disabled={ownDevice <= 0}
-                          className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all ${
-                            ownDevice <= 0
-                              ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed'
-                              : 'border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2] active:scale-95'
-                          }`}
-                        >
-                          <span className="text-lg font-bold leading-none">&minus;</span>
-                        </button>
-                        <span className="text-xl font-bold text-[#080808] w-8 text-center">{ownDevice}</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (getTotalManagedPhones() >= getUserCount()) return;
-                            setOwnDevice(ownDevice + 1);
-
-                          }}
-                          disabled={getTotalManagedPhones() >= getUserCount()}
-                          className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all active:scale-95 ${getTotalManagedPhones() >= getUserCount() ? 'border-[#D9D9D9] text-[#CCC] cursor-not-allowed' : 'border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2]'}`}
-                        >
-                          <span className="text-lg font-bold leading-none">+</span>
-                        </button>
+                    <div className="flex items-start gap-4">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                        ownDevice > 0 ? 'bg-[#F53900]' : 'bg-[#F5F5F5]'
+                      }`}>
+                        <svg className={`w-6 h-6 ${ownDevice > 0 ? 'text-white' : 'text-[#585858]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                        </svg>
                       </div>
                       
-                      <div className="hidden md:flex items-center gap-2 text-xs text-[#585858] mt-3">
-                        <svg className="w-4 h-4 text-[#17DB4E]" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                        </svg>
-                        <span className="font-medium">Not sure if yours is compatible?</span>
-                        <span>We&#39;re happy to help - just ask!</span>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base md:text-lg font-bold text-[#080808] mb-1">
+                          Bring Your Own Phone
+                        </h3>
+                        <p className="text-sm text-[#585858] mb-4">
+                          Already have a compatible VoIP phone? We'll provision and set it up for you.
+                        </p>
+                        
+                        {/* Quantity controls */}
+                        <div className="flex items-center gap-3 mb-4">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (ownDevice > 0) setOwnDevice(ownDevice - 1);
+                            }}
+                            disabled={ownDevice <= 0}
+                            className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all ${
+                              ownDevice <= 0
+                                ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed'
+                                : 'border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2] active:scale-95'
+                            }`}
+                          >
+                            <span className="text-lg font-bold leading-none">&minus;</span>
+                          </button>
+                          <span className="text-xl font-bold text-[#080808] w-8 text-center">{ownDevice}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (getTotalManagedPhones() >= getUserCount()) return;
+                              setOwnDevice(ownDevice + 1);
+                            }}
+                            disabled={getTotalManagedPhones() >= getUserCount()}
+                            className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all active:scale-95 ${getTotalManagedPhones() >= getUserCount() ? 'border-[#D9D9D9] text-[#CCC] cursor-not-allowed' : 'border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2]'}`}
+                          >
+                            <span className="text-lg font-bold leading-none">+</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
+                  </div>
+                  
+                  {/* Supported phones KB link */}
+                  <div className="bg-[#F9F9F9] border-t border-[#E8E8E8] px-5 md:px-6 py-3">
+                    <a
+                      href="https://kb.voiply.com/premier-plan-supported-phones"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-[#F53900] hover:underline font-medium"
+                    >
+                      <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      View supported phones
+                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
                   </div>
                 </div>
 
