@@ -2070,9 +2070,17 @@ export default function Home() {
           : hasPhone === true && phoneNumber
           ? phoneNumber
           : 'N/A',
+        // Raw 10-digit phone for n8n webhook (fired from thank you page)
+        phoneDigits: (() => {
+          let d = '';
+          if (hasPhone === false && selectedNewNumber) d = selectedNewNumber.replace(/\D/g, '');
+          else if (hasPhone === true && phoneNumber) d = phoneNumber.replace(/\D/g, '');
+          return d.length > 10 ? d.slice(-10) : d;
+        })(),
         plan: selectedPlan,
         bundle: ownDevice > 0 ? 'Service Only' : getPhonesSummary(),
         address: addressComponents,
+        address2: address2 || '',
         email: email,
         name: `${firstName} ${lastName}`,
         total: finalTotal.toFixed(2),
@@ -2081,6 +2089,7 @@ export default function Home() {
         customerId: finalCustomerId,
         internetPackage: (hasInternet === false && addInternetPackage) ? internetPackage : null,
         internetDevice: (hasInternet === false && addInternetPackage) ? internetDevice : null,
+        onlineFax: onlineFax || false,
       };
       localStorage.setItem('lastOrder', JSON.stringify(preSaveOrderDetails));
 
