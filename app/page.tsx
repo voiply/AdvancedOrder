@@ -174,7 +174,7 @@ const CANADIAN_PROVINCES = [
 
 export default function Home() {
   // Initialize LogRocket
-  LogRocket.init('uyjcld/advanced-checkout');
+  LogRocket.init('uyjcld/premier-checkout');
 
 
   // Step management
@@ -294,7 +294,7 @@ export default function Home() {
       setAddInternetPackage(false);
     }
   }, [hasInternet]);
-  const [internetPackage, setInternetPackage] = useState('phone-only');
+  const [internetPackage, setInternetPackage] = useState('unlimited-5g');
   const [internetDevice, setInternetDevice] = useState('rental');
   
   // Online Fax
@@ -450,7 +450,7 @@ export default function Home() {
             setOnlineFax(session.onlineFax || false);
             if (session.hasInternet !== undefined) setHasInternet(session.hasInternet);
             if (session.addInternetPackage !== undefined) setAddInternetPackage(session.addInternetPackage);
-            setInternetPackage(session.internetPackage || 'phone-only');
+            setInternetPackage(session.internetPackage || 'unlimited-5g');
             setInternetDevice(session.internetDevice || 'rental');
             setStripeCustomerId(session.stripeCustomerId || '');
             if (session.numUsers) setNumUsers(session.numUsers);
@@ -1226,7 +1226,7 @@ export default function Home() {
   };
   
   // Helper function to get plan price (accounts for coupon)
-  // Business Advanced Plan: $11.95/mo ($4 telco + $7.95 support)
+  // Business Premier Plan: $16.95/mo per user
   // NOTE: Coupon ONLY applies to 3-month plan
   const getUserCount = () => parseInt(numUsers) || 1;
 
@@ -1367,8 +1367,8 @@ export default function Home() {
         user_region: addressComponents.state || undefined,
         user_postal: addressComponents.zipCode || undefined,
         user_country: country || undefined,
-        product: 'advanced',
-        plan: 'advanced',
+        product: 'premier',
+        plan: 'premier',
         quantity: '1',
         total: total.toFixed(2),
         tax: taxes.toFixed(2),
@@ -2193,17 +2193,17 @@ export default function Home() {
         user_region: addressComponents.state || undefined,
         user_postal: addressComponents.zipCode || undefined,
         user_country: country || undefined,
-        product: 'advanced',
-        plan: 'advanced',
+        product: 'premier',
+        plan: 'premier',
         ecommerce: {
           transaction_id: String(preSaveOrderDetails.orderNumber),
           value: parseFloat(finalTotal.toFixed(2)),
           tax: parseFloat(preSaveGtmTax.toFixed(2)),
           currency: country === 'CA' ? 'CAD' : 'USD',
           items: [{
-            item_id: 'advanced',
-            item_name: 'Voiply Advanced Business',
-            item_category: 'advanced',
+            item_id: 'premier',
+            item_name: 'Voiply Premier Business',
+            item_category: 'premier',
             quantity: getUserCount(),
             price: parseFloat(finalTotal.toFixed(2)),
           }],
@@ -2333,17 +2333,17 @@ export default function Home() {
           user_region: orderDetails.address?.state || undefined,
           user_postal: orderDetails.address?.zipCode || undefined,
           user_country: country || undefined,
-          product: 'advanced',
-          plan: 'advanced',
+          product: 'premier',
+          plan: 'premier',
           ecommerce: {
             transaction_id: String(orderDetails.orderNumber),
             value: parseFloat(orderTotal.toFixed(2)),
             tax: parseFloat(gtmTax.toFixed(2)),
             currency: country === 'CA' ? 'CAD' : 'USD',
             items: [{
-              item_id: 'advanced',
-              item_name: 'Voiply Advanced Business',
-              item_category: 'advanced',
+              item_id: 'premier',
+              item_name: 'Voiply Premier Business',
+              item_category: 'premier',
               quantity: getUserCount(),
               price: parseFloat(orderTotal.toFixed(2)),
             }],
@@ -3797,7 +3797,7 @@ export default function Home() {
                           <div>
                             <p className="text-sm font-medium text-[#080808]">Voiply Internet</p>
                             <p className="text-xs text-[#999]">
-                              {internetPackage === 'phone-only' ? 'Phone Only' : 'Unlimited 5G'} + {internetDevice === 'rental' ? 'Rental Device' : 'Device Purchase'}
+                              Unlimited 5G + {internetDevice === 'rental' ? 'Rental Device' : 'Device Purchase'}
                             </p>
                           </div>
                           <span className="text-sm font-bold text-[#080808]">
@@ -3862,100 +3862,49 @@ export default function Home() {
                         </p>
                       </div>
                       
-                      {/* User tiers with individual controls */}
-                      {(() => {
-                        const totalManaged = getTotalManagedPhones();
-                        const premierUsers = Math.min(totalManaged, getUserCount());
-                        const advancedUsers = getUserCount() - premierUsers;
-                        return (
-                          <div className="space-y-2 mb-2">
-                            {/* Advanced Plan tier */}
-                            <div className="bg-[#F9F9F9] rounded-xl px-4 py-3">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-[#F53900]"></div>
-                                    <span className="text-sm font-semibold text-[#080808]">Advanced Plan</span>
-                                  </div>
-                                  <p className="text-xs text-[#999] ml-4 mt-0.5">$11.95/mo per user</p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const current = getUserCount();
-                                      if (current > 1 && advancedUsers > 0) setNumUsers(String(current - 1));
-                                    }}
-                                    disabled={advancedUsers <= 0}
-                                    className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
-                                      advancedUsers <= 0 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFF5F2] hover:border-[#F53900]'
-                                    }`}
-                                  >
-                                    <span className="text-sm font-bold">−</span>
-                                  </button>
-                                  <span className="text-base font-bold text-[#080808] w-8 text-center">{advancedUsers}</span>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const current = getUserCount();
-                                      if (current < 100) setNumUsers(String(current + 1));
-                                    }}
-                                    disabled={getUserCount() >= 100}
-                                    className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
-                                      getUserCount() >= 100 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFF5F2] hover:border-[#F53900]'
-                                    }`}
-                                  >
-                                    <span className="text-sm font-bold">+</span>
-                                  </button>
-                                </div>
+                      {/* Premier Plan — single tier */}
+                      <div className="space-y-2 mb-2">
+                        <div className="bg-[#FFFBF5] rounded-xl px-4 py-3 border border-[#F59E0B]/15">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-[#F59E0B]"></div>
+                                <span className="text-sm font-semibold text-[#080808]">Premier Plan</span>
                               </div>
+                              <p className="text-xs text-[#999] ml-4 mt-0.5">$16.95/mo per user</p>
                             </div>
-
-                            {/* Premier Plan tier — only show when there are hardware users */}
-                            {premierUsers > 0 && (
-                              <div className="bg-[#FFFBF5] rounded-xl px-4 py-3 border border-[#F59E0B]/15">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-[#F59E0B]"></div>
-                                    <span className="text-sm font-semibold text-[#080808]">Premier Plan</span>
-                                    <button
-                                      type="button"
-                                      onClick={() => setCurrentStep(4)}
-                                      title="Edit phone selection"
-                                      className="w-5 h-5 rounded-full bg-[#F59E0B]/10 hover:bg-[#F59E0B]/20 flex items-center justify-center transition-colors"
-                                    >
-                                      <svg className="w-3 h-3 text-[#F59E0B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                      </svg>
-                                    </button>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <button
-                                      type="button"
-                                      onClick={() => setCurrentStep(4)}
-                                      className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]`}
-                                    >
-                                      <span className="text-sm font-bold">−</span>
-                                    </button>
-                                    <span className="text-base font-bold text-[#080808] w-8 text-center">{premierUsers}</span>
-                                    <button
-                                      type="button"
-                                      onClick={() => setCurrentStep(4)}
-                                      className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
-                                        getUserCount() >= 100 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'
-                                      }`}
-                                    >
-                                      <span className="text-sm font-bold">+</span>
-                                    </button>
-                                  </div>
-                                </div>
-                                <p className="text-xs text-[#999] ml-4 mt-0.5">$16.95/mo per user</p>
-                              </div>
-                            )}
-
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const current = getUserCount();
+                                  if (current > 1) setNumUsers(String(current - 1));
+                                }}
+                                disabled={getUserCount() <= 1}
+                                className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
+                                  getUserCount() <= 1 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'
+                                }`}
+                              >
+                                <span className="text-sm font-bold">−</span>
+                              </button>
+                              <span className="text-base font-bold text-[#080808] w-8 text-center">{getUserCount()}</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const current = getUserCount();
+                                  if (current < 100) setNumUsers(String(current + 1));
+                                }}
+                                disabled={getUserCount() >= 100}
+                                className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
+                                  getUserCount() >= 100 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'
+                                }`}
+                              >
+                                <span className="text-sm font-bold">+</span>
+                              </button>
+                            </div>
                           </div>
-                        );
-                      })()}
+                        </div>
+                      </div>
                       <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA] mb-2">Payment terms</p>
                       <div className="space-y-2">
                         <button
@@ -4064,32 +4013,13 @@ export default function Home() {
                           </button>
                         </div>
 
-                        {/* Package selector - vertical plan-style cards */}
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA] mb-2">Select package</p>
-                          <div className="space-y-2">
-                            {[
-                              { id: 'phone-only', label: 'Phone Only', sub: 'Basic connectivity for calls', price: '$16.95', per: '/mo' },
-                              { id: 'unlimited-5g', label: 'Unlimited 5G', sub: 'Fast 5G data with no speed limits', price: '$84.95', per: '/mo' },
-                            ].map(pkg => (
-                              <button
-                                key={pkg.id}
-                                type="button"
-                                onClick={() => setInternetPackage(pkg.id)}
-                                className={`w-full flex justify-between items-center px-4 py-3 rounded-xl border-2 transition-all ${
-                                  internetPackage === pkg.id
-                                    ? 'border-[#F53900] bg-[#FFF5F2]'
-                                    : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'
-                                }`}
-                              >
-                                <div className="text-left">
-                                  <span className={`text-sm font-semibold ${internetPackage === pkg.id ? 'text-[#F53900]' : 'text-[#080808]'}`}>{pkg.label}</span>
-                                  <p className="text-xs text-[#999] mt-0.5">{pkg.sub}</p>
-                                </div>
-                                <span className={`text-base font-bold ${internetPackage === pkg.id ? 'text-[#F53900]' : 'text-[#080808]'}`}>{pkg.price}<span className="text-xs font-normal text-[#999]">{pkg.per}</span></span>
-                              </button>
-                            ))}
+                        {/* Unlimited 5G — fixed package */}
+                        <div className="flex justify-between items-center px-4 py-3 rounded-xl border-2 border-[#F53900] bg-[#FFF5F2]">
+                          <div className="text-left">
+                            <span className="text-sm font-semibold text-[#F53900]">Unlimited 5G</span>
+                            <p className="text-xs text-[#999] mt-0.5">Fast 5G data with no speed limits</p>
                           </div>
+                          <span className="text-base font-bold text-[#F53900]">$84.95<span className="text-xs font-normal text-[#999]">/mo</span></span>
                         </div>
 
                         {/* Device selector - vertical plan-style cards */}

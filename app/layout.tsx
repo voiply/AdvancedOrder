@@ -3,8 +3,8 @@ import './globals.css'
 import Script from 'next/script'
 
 export const metadata: Metadata = {
-  title: 'Voiply Business Advanced Solutions Checkout',
-  description: 'Get reliable business phone service from Voiply. Advanced checkout for Voiply business phone solutions.',
+  title: 'Voiply Business Premier Solutions Checkout',
+  description: 'Get reliable business phone service from Voiply. Premier checkout for Voiply business phone solutions.',
   icons: {
     icon: '/business-checkout/favicon.ico',
   },
