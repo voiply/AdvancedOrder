@@ -2375,11 +2375,11 @@ export default function Home() {
           };
           
           const webhookData = {
-            plan: 'residential',
+            plan: 'premier',
             phoneNumber: getPhoneDigits(),
             customerId: finalCustomerId, // Use the guaranteed customer ID
             orderId: orderDetails.orderNumber,
-            userCount: '1',
+            userCount: String(getUserCount()),
             version: typeof window !== 'undefined' && window.location.hostname.includes('voiply.com') ? 'prod' : 'dev',
             interval: getInterval(),
             newNumber: hasPhone === false,

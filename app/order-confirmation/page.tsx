@@ -49,18 +49,19 @@ export default function OrderConfirmation() {
     // ────────────────────────────────────────────────────────────────────
 
     // Load order details from localStorage (set by checkout page before redirect)
+    let parsedOrder: any = null;
     try {
       const savedOrder = localStorage.getItem('lastOrder');
       if (savedOrder) {
-        const order = JSON.parse(savedOrder);
-        setOrderDetails(order);
+        parsedOrder = JSON.parse(savedOrder);
+        setOrderDetails(parsedOrder);
         localStorage.removeItem('lastOrder');
         // Identify user in LogRocket so session is tagged with customer info
-        if (order.email) {
-          LogRocket.identify(order.email, {
-            name: order.name || '',
-            email: order.email,
-            plan: order.plan || '',
+        if (parsedOrder.email) {
+          LogRocket.identify(parsedOrder.email, {
+            name: parsedOrder.name || '',
+            email: parsedOrder.email,
+            plan: parsedOrder.plan || '',
           });
         }
       }
@@ -70,10 +71,8 @@ export default function OrderConfirmation() {
 
     // Set payment method as default on customer — fire silently, non-blocking
     try {
-      const savedOrder = localStorage.getItem('lastOrder');
-      const order = savedOrder ? JSON.parse(savedOrder) : null;
-      const piId = order?.paymentIntentId || new URLSearchParams(window.location.search).get('payment_intent');
-      const custId = order?.customerId;
+      const piId = parsedOrder?.paymentIntentId || new URLSearchParams(window.location.search).get('payment_intent');
+      const custId = parsedOrder?.customerId;
       if (piId && custId) {
         fetch(`${basePath}/api/set-default-payment`, {
           method: 'POST',
