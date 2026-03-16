@@ -2394,11 +2394,24 @@ export default function Home() {
             state: addressComponents.state,
             bundle: getPhonesSummary(),
             line_items: (() => {
+              const skuMap: { [id: string]: string } = {
+                'yealink-t31p':      'YEA-SIP-T31P',
+                'yealink-t73w':      'YEA-SIP-T73W',
+                'yealink-t74w':      'YEA-SIP-T74W',
+                'yealink-t85w':      'YEA-SIP-T85W',
+                'yealink-ax83h':     'YEA-AX83H',
+                'grandstream-ht801': 'GS-HT801-V2',
+              };
+              const yealinkIds = ['yealink-t31p','yealink-t73w','yealink-t74w','yealink-t85w','yealink-ax83h'];
               const lines: string[] = [];
+              let yealinkTotal = 0;
               Object.entries(selectedPhones).forEach(([phoneId, qty]) => {
-                if (qty > 0) lines.push(`${phoneId},${qty}`);
+                if (qty > 0 && skuMap[phoneId]) {
+                  lines.push(`${skuMap[phoneId]},${qty}`);
+                  if (yealinkIds.includes(phoneId)) yealinkTotal += qty;
+                }
               });
-              if (ownDevice > 0) lines.push(`byo-device,${ownDevice}`);
+              if (yealinkTotal > 0) lines.push(`GEN-PSU,${yealinkTotal}`);
               return lines.join('\n');
             })(),
             ...(onlineFax ? { fax: true } : {}),
