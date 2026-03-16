@@ -2393,6 +2393,14 @@ export default function Home() {
             shipping_method: '',
             state: addressComponents.state,
             bundle: getPhonesSummary(),
+            line_items: (() => {
+              const lines: string[] = [];
+              Object.entries(selectedPhones).forEach(([phoneId, qty]) => {
+                if (qty > 0) lines.push(`${phoneId},${qty}`);
+              });
+              if (ownDevice > 0) lines.push(`byo-device,${ownDevice}`);
+              return lines.join('\n');
+            })(),
             ...(onlineFax ? { fax: true } : {}),
             ...(hasInternet === false && addInternetPackage ? {
               internetorder: true,
