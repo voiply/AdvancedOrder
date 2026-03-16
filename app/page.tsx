@@ -19,7 +19,7 @@ const getStripePromise = () => {
 };
 
 // Base path from next.config.ts - must match the mount path in Webflow Cloud
-const basePath = '/business-advanced-checkout';
+const basePath = '/business-checkout';
 
 // Types
 interface AddressComponents {

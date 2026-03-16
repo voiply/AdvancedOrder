@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Voiply Business Advanced Solutions Checkout',
   description: 'Get reliable business phone service from Voiply. Advanced checkout for Voiply business phone solutions.',
   icons: {
-    icon: '/business-advanced-checkout/favicon.ico',
+    icon: '/business-checkout/favicon.ico',
   },
 }
 

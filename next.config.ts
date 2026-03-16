@@ -22,7 +22,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  basePath: '/business-advanced-checkout',
+  basePath: '/business-checkout',
 
   async headers() {
     return [

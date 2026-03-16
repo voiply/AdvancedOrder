@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import LogRocket from 'logrocket';
 LogRocket.init('uyjcld/voiply-checkout');
 
-const basePath = '/business-advanced-checkout';
+const basePath = '/business-checkout';
 
 export default function OrderConfirmation() {
   const [orderDetails, setOrderDetails] = useState<any>(null);
