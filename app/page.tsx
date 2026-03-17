@@ -851,14 +851,15 @@ export default function Home() {
               'unlimited-5g': 84.95
             };
             const packagePrice = packagePrices[internetPackage] || 84.95;
-            const deviceCost = internetDevice === 'rental' ? 10 : 129;
+            const deviceCost = internetDevice === 'rental' ? 10 : 0; // purchase cost is in taxableSubtotal
             internetPrice = packagePrice + deviceCost;
           }
           
           // Tax phone service, device, protection, and shipping (NOT internet)
           // Use planPriceForTax to charge tax on all 3 months even if 1 month is free with coupon
           const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
-            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost;
+            const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
+            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
           const taxes = taxableSubtotal * 0.47;
           // Add internet AFTER taxes (internet is not taxed)
           const total = taxableSubtotal + taxes + internetPrice;
@@ -939,14 +940,15 @@ export default function Home() {
               'unlimited-5g': 84.95
             };
             const packagePrice = packagePrices[internetPackage] || 84.95;
-            const deviceCost = internetDevice === 'rental' ? 10 : 129;
+            const deviceCost = internetDevice === 'rental' ? 10 : 0; // purchase cost is in taxableSubtotal
             internetPrice = packagePrice + deviceCost;
           }
           
           // Tax phone service, device, protection, and shipping (NOT internet)
           // Use planPriceForTax to charge tax on all 3 months even if 1 month is free with coupon
           const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
-            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost;
+            const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
+            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
           const taxes = taxableSubtotal * 0.47;
           // Add internet AFTER taxes (internet is not taxed)
           const total = taxableSubtotal + taxes + internetPrice;
@@ -1355,7 +1357,8 @@ export default function Home() {
       const protectionPrice = 0;
       const shippingCost = getShippingCost();
       const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
-            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost;
+            const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
+            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
       const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
       const total = taxableSubtotal + taxes;
       
@@ -1915,12 +1918,13 @@ export default function Home() {
               'unlimited-5g': 84.95
         };
         const packagePrice = packagePrices[internetPackage] || 84.95;
-        const deviceCost = internetDevice === 'rental' ? 10 : 129;
+        const deviceCost = internetDevice === 'rental' ? 10 : 0; // purchase cost is in taxableSubtotal;
         internetPrice = packagePrice + deviceCost;
       }
       
       const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
-            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost;
+            const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
+            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
       const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
       const expectedTotal = taxableSubtotal + taxes + internetPrice;
       
@@ -2039,7 +2043,7 @@ export default function Home() {
       if (hasInternet === false && addInternetPackage) {
         const pkgPrices: { [key: string]: number } = { 'phone-only': 16.95, 'unlimited-5g': 84.95 };
         const pkgPrice = pkgPrices[internetPackage] || 16.95;
-        const devCost = internetDevice === 'rental' ? 10 : 129;
+        const devCost = internetDevice === 'rental' ? 10 : 0; // purchase cost is in taxableSubtotal
         finalInternetPrice = pkgPrice + devCost;
       }
       const finalTaxableSubtotal = finalPlanPriceForTax + finalDevicePrice + finalProtectionPrice + finalShippingCost;
@@ -3824,23 +3828,23 @@ export default function Home() {
                         if (!phone) return null;
                         return (
                           <div key={phoneId} className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
-                            <div className="flex items-center gap-2">
-                              <div>
+                            <div>
+                              <div className="flex items-center gap-1.5">
                                 <p className="text-sm font-medium text-[#080808]">
                                   {phone.name}{qty > 1 ? ` ×${qty}` : ''}
                                 </p>
-                                <p className="text-xs text-[#999]">Hardware</p>
+                                <button
+                                  type="button"
+                                  onClick={() => setCurrentStep(4)}
+                                  title="Edit hardware selection"
+                                  className="w-4 h-4 flex items-center justify-center rounded-full bg-[#E8E8E8] hover:bg-[#D9D9D9] transition-colors flex-shrink-0"
+                                >
+                                  <svg className="w-2.5 h-2.5 text-[#666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                  </svg>
+                                </button>
                               </div>
-                              <button
-                                type="button"
-                                onClick={() => setCurrentStep(4)}
-                                title="Edit hardware selection"
-                                className="w-4 h-4 flex items-center justify-center rounded-full bg-[#E8E8E8] hover:bg-[#D9D9D9] transition-colors flex-shrink-0"
-                              >
-                                <svg className="w-2.5 h-2.5 text-[#666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                </svg>
-                              </button>
+                              <p className="text-xs text-[#999]">Hardware</p>
                             </div>
                             <span className={`text-sm font-bold ${phone.isFree ? 'text-[#17DB4E]' : 'text-[#080808]'}`}>
                               {phone.isFree ? 'FREE' : `$${(phone.price * qty).toFixed(2)}`}
@@ -3852,7 +3856,7 @@ export default function Home() {
                       {/* Own Equipment */}
                       {ownDevice > 0 && (
                         <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
                             <p className="text-sm font-medium text-[#080808]">Own Equipment{ownDevice > 1 ? ` ×${ownDevice}` : ''}</p>
                             <button
                               type="button"
@@ -3886,12 +3890,12 @@ export default function Home() {
                           {/* Line 1: Service */}
                           <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
                             <div>
-                              <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5">
                                 <p className="text-sm font-medium text-[#080808]">Business Internet Service</p>
                                 <button
                                   type="button"
                                   onClick={() => { setAddInternetPackage(false); setHasInternet(true); }}
-                                  className="w-4 h-4 flex items-center justify-center rounded-full bg-[#E8E8E8] hover:bg-[#FFEDED] transition-colors flex-shrink-0 ml-2"
+                                  className="w-4 h-4 flex items-center justify-center rounded-full bg-[#E8E8E8] hover:bg-[#FFEDED] transition-colors flex-shrink-0"
                                   title="Remove internet"
                                 >
                                   <svg className="w-2.5 h-2.5 text-[#666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -3977,7 +3981,8 @@ export default function Home() {
                             const protectionPrice = 0;
                             const shippingCost = getShippingCost();
                             const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
-            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost;
+            const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
+            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
                             return (taxableSubtotal * 0.47).toFixed(2);
                           })()}{country === 'CA' ? ' CAD' : ''}
                         </span>
@@ -3985,58 +3990,47 @@ export default function Home() {
 
                     </div>
 
-                    {/* Plan Selector - 3 vertical card boxes */}
+                    {/* Premier Plan line item + payment terms */}
                     <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA]">
-                          Your plan for {getUserCount()} user{getUserCount() !== 1 ? 's' : ''}
-                        </p>
-                      </div>
-                      
-                      {/* Premier Plan — single tier */}
-                      <div className="space-y-2 mb-2">
-                        <div className="bg-[#FFFBF5] rounded-xl px-4 py-3 border border-[#F59E0B]/15">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-[#F59E0B]"></div>
-                                <span className="text-sm font-semibold text-[#080808]">Premier Plan</span>
-                              </div>
-                              <p className="text-xs text-[#999] ml-4 mt-0.5">$16.95/mo per user</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const current = getUserCount();
-                                  if (current > 1) setNumUsers(String(current - 1));
-                                }}
-                                disabled={getUserCount() <= 1}
-                                className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
-                                  getUserCount() <= 1 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'
-                                }`}
-                              >
-                                <span className="text-sm font-bold">−</span>
-                              </button>
-                              <span className="text-base font-bold text-[#080808] w-8 text-center">{getUserCount()}</span>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const current = getUserCount();
-                                  if (current < 100) setNumUsers(String(current + 1));
-                                }}
-                                disabled={getUserCount() >= 100}
-                                className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
-                                  getUserCount() >= 100 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'
-                                }`}
-                              >
-                                <span className="text-sm font-bold">+</span>
-                              </button>
-                            </div>
+                      {/* Line item: Premier Plan for X users with -/+ */}
+                      <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5] mb-3">
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-[#F59E0B] flex-shrink-0"></div>
+                            <p className="text-sm font-medium text-[#080808]">Premier Plan for {getUserCount()} user{getUserCount() !== 1 ? 's' : ''}</p>
                           </div>
+                          <p className="text-xs text-[#999] ml-3.5 mt-0.5">$16.95/mo per user</p>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const current = getUserCount();
+                              if (current > 1) setNumUsers(String(current - 1));
+                            }}
+                            disabled={getUserCount() <= 1}
+                            className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
+                              getUserCount() <= 1 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'
+                            }`}
+                          >
+                            <span className="text-xs font-bold">−</span>
+                          </button>
+                          <span className="text-sm font-bold text-[#080808] w-6 text-center">{getUserCount()}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const current = getUserCount();
+                              if (current < 100) setNumUsers(String(current + 1));
+                            }}
+                            disabled={getUserCount() >= 100}
+                            className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
+                              getUserCount() >= 100 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'
+                            }`}
+                          >
+                            <span className="text-xs font-bold">+</span>
+                          </button>
                         </div>
                       </div>
-                      <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA] mb-2">Payment terms</p>
                       <div className="space-y-2">
                         <button
                           type="button"
@@ -4142,13 +4136,14 @@ export default function Home() {
               'unlimited-5g': 84.95
                               };
                               const packagePrice = packagePrices[internetPackage] || 84.95;
-                              const deviceCost = internetDevice === 'rental' ? 10 : 129;
+                              const deviceCost = internetDevice === 'rental' ? 10 : 0; // purchase cost is in taxableSubtotal;
                               internetPrice = packagePrice + deviceCost;
                             }
                             
                             // Use API-calculated tax when available, fallback to estimate
                             const managedDeskPhonePriceTax = getManagedDeskPhonePriceForTax();
-                            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePriceTax + protectionPrice + shippingCost;
+                            const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
+                            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePriceTax + protectionPrice + shippingCost + gatewayPurchasePrice;
                             const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
                             const total = planPrice + devicePrice + managedPhonePrice + protectionPrice + shippingCost + taxes + internetPrice;
                             return total.toFixed(2);
