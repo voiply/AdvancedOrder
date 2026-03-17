@@ -3902,6 +3902,15 @@ export default function Home() {
                         <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
                       </div>
 
+                      {/* Shipping & Handling */}
+                      <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
+                        <div>
+                          <p className="text-sm font-medium text-[#080808]">Shipping &amp; Handling</p>
+                          <p className="text-xs text-[#999]">Est. delivery {getDeliveryDate()}</p>
+                        </div>
+                        <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
+                      </div>
+
                       {/* Selected Phones - Hardware */}
                       {ownDevice === 0 && Object.entries(selectedPhones).map(([phoneId, qty]) => {
                         const phone = PHONES.find(p => p.id === phoneId);
