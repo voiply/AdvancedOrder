@@ -850,8 +850,8 @@ export default function Home() {
               'phone-only': 16.95,
               'unlimited-5g': 84.95
             };
-            const packagePrice = packagePrices[internetPackage] || 16.95;
-            const deviceCost = internetDevice === 'rental' ? 15 : 199;
+            const packagePrice = packagePrices[internetPackage] || 84.95;
+            const deviceCost = internetDevice === 'rental' ? 10 : 129;
             internetPrice = packagePrice + deviceCost;
           }
           
@@ -938,8 +938,8 @@ export default function Home() {
               'phone-only': 16.95,
               'unlimited-5g': 84.95
             };
-            const packagePrice = packagePrices[internetPackage] || 16.95;
-            const deviceCost = internetDevice === 'rental' ? 15 : 199;
+            const packagePrice = packagePrices[internetPackage] || 84.95;
+            const deviceCost = internetDevice === 'rental' ? 10 : 129;
             internetPrice = packagePrice + deviceCost;
           }
           
@@ -1912,8 +1912,8 @@ export default function Home() {
           'phone-only': 16.95,
               'unlimited-5g': 84.95
         };
-        const packagePrice = packagePrices[internetPackage] || 16.95;
-        const deviceCost = internetDevice === 'rental' ? 15 : 199;
+        const packagePrice = packagePrices[internetPackage] || 84.95;
+        const deviceCost = internetDevice === 'rental' ? 10 : 129;
         internetPrice = packagePrice + deviceCost;
       }
       
@@ -2037,7 +2037,7 @@ export default function Home() {
       if (hasInternet === false && addInternetPackage) {
         const pkgPrices: { [key: string]: number } = { 'phone-only': 16.95, 'unlimited-5g': 84.95 };
         const pkgPrice = pkgPrices[internetPackage] || 16.95;
-        const devCost = internetDevice === 'rental' ? 15 : 199;
+        const devCost = internetDevice === 'rental' ? 10 : 129;
         finalInternetPrice = pkgPrice + devCost;
       }
       const finalTaxableSubtotal = finalPlanPriceForTax + finalDevicePrice + finalProtectionPrice + finalShippingCost;
@@ -3064,7 +3064,7 @@ export default function Home() {
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
                           </svg>
                           <div>
-                            <div className="font-medium">Great news! We can transfer your number</div>
+                            <div className="font-medium">Great news! We can transfer your business number. Additional numbers can be ported after placing your order.</div>
                           </div>
                         </div>
                       )}
@@ -3519,7 +3519,7 @@ export default function Home() {
                   Select Your Desk Phones
                 </h1>
                 <p className="text-base md:text-lg text-[#585858] leading-tight">
-                  Choose the phones your team needs.
+                  Choose the phones your team needs. You have <span className="font-semibold text-[#080808]">{getUserCount()} user{getUserCount() !== 1 ? 's' : ''}</span> — you can select up to {getUserCount()} {getUserCount() === 1 ? 'phone' : 'phones'} total.
                 </p>
               </div>
 
@@ -3866,7 +3866,7 @@ export default function Home() {
                           <span className="text-sm font-bold text-[#080808]">
                             ${(() => {
                               const pp: { [key: string]: number } = { 'phone-only': 16.95, 'unlimited-5g': 84.95 };
-                              return (pp[internetPackage] || 16.95) + (internetDevice === 'rental' ? 15 : 199);
+                              return (pp[internetPackage] || 84.95) + (internetDevice === 'rental' ? 10 : 129);
                             })().toFixed(2)}{country === 'CA' ? ' CAD' : ''}
                           </span>
                         </div>
@@ -4062,8 +4062,8 @@ export default function Home() {
                             </svg>
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-semibold text-[#080808]">Home Internet Service</p>
-                            <p className="text-xs text-[#585858]">Reliable home internet to stay connected and have a backup. Easy plug and play setup with free shipping.</p>
+                            <p className="text-sm font-semibold text-[#080808]">Business Internet Service</p>
+                            <p className="text-xs text-[#585858]">Business-grade 5G internet built for the demands of modern work. Unlimited data, uncapped speeds, and no throttling.</p>
                           </div>
                           <button
                             type="button"
@@ -4076,13 +4076,10 @@ export default function Home() {
                           </button>
                         </div>
 
-                        {/* Unlimited 5G — fixed package */}
-                        <div className="flex justify-between items-center px-4 py-3 rounded-xl border-2 border-[#F53900] bg-[#FFF5F2]">
-                          <div className="text-left">
-                            <span className="text-sm font-semibold text-[#F53900]">Unlimited 5G</span>
-                            <p className="text-xs text-[#999] mt-0.5">Fast 5G data with no speed limits</p>
-                          </div>
-                          <span className="text-base font-bold text-[#F53900]">$84.95<span className="text-xs font-normal text-[#999]">/mo</span></span>
+                        {/* Unlimited 5G — fixed plan label */}
+                        <div className="flex justify-between items-center px-1">
+                          <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA]">Plan</p>
+                          <p className="text-sm font-semibold text-[#080808]">Unlimited 5G <span className="text-[#999] font-normal">— $84.95/mo</span></p>
                         </div>
 
                         {/* Device selector - vertical plan-style cards */}
@@ -4103,7 +4100,7 @@ export default function Home() {
                                   <span className={`text-sm font-semibold ${internetDevice === 'rental' ? 'text-[#F53900]' : 'text-[#080808]'}`}>Rental</span>
                                   <span className="text-[9px] font-bold text-white bg-[#17DB4E] px-1.5 py-0.5 rounded-full">MOST POPULAR</span>
                                 </div>
-                                <span className={`text-base font-bold ${internetDevice === 'rental' ? 'text-[#F53900]' : 'text-[#080808]'}`}>+$15<span className="text-xs font-normal text-[#999]">/mo</span></span>
+                                <span className={`text-base font-bold ${internetDevice === 'rental' ? 'text-[#F53900]' : 'text-[#080808]'}`}>+$10<span className="text-xs font-normal text-[#999]">/mo</span></span>
                               </button>
                               
                             </div>
@@ -4121,7 +4118,7 @@ export default function Home() {
                                   <span className={`text-sm font-semibold ${internetDevice === 'purchase' ? 'text-[#F53900]' : 'text-[#080808]'}`}>Purchase</span>
                                   <span className="text-[9px] font-bold text-white bg-[#7C5CF6] px-1.5 py-0.5 rounded-full">LONG-TERM SAVINGS</span>
                                 </div>
-                                <span className={`text-base font-bold ${internetDevice === 'purchase' ? 'text-[#F53900]' : 'text-[#080808]'}`}>+$199</span>
+                                <span className={`text-base font-bold ${internetDevice === 'purchase' ? 'text-[#F53900]' : 'text-[#080808]'}`}>+$129</span>
                               </button>
                               
                             </div>
@@ -4150,8 +4147,8 @@ export default function Home() {
                                 'phone-only': 16.95,
               'unlimited-5g': 84.95
                               };
-                              const packagePrice = packagePrices[internetPackage] || 16.95;
-                              const deviceCost = internetDevice === 'rental' ? 15 : 199;
+                              const packagePrice = packagePrices[internetPackage] || 84.95;
+                              const deviceCost = internetDevice === 'rental' ? 10 : 129;
                               internetPrice = packagePrice + deviceCost;
                             }
                             
