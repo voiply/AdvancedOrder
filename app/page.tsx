@@ -1296,10 +1296,12 @@ export default function Home() {
     return totalPhones * 5 * months;
   };
 
-  // Add phone to cart
+  // Add phone to cart — auto-increases user count if phones exceed current users
   const addPhoneToCart = (phoneId: string) => {
-    // Total managed phones (cart + BYO) can't exceed number of users
-    if (getTotalManagedPhones() >= getUserCount()) return;
+    const newTotal = getTotalManagedPhones() + 1;
+    if (newTotal > getUserCount()) {
+      setNumUsers(String(newTotal));
+    }
     setSelectedPhones(prev => ({
       ...prev,
       [phoneId]: (prev[phoneId] || 0) + 1
@@ -3519,7 +3521,7 @@ export default function Home() {
                   Select Your Desk Phones
                 </h1>
                 <p className="text-base md:text-lg text-[#585858] leading-tight">
-                  Choose the phones your team needs. You have <span className="font-semibold text-[#080808]">{getUserCount()} user{getUserCount() !== 1 ? 's' : ''}</span> — you can select up to {getUserCount()} {getUserCount() === 1 ? 'phone' : 'phones'} total.
+                  Choose the phones your team needs. You can add up to <span className="font-semibold text-[#080808]">{getUserCount()} {getUserCount() === 1 ? 'phone' : 'phones'}</span>.
                 </p>
               </div>
 
@@ -3544,9 +3546,12 @@ export default function Home() {
                       <button
                         type="button"
                         onClick={() => setSelectedPhones({})}
-                        className="text-xs text-[#F53900] hover:underline font-medium"
+                        title="Clear all phones"
+                        className="w-8 h-8 flex items-center justify-center rounded-full bg-[#FFF0ED] hover:bg-[#FFE0D9] transition-colors"
                       >
-                        Clear all
+                        <svg className="w-4 h-4 text-[#F53900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                       </button>
                     </div>
                     {/* Cart items */}
@@ -3567,8 +3572,7 @@ export default function Home() {
                               </button>
                               <span className="text-sm font-semibold w-6 text-center">{qty}</span>
                               <button type="button" onClick={() => addPhoneToCart(phoneId)}
-                                disabled={getTotalManagedPhones() >= getUserCount()}
-                                className={`w-6 h-6 rounded-full border flex items-center justify-center ${getTotalManagedPhones() >= getUserCount() ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#F5F5F5]'}`}>
+                                className="w-6 h-6 rounded-full border border-[#D9D9D9] flex items-center justify-center text-[#585858] hover:bg-[#F5F5F5]">
                                 <span className="text-xs font-bold">+</span>
                               </button>
                               <span className="text-xs font-semibold text-[#080808] w-16 text-right">
@@ -3640,10 +3644,9 @@ export default function Home() {
                             <button
                               type="button"
                               onClick={() => addPhoneToCart(phone.id)}
-                              disabled={getTotalManagedPhones() >= getUserCount()}
-                              className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-colors ${getTotalManagedPhones() >= getUserCount() ? 'bg-[#D9D9D9] text-white cursor-not-allowed' : 'bg-[#F53900] text-white hover:bg-[#d63300]'}`}
+                              className="w-full py-2.5 rounded-lg text-sm font-semibold transition-colors bg-[#F53900] text-white hover:bg-[#d63300]"
                             >
-                              {getTotalManagedPhones() >= getUserCount() ? `Limit: ${getUserCount()} user${getUserCount() > 1 ? 's' : ''}` : 'Add to Cart'}
+                              Add to Cart
                             </button>
                           ) : (
                             <div className="flex items-center justify-between bg-[#F5F5F5] rounded-lg py-1.5 px-3">
@@ -3653,8 +3656,7 @@ export default function Home() {
                               </button>
                               <span className="text-base font-bold text-[#080808]">{qtyInCart}</span>
                               <button type="button" onClick={() => addPhoneToCart(phone.id)}
-                                disabled={getTotalManagedPhones() >= getUserCount()}
-                                className={`w-8 h-8 rounded-full bg-white border flex items-center justify-center transition-colors ${getTotalManagedPhones() >= getUserCount() ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] hover:bg-[#FFF5F2] text-[#585858]'}`}>
+                                className="w-8 h-8 rounded-full bg-white border border-[#D9D9D9] flex items-center justify-center transition-colors hover:bg-[#FFF5F2] text-[#585858]">
                                 <span className="text-sm font-bold">+</span>
                               </button>
                             </div>
@@ -3715,11 +3717,11 @@ export default function Home() {
                           <button
                             type="button"
                             onClick={() => {
-                              if (getTotalManagedPhones() >= getUserCount()) return;
+                              const newTotal = getTotalManagedPhones() + 1;
+                              if (newTotal > getUserCount()) setNumUsers(String(newTotal));
                               setOwnDevice(ownDevice + 1);
                             }}
-                            disabled={getTotalManagedPhones() >= getUserCount()}
-                            className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all active:scale-95 ${getTotalManagedPhones() >= getUserCount() ? 'border-[#D9D9D9] text-[#CCC] cursor-not-allowed' : 'border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2]'}`}
+                            className="w-9 h-9 rounded-full border-2 border-[#F53900] text-[#F53900] flex items-center justify-center transition-all active:scale-95 hover:bg-[#FFF5F2]"
                           >
                             <span className="text-lg font-bold leading-none">+</span>
                           </button>
@@ -3860,8 +3862,20 @@ export default function Home() {
                           {/* Line 1: Service */}
                           <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
                             <div>
-                              <p className="text-sm font-medium text-[#080808]">Business Internet Service</p>
-                              <p className="text-xs text-[#999]">Unlimited 5G — no throttling</p>
+                              <div className="flex items-center justify-between">
+                                <p className="text-sm font-medium text-[#080808]">Business Internet Service</p>
+                                <button
+                                  type="button"
+                                  onClick={() => { setAddInternetPackage(false); setHasInternet(true); }}
+                                  className="w-6 h-6 flex items-center justify-center rounded-full bg-[#F0F0F0] hover:bg-[#FFEDED] hover:text-[#F53900] transition-colors flex-shrink-0 ml-2"
+                                  title="Remove internet"
+                                >
+                                  <svg className="w-3.5 h-3.5 text-[#999] hover:text-[#F53900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                </button>
+                              </div>
+                              <p className="text-xs text-[#999]">Unlimited data, uncapped speeds, and no throttling</p>
                             </div>
                             <div className="text-right">
                               <span className="text-sm font-bold text-[#080808]">$84.95<span className="text-xs font-normal text-[#999]">/mo</span></span>
@@ -3869,15 +3883,8 @@ export default function Home() {
                           </div>
                           {/* Line 2: Equipment selector */}
                           <div className="py-2.5 border-b border-[#F5F5F5]">
-                            <div className="flex justify-between items-center mb-2">
-                              <p className="text-sm font-medium text-[#080808]">Equipment</p>
-                              <button
-                                type="button"
-                                onClick={() => { setAddInternetPackage(false); setHasInternet(true); }}
-                                className="text-xs text-[#999] hover:text-[#F53900] transition-colors"
-                              >
-                                Remove
-                              </button>
+                            <div className="flex items-center mb-2">
+                              <p className="text-sm font-medium text-[#080808]">Voiply 5G Gateway</p>
                             </div>
                             <div className="flex gap-2">
                               <button
