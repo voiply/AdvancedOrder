@@ -114,6 +114,8 @@ export async function GET(request: NextRequest) {
       // Plan & Bundle Selection
       selectedPlan: session.selected_plan,
       selectedBundle: session.selected_bundle,
+      selectedPhones: session.selected_phones ? (() => { try { return JSON.parse(session.selected_phones); } catch { return {}; } })() : {},
+      numUsers: session.num_users || 1,
       ownDevice: session.own_device === 1,
       
       // Protection Plan

@@ -3824,11 +3824,23 @@ export default function Home() {
                         if (!phone) return null;
                         return (
                           <div key={phoneId} className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
-                            <div>
-                              <p className="text-sm font-medium text-[#080808]">
-                                {phone.name}{qty > 1 ? ` ×${qty}` : ''}
-                              </p>
-                              <p className="text-xs text-[#999]">Hardware</p>
+                            <div className="flex items-center gap-2">
+                              <div>
+                                <p className="text-sm font-medium text-[#080808]">
+                                  {phone.name}{qty > 1 ? ` ×${qty}` : ''}
+                                </p>
+                                <p className="text-xs text-[#999]">Hardware</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setCurrentStep(4)}
+                                title="Edit hardware selection"
+                                className="w-4 h-4 flex items-center justify-center rounded-full bg-[#E8E8E8] hover:bg-[#D9D9D9] transition-colors flex-shrink-0"
+                              >
+                                <svg className="w-2.5 h-2.5 text-[#666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                              </button>
                             </div>
                             <span className={`text-sm font-bold ${phone.isFree ? 'text-[#17DB4E]' : 'text-[#080808]'}`}>
                               {phone.isFree ? 'FREE' : `$${(phone.price * qty).toFixed(2)}`}
@@ -3840,7 +3852,19 @@ export default function Home() {
                       {/* Own Equipment */}
                       {ownDevice > 0 && (
                         <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
-                          <p className="text-sm font-medium text-[#080808]">Own Equipment{ownDevice > 1 ? ` ×${ownDevice}` : ''}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium text-[#080808]">Own Equipment{ownDevice > 1 ? ` ×${ownDevice}` : ''}</p>
+                            <button
+                              type="button"
+                              onClick={() => setCurrentStep(4)}
+                              title="Edit hardware selection"
+                              className="w-4 h-4 flex items-center justify-center rounded-full bg-[#E8E8E8] hover:bg-[#D9D9D9] transition-colors flex-shrink-0"
+                            >
+                              <svg className="w-2.5 h-2.5 text-[#666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                              </svg>
+                            </button>
+                          </div>
                           <span className="text-sm font-bold text-[#17DB4E]">No hardware cost</span>
                         </div>
                       )}
@@ -3867,10 +3891,10 @@ export default function Home() {
                                 <button
                                   type="button"
                                   onClick={() => { setAddInternetPackage(false); setHasInternet(true); }}
-                                  className="w-6 h-6 flex items-center justify-center rounded-full bg-[#F0F0F0] hover:bg-[#FFEDED] hover:text-[#F53900] transition-colors flex-shrink-0 ml-2"
+                                  className="w-4 h-4 flex items-center justify-center rounded-full bg-[#E8E8E8] hover:bg-[#FFEDED] transition-colors flex-shrink-0 ml-2"
                                   title="Remove internet"
                                 >
-                                  <svg className="w-3.5 h-3.5 text-[#999] hover:text-[#F53900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <svg className="w-2.5 h-2.5 text-[#666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                   </svg>
                                 </button>
@@ -3896,11 +3920,8 @@ export default function Home() {
                                     : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'
                                 }`}
                               >
-                                <div className="text-left">
-                                  <span className={`text-xs font-semibold ${internetDevice === 'rental' ? 'text-[#F53900]' : 'text-[#080808]'}`}>Rental</span>
-                                  <p className="text-[10px] text-[#999]">Most popular</p>
-                                </div>
-                                <span className={`text-xs font-bold ${internetDevice === 'rental' ? 'text-[#F53900]' : 'text-[#080808]'}`}>+$10<span className="text-[10px] font-normal text-[#999]">/mo</span></span>
+                                <span className={`text-sm font-medium ${internetDevice === 'rental' ? 'text-[#F53900]' : 'text-[#080808]'}`}>Rental</span>
+                                <span className={`text-sm font-bold ${internetDevice === 'rental' ? 'text-[#F53900]' : 'text-[#080808]'}`}>+$10<span className="text-xs font-normal text-[#999]">/mo</span></span>
                               </button>
                               <button
                                 type="button"
@@ -3911,11 +3932,8 @@ export default function Home() {
                                     : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'
                                 }`}
                               >
-                                <div className="text-left">
-                                  <span className={`text-xs font-semibold ${internetDevice === 'purchase' ? 'text-[#F53900]' : 'text-[#080808]'}`}>Purchase</span>
-                                  <p className="text-[10px] text-[#999]">Long-term savings</p>
-                                </div>
-                                <span className={`text-xs font-bold ${internetDevice === 'purchase' ? 'text-[#F53900]' : 'text-[#080808]'}`}>+$129</span>
+                                <span className={`text-sm font-medium ${internetDevice === 'purchase' ? 'text-[#F53900]' : 'text-[#080808]'}`}>Purchase</span>
+                                <span className={`text-sm font-bold ${internetDevice === 'purchase' ? 'text-[#F53900]' : 'text-[#080808]'}`}>+$129</span>
                               </button>
                             </div>
                           </div>
