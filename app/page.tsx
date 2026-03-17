@@ -3799,6 +3799,8 @@ export default function Home() {
                 <div className="space-y-6">
                   <div className="bg-white border border-[#D9D9D9] rounded-lg p-4 md:p-6 space-y-4 md:space-y-5">
 
+                    {/* Plan + Line Items — no gap between them */}
+                    <div>
                     {/* Premier Plan — top of card */}
                     <div className="pb-4 border-b border-[#F0F0F0]">
                       {/* Header row: icon + title + user stepper */}
@@ -4077,8 +4079,8 @@ export default function Home() {
                       </div>
 
                     </div>
+                    </div>{/* end plan + line items wrapper */}
 
-                    {/* Total */}
                     {/* Total */}
                     <div className="pt-4 border-t-2 border-[#333]">
                       <div className="flex justify-between items-center">
