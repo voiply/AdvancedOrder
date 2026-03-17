@@ -1521,7 +1521,7 @@ export default function Home() {
     hasInternet !== null;
   
   // Step 2 is business needs assessment
-  const needsSalesCall = getUserCount() >= 100 || highCallVolume === 'high-volume' || highCallVolume === 'call-center';
+  const needsSalesCall = getUserCount() >= 99 || highCallVolume === 'high-volume' || highCallVolume === 'call-center';
   const canProceedStep2 = needsSalesCall || (numUsers !== '' && callMethod !== '' && highCallVolume !== '');
   
   // Step 3 is number selection (only shown if hasPhone === false)  
@@ -3144,7 +3144,7 @@ export default function Home() {
                   Book a call with our sales team
                 </h1>
                 <p className="text-base md:text-lg text-[#585858] leading-tight">
-                  {getUserCount() >= 100
+                  {getUserCount() >= 99
                     ? 'For teams of 100+ users, our team will design a solution tailored to your needs.'
                     : `For ${highCallVolume === 'call-center' ? 'call center operations' : 'high call volumes'}, our team will design a solution tailored to your needs.`}
                 </p>
@@ -3205,11 +3205,11 @@ export default function Home() {
                           type="button"
                           onClick={() => {
                             const current = parseInt(numUsers) || 0;
-                            if (current < 100) setNumUsers(String(current + 1));
+                            if (current < 99) setNumUsers(String(current + 1));
                           }}
-                          disabled={parseInt(numUsers) >= 100}
+                          disabled={parseInt(numUsers) >= 99}
                           className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all ${
-                            parseInt(numUsers) >= 100
+                            parseInt(numUsers) >= 99
                               ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed'
                               : 'border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2] active:scale-95'
                           }`}
@@ -3306,7 +3306,7 @@ export default function Home() {
                   <div className="bg-[#FFF5F2] border border-[#F53900]/20 rounded-xl p-4 text-center">
                     <p className="text-sm font-semibold text-[#080808] mb-1">Customized solution needed</p>
                     <p className="text-xs text-[#585858]">
-                      {getUserCount() >= 100
+                      {getUserCount() >= 99
                         ? 'For teams of 100+ users, our team will design a solution tailored to your needs. Book a quick call to get started.'
                         : `For ${highCallVolume === 'call-center' ? 'call center operations' : 'high call volumes'}, our team will design a solution tailored to your needs. Book a quick call to get started.`}
                     </p>
@@ -3830,9 +3830,9 @@ export default function Home() {
                           </div>
                           <button
                             type="button"
-                            onClick={() => { const c = getUserCount(); if (c < 100) setNumUsers(String(c + 1)); }}
-                            disabled={getUserCount() >= 100}
-                            className={`w-8 h-8 flex items-center justify-center transition-colors text-base font-bold ${getUserCount() >= 100 ? 'text-[#CCC] cursor-not-allowed' : 'text-[#585858] hover:bg-[#E8E8E8] active:bg-[#D9D9D9]'}`}
+                            onClick={() => { const c = getUserCount(); if (c < 99) setNumUsers(String(c + 1)); }}
+                            disabled={getUserCount() >= 99}
+                            className={`w-8 h-8 flex items-center justify-center transition-colors text-base font-bold ${getUserCount() >= 99 ? 'text-[#CCC] cursor-not-allowed' : 'text-[#585858] hover:bg-[#E8E8E8] active:bg-[#D9D9D9]'}`}
                           >+</button>
                         </div>
                       </div>
@@ -4112,7 +4112,7 @@ export default function Home() {
                             const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePriceTax + protectionPrice + shippingCost + gatewayPurchasePrice;
                             const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
                             const total = planPrice + devicePrice + managedPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice + taxes + internetPrice;
-                            return total.toFixed(2);
+                            return parseFloat(total.toFixed(2)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                           })()}{country === 'CA' ? ' CAD' : ''}
                         </p>
                       </div>
