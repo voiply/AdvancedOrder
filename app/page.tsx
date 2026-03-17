@@ -3821,7 +3821,8 @@ export default function Home() {
                           >
                             <span className="text-sm font-bold">−</span>
                           </button>
-                          <span className="text-sm font-bold text-[#080808] w-8 text-center">{getUserCount()} user{getUserCount() !== 1 ? 's' : ''}</span>
+                          <span className="text-sm font-bold text-[#080808] w-6 text-center">{getUserCount()}</span>
+                          <span className="text-xs text-[#999]">user{getUserCount() !== 1 ? 's' : ''}</span>
                           <button
                             type="button"
                             onClick={() => { const c = getUserCount(); if (c < 100) setNumUsers(String(c + 1)); }}
@@ -3887,9 +3888,8 @@ export default function Home() {
                         </button>
                       </div>
                     </div>
-
                     {/* Line Items - uniform style */}
-                    <div className="space-y-0">
+                    <div className="space-y-0 pt-1">
 
                       {/* Activation / Transfer */}
                       <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
@@ -4113,7 +4113,7 @@ export default function Home() {
                             const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
                             const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePriceTax + protectionPrice + shippingCost + gatewayPurchasePrice;
                             const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
-                            const total = planPrice + devicePrice + managedPhonePrice + protectionPrice + shippingCost + taxes + internetPrice;
+                            const total = planPrice + devicePrice + managedPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice + taxes + internetPrice;
                             return total.toFixed(2);
                           })()}{country === 'CA' ? ' CAD' : ''}
                         </p>
