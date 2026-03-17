@@ -3801,11 +3801,10 @@ export default function Home() {
 
                     {/* Premier Plan — top of card */}
                     <div className="pb-4 border-b border-[#F0F0F0]">
-                      {/* Header row: icon + title + user controls */}
+                      {/* Header row: icon + title + user stepper */}
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-full bg-[#FFFBF5] border border-[#F59E0B]/20 flex items-center justify-center flex-shrink-0">
-                            {/* PBX / phone system icon */}
                             <svg className="w-5 h-5 text-[#F59E0B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                             </svg>
@@ -3815,26 +3814,24 @@ export default function Home() {
                             <p className="text-xs text-[#999] mt-0.5">$16.95/mo per user</p>
                           </div>
                         </div>
-                        {/* User -/+ controls */}
-                        <div className="flex items-center gap-1.5">
+                        {/* User stepper — pill style matching plan cards */}
+                        <div className="flex items-center gap-0 bg-[#F5F5F5] rounded-lg overflow-hidden border border-[#E8E8E8]">
                           <button
                             type="button"
                             onClick={() => { const c = getUserCount(); if (c > 1) setNumUsers(String(c - 1)); }}
                             disabled={getUserCount() <= 1}
-                            className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${getUserCount() <= 1 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'}`}
-                          >
-                            <span className="text-sm font-bold">−</span>
-                          </button>
-                          <span className="text-sm font-bold text-[#080808] w-6 text-center">{getUserCount()}</span>
-                          <span className="text-xs text-[#999]">user{getUserCount() !== 1 ? 's' : ''}</span>
+                            className={`w-8 h-8 flex items-center justify-center transition-colors text-base font-bold ${getUserCount() <= 1 ? 'text-[#CCC] cursor-not-allowed' : 'text-[#585858] hover:bg-[#E8E8E8] active:bg-[#D9D9D9]'}`}
+                          >−</button>
+                          <div className="px-2 h-8 flex items-center justify-center border-x border-[#E8E8E8] min-w-[52px]">
+                            <span className="text-sm font-bold text-[#080808]">{getUserCount()}</span>
+                            <span className="text-xs text-[#999] ml-1">user{getUserCount() !== 1 ? 's' : ''}</span>
+                          </div>
                           <button
                             type="button"
                             onClick={() => { const c = getUserCount(); if (c < 100) setNumUsers(String(c + 1)); }}
                             disabled={getUserCount() >= 100}
-                            className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${getUserCount() >= 100 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'}`}
-                          >
-                            <span className="text-sm font-bold">+</span>
-                          </button>
+                            className={`w-8 h-8 flex items-center justify-center transition-colors text-base font-bold ${getUserCount() >= 100 ? 'text-[#CCC] cursor-not-allowed' : 'text-[#585858] hover:bg-[#E8E8E8] active:bg-[#D9D9D9]'}`}
+                          >+</button>
                         </div>
                       </div>
                       {/* Payment term cards */}
@@ -3842,7 +3839,7 @@ export default function Home() {
                         <button
                           type="button"
                           onClick={() => setSelectedPlan('3month')}
-                          className={`w-full flex justify-between items-center px-4 py-3 rounded-xl border-2 transition-all ${selectedPlan === '3month' ? 'border-[#F53900] bg-[#FFF5F2]' : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'}`}
+                          className={`w-full flex justify-between items-center px-3 py-2.5 md:px-4 md:py-3 rounded-xl border-2 transition-all ${selectedPlan === '3month' ? 'border-[#F53900] bg-[#FFF5F2]' : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'}`}
                         >
                           <div className="text-left">
                             <div className="flex items-center gap-2">
@@ -3859,7 +3856,7 @@ export default function Home() {
                         <button
                           type="button"
                           onClick={() => setSelectedPlan('annually')}
-                          className={`w-full flex justify-between items-center px-4 py-3 rounded-xl border-2 transition-all relative ${selectedPlan === 'annually' ? 'border-[#F53900] bg-[#FFF5F2]' : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'}`}
+                          className={`w-full flex justify-between items-center px-3 py-2.5 md:px-4 md:py-3 rounded-xl border-2 transition-all relative ${selectedPlan === 'annually' ? 'border-[#F53900] bg-[#FFF5F2]' : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'}`}
                         >
                           <div className="text-left">
                             <div className="flex items-center gap-2">
@@ -3876,7 +3873,7 @@ export default function Home() {
                         <button
                           type="button"
                           onClick={() => setSelectedPlan('3year')}
-                          className={`w-full flex justify-between items-center px-4 py-3 rounded-xl border-2 transition-all ${selectedPlan === '3year' ? 'border-[#F53900] bg-[#FFF5F2]' : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'}`}
+                          className={`w-full flex justify-between items-center px-3 py-2.5 md:px-4 md:py-3 rounded-xl border-2 transition-all ${selectedPlan === '3year' ? 'border-[#F53900] bg-[#FFF5F2]' : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'}`}
                         >
                           <div className="text-left">
                             <div className="flex items-center gap-2">
@@ -4011,7 +4008,7 @@ export default function Home() {
                               <button
                                 type="button"
                                 onClick={() => setInternetDevice('rental')}
-                                className={`flex-1 flex justify-between items-center px-3 py-2 rounded-lg border-2 transition-all ${
+                                className={`flex-1 flex justify-between items-center px-2.5 py-2 rounded-lg border-2 transition-all ${
                                   internetDevice === 'rental'
                                     ? 'border-[#F53900] bg-[#FFF5F2]'
                                     : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'
@@ -4023,7 +4020,7 @@ export default function Home() {
                               <button
                                 type="button"
                                 onClick={() => setInternetDevice('purchase')}
-                                className={`flex-1 flex justify-between items-center px-3 py-2 rounded-lg border-2 transition-all ${
+                                className={`flex-1 flex justify-between items-center px-2.5 py-2 rounded-lg border-2 transition-all ${
                                   internetDevice === 'purchase'
                                     ? 'border-[#F53900] bg-[#FFF5F2]'
                                     : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'
@@ -4168,7 +4165,7 @@ export default function Home() {
                     <p className="text-sm text-[#666] -mt-4">* Required fields</p>
                     
                     {/* Customer Information */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1">
                       <input
                         ref={firstNameRef}
