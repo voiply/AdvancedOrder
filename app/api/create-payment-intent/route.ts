@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const MAX_AMOUNT = 1000;
+    const MAX_AMOUNT = 50000;
     if (amount > MAX_AMOUNT) {
       return NextResponse.json(
         { error: 'Amount exceeds maximum allowed' },
@@ -121,11 +121,11 @@ export async function POST(request: NextRequest) {
     if (plan) {
       let description = '';
       if (plan === '3month') {
-        description = '3-Month Advanced';
+        description = '3-Month Premier';
       } else if (plan === 'annually') {
-        description = 'Annually Advanced';
+        description = 'Annually Premier';
       } else if (plan === '3year') {
-        description = '3-Year Advanced';
+        description = '3-Year Premier';
       }
       if (description) {
         formBody.append('description', description);

@@ -3893,7 +3893,7 @@ export default function Home() {
                       </div>
                     </div>
                     {/* Line Items - uniform style */}
-                    <div className="space-y-0 pt-1">
+                    <div className="space-y-0">
 
                       {/* Activation / Transfer */}
                       <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
