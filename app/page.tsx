@@ -3854,22 +3854,65 @@ export default function Home() {
                         </div>
                       )}
 
-                      {/* Internet Package */}
+                      {/* Internet — two line items when added */}
                       {hasInternet === false && addInternetPackage && (
-                        <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
-                          <div>
-                            <p className="text-sm font-medium text-[#080808]">Voiply Internet</p>
-                            <p className="text-xs text-[#999]">
-                              Unlimited 5G + {internetDevice === 'rental' ? 'Rental Device' : 'Device Purchase'}
-                            </p>
+                        <>
+                          {/* Line 1: Service */}
+                          <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
+                            <div>
+                              <p className="text-sm font-medium text-[#080808]">Business Internet Service</p>
+                              <p className="text-xs text-[#999]">Unlimited 5G — no throttling</p>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-sm font-bold text-[#080808]">$84.95<span className="text-xs font-normal text-[#999]">/mo</span></span>
+                            </div>
                           </div>
-                          <span className="text-sm font-bold text-[#080808]">
-                            ${(() => {
-                              const pp: { [key: string]: number } = { 'phone-only': 16.95, 'unlimited-5g': 84.95 };
-                              return (pp[internetPackage] || 84.95) + (internetDevice === 'rental' ? 10 : 129);
-                            })().toFixed(2)}{country === 'CA' ? ' CAD' : ''}
-                          </span>
-                        </div>
+                          {/* Line 2: Equipment selector */}
+                          <div className="py-2.5 border-b border-[#F5F5F5]">
+                            <div className="flex justify-between items-center mb-2">
+                              <p className="text-sm font-medium text-[#080808]">Equipment</p>
+                              <button
+                                type="button"
+                                onClick={() => { setAddInternetPackage(false); setHasInternet(true); }}
+                                className="text-xs text-[#999] hover:text-[#F53900] transition-colors"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setInternetDevice('rental')}
+                                className={`flex-1 flex justify-between items-center px-3 py-2 rounded-lg border-2 transition-all ${
+                                  internetDevice === 'rental'
+                                    ? 'border-[#F53900] bg-[#FFF5F2]'
+                                    : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'
+                                }`}
+                              >
+                                <div className="text-left">
+                                  <span className={`text-xs font-semibold ${internetDevice === 'rental' ? 'text-[#F53900]' : 'text-[#080808]'}`}>Rental</span>
+                                  <p className="text-[10px] text-[#999]">Most popular</p>
+                                </div>
+                                <span className={`text-xs font-bold ${internetDevice === 'rental' ? 'text-[#F53900]' : 'text-[#080808]'}`}>+$10<span className="text-[10px] font-normal text-[#999]">/mo</span></span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setInternetDevice('purchase')}
+                                className={`flex-1 flex justify-between items-center px-3 py-2 rounded-lg border-2 transition-all ${
+                                  internetDevice === 'purchase'
+                                    ? 'border-[#F53900] bg-[#FFF5F2]'
+                                    : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'
+                                }`}
+                              >
+                                <div className="text-left">
+                                  <span className={`text-xs font-semibold ${internetDevice === 'purchase' ? 'text-[#F53900]' : 'text-[#080808]'}`}>Purchase</span>
+                                  <p className="text-[10px] text-[#999]">Long-term savings</p>
+                                </div>
+                                <span className={`text-xs font-bold ${internetDevice === 'purchase' ? 'text-[#F53900]' : 'text-[#080808]'}`}>+$129</span>
+                              </button>
+                            </div>
+                          </div>
+                        </>
                       )}
 
                       {/* Shipping */}
@@ -4051,81 +4094,7 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* Internet Package Upsell - Only show if hasInternet === false */}
-                    {hasInternet === false && (
-                      <div className="border border-[#D9D9D9] rounded-lg p-4 md:p-6 space-y-4">
-                        {/* Header */}
-                        <div className="flex items-start gap-3">
-                          <div className="w-9 h-9 rounded-full bg-[#FFF0ED] flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <svg className="w-5 h-5 text-[#F53900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
-                            </svg>
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-sm font-semibold text-[#080808]">Business Internet Service</p>
-                            <p className="text-xs text-[#585858]">Business-grade 5G internet built for the demands of modern work. Unlimited data, uncapped speeds, and no throttling.</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => { setAddInternetPackage(false); setHasInternet(true); }}
-                            className="w-7 h-7 flex items-center justify-center rounded-full bg-[#F0F0F0] hover:bg-[#E0E0E0] transition-colors flex-shrink-0"
-                          >
-                            <svg className="w-4 h-4 text-[#666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
 
-                        {/* Unlimited 5G — fixed plan label */}
-                        <div className="flex justify-between items-center px-1">
-                          <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA]">Plan</p>
-                          <p className="text-sm font-semibold text-[#080808]">Unlimited 5G <span className="text-[#999] font-normal">— $84.95/mo</span></p>
-                        </div>
-
-                        {/* Device selector - vertical plan-style cards */}
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA] mb-2">Equipment options</p>
-                          <div className="space-y-2">
-                            <div>
-                              <button
-                                type="button"
-                                onClick={() => setInternetDevice('rental')}
-                                className={`w-full flex justify-between items-center px-4 py-3 rounded-xl border-2 transition-all ${
-                                  internetDevice === 'rental'
-                                    ? 'border-[#F53900] bg-[#FFF5F2]'
-                                    : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <span className={`text-sm font-semibold ${internetDevice === 'rental' ? 'text-[#F53900]' : 'text-[#080808]'}`}>Rental</span>
-                                  <span className="text-[9px] font-bold text-white bg-[#17DB4E] px-1.5 py-0.5 rounded-full">MOST POPULAR</span>
-                                </div>
-                                <span className={`text-base font-bold ${internetDevice === 'rental' ? 'text-[#F53900]' : 'text-[#080808]'}`}>+$10<span className="text-xs font-normal text-[#999]">/mo</span></span>
-                              </button>
-                              
-                            </div>
-                            <div>
-                              <button
-                                type="button"
-                                onClick={() => setInternetDevice('purchase')}
-                                className={`w-full flex justify-between items-center px-4 py-3 rounded-xl border-2 transition-all ${
-                                  internetDevice === 'purchase'
-                                    ? 'border-[#F53900] bg-[#FFF5F2]'
-                                    : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <span className={`text-sm font-semibold ${internetDevice === 'purchase' ? 'text-[#F53900]' : 'text-[#080808]'}`}>Purchase</span>
-                                  <span className="text-[9px] font-bold text-white bg-[#7C5CF6] px-1.5 py-0.5 rounded-full">LONG-TERM SAVINGS</span>
-                                </div>
-                                <span className={`text-base font-bold ${internetDevice === 'purchase' ? 'text-[#F53900]' : 'text-[#080808]'}`}>+$129</span>
-                              </button>
-                              
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
 
                     {/* Total */}
                     <div className="pt-4 border-t-2 border-[#333]">
