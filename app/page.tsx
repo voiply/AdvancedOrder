@@ -4046,7 +4046,7 @@ export default function Home() {
                       )}
 
                       {/* Taxes & Fees */}
-                      <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
+                      <div className="flex justify-between items-center py-2.5">
                         <div className="flex items-center gap-1.5">
                           <p className="text-sm font-medium text-[#080808]">Taxes & Fees</p>
                           <button
@@ -4080,10 +4080,7 @@ export default function Home() {
 
                     </div>
 
-
-
-
-
+                    {/* Total */}
                     {/* Total */}
                     <div className="pt-4 border-t-2 border-[#333]">
                       <div className="flex justify-between items-center">
