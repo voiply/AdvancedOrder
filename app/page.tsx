@@ -3895,10 +3895,8 @@ export default function Home() {
                       {/* Activation / Transfer */}
                       <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
                         <div>
-                          <p className="text-sm font-medium text-[#080808]">
-                            {hasPhone ? 'Transfer' : 'Activate'}&nbsp;
-                            <span className="text-[#F53900]">{formatPhoneNumber((hasPhone ? phoneNumber : selectedNewNumber).replace('+1', ''))}</span>
-                          </p>
+                          <p className="text-sm font-medium text-[#080808]">{hasPhone ? 'Transfer Number' : 'Activate Number'}</p>
+                          <p className="text-xs text-[#999]">{formatPhoneNumber((hasPhone ? phoneNumber : selectedNewNumber).replace('+1', ''))}</p>
                         </div>
                         <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
                       </div>
