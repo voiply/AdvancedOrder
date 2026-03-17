@@ -1535,35 +1535,39 @@ export default function Home() {
   
   // Calculate delivery date (5 business days from today, skipping weekends)
   const getDeliveryDate = () => {
-    const today = new Date();
-    let businessDaysAdded = 0;
-    let currentDate = new Date(today);
-    
-    while (businessDaysAdded < 5) {
-      currentDate.setDate(currentDate.getDate() + 1);
-      const dayOfWeek = currentDate.getDay();
-      // Skip Saturday (6) and Sunday (0)
-      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-        businessDaysAdded++;
+    const addBusinessDays = (date: Date, days: number) => {
+      const result = new Date(date);
+      let added = 0;
+      while (added < days) {
+        result.setDate(result.getDate() + 1);
+        const dow = result.getDay();
+        if (dow !== 0 && dow !== 6) added++;
       }
-    }
-    
-    // Format date as "Monday, February 24th"
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    
-    const dayName = days[currentDate.getDay()];
-    const monthName = months[currentDate.getMonth()];
-    const date = currentDate.getDate();
-    
-    // Add ordinal suffix (st, nd, rd, th)
-    const getOrdinal = (n: number) => {
-      const s = ["th", "st", "nd", "rd"];
-      const v = n % 100;
-      return n + (s[(v - 20) % 10] || s[v] || s[0]);
+      return result;
     };
-    
-    return `${dayName}, ${monthName} ${getOrdinal(date)}`;
+
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    const today = new Date();
+    const early = addBusinessDays(today, 3);
+    const late = addBusinessDays(today, 5);
+
+    const earlyDay = days[early.getDay()].slice(0, 3);
+    const lateDay = days[late.getDay()].slice(0, 3);
+    const lateMonth = months[late.getMonth()];
+    const lateDate = late.getDate();
+
+    // If same day: "Arrives Thu, Mar 20"
+    // If different days same week: "Arrives Mon–Thu, Mar 17–20"
+    if (early.toDateString() === late.toDateString()) {
+      return `${lateDay}, ${lateMonth} ${lateDate}`;
+    }
+    if (early.getMonth() === late.getMonth()) {
+      return `${earlyDay}–${lateDay}, ${lateMonth} ${early.getDate()}–${lateDate}`;
+    }
+    const earlyMonth = months[early.getMonth()];
+    return `${earlyDay}, ${earlyMonth} ${early.getDate()} – ${lateDay}, ${lateMonth} ${lateDate}`;
   };
   
   // Validate step 1 and scroll to incomplete section
@@ -3906,7 +3910,7 @@ export default function Home() {
                       <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
                         <div>
                           <p className="text-sm font-medium text-[#080808]">Shipping &amp; Handling</p>
-                          <p className="text-xs text-[#999]">Est. delivery {getDeliveryDate()}</p>
+                          <p className="text-xs text-[#999]">Arrives {getDeliveryDate()}</p>
                         </div>
                         <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
                       </div>
