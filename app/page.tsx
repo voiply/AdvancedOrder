@@ -3795,16 +3795,96 @@ export default function Home() {
                 <div className="space-y-6">
                   <div className="bg-white border border-[#D9D9D9] rounded-lg p-4 md:p-6 space-y-4 md:space-y-5">
 
-                    {/* Expected Delivery - top of card, replaces ORDER SUMMARY heading */}
-                    <div className="flex items-center gap-3 pb-4 border-b border-[#F0F0F0]">
-                      <div className="w-9 h-9 rounded-full bg-[#FFF0ED] flex items-center justify-center flex-shrink-0">
-                        <svg className="w-5 h-5 text-[#F53900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-                        </svg>
+                    {/* Premier Plan — top of card */}
+                    <div className="pb-4 border-b border-[#F0F0F0]">
+                      {/* Header row: icon + title + user controls */}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-[#FFFBF5] border border-[#F59E0B]/20 flex items-center justify-center flex-shrink-0">
+                            {/* PBX / phone system icon */}
+                            <svg className="w-5 h-5 text-[#F59E0B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-[#080808]">Premier Plan</p>
+                            <p className="text-xs text-[#999] mt-0.5">$16.95/mo per user</p>
+                          </div>
+                        </div>
+                        {/* User -/+ controls */}
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => { const c = getUserCount(); if (c > 1) setNumUsers(String(c - 1)); }}
+                            disabled={getUserCount() <= 1}
+                            className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${getUserCount() <= 1 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'}`}
+                          >
+                            <span className="text-sm font-bold">−</span>
+                          </button>
+                          <span className="text-sm font-bold text-[#080808] w-8 text-center">{getUserCount()} user{getUserCount() !== 1 ? 's' : ''}</span>
+                          <button
+                            type="button"
+                            onClick={() => { const c = getUserCount(); if (c < 100) setNumUsers(String(c + 1)); }}
+                            disabled={getUserCount() >= 100}
+                            className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${getUserCount() >= 100 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'}`}
+                          >
+                            <span className="text-sm font-bold">+</span>
+                          </button>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-widest text-[#AAAAAA]">Expected Delivery</p>
-                        <p className="text-sm font-semibold text-[#080808]">{getDeliveryDate()}</p>
+                      {/* Payment term cards */}
+                      <div className="space-y-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPlan('3month')}
+                          className={`w-full flex justify-between items-center px-4 py-3 rounded-xl border-2 transition-all ${selectedPlan === '3month' ? 'border-[#F53900] bg-[#FFF5F2]' : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'}`}
+                        >
+                          <div className="text-left">
+                            <div className="flex items-center gap-2">
+                              <span className={`text-sm font-semibold ${selectedPlan === '3month' ? 'text-[#F53900]' : 'text-[#080808]'}`}>3-Month</span>
+                              {couponApplied && <span className="text-[9px] font-bold text-white bg-[#17DB4E] px-1.5 py-0.5 rounded-full">1 MONTH FREE</span>}
+                            </div>
+                            <p className="text-xs text-[#999] mt-0.5">{couponApplied ? '1 month free applied' : '3 months'}</p>
+                          </div>
+                          <div className="text-right">
+                            {couponApplied && <p className="text-xs text-[#CCC] line-through">${(35.85 * getUserCount()).toFixed(2)}</p>}
+                            <span className={`text-base font-bold ${selectedPlan === '3month' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${(couponApplied ? 23.90 * getUserCount() : 35.85 * getUserCount()).toFixed(2)}</span>
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPlan('annually')}
+                          className={`w-full flex justify-between items-center px-4 py-3 rounded-xl border-2 transition-all relative ${selectedPlan === 'annually' ? 'border-[#F53900] bg-[#FFF5F2]' : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'}`}
+                        >
+                          <div className="text-left">
+                            <div className="flex items-center gap-2">
+                              <span className={`text-sm font-semibold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>1-Year</span>
+                              <span className="text-[9px] font-bold text-white bg-[#17DB4E] px-1.5 py-0.5 rounded-full">MOST POPULAR</span>
+                            </div>
+                            <p className="text-xs text-[#999] mt-0.5">12 months for the price of 10</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-[#CCC] line-through">${(143.40 * getUserCount()).toFixed(2)}</p>
+                            <span className={`text-base font-bold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${(119.50 * getUserCount()).toFixed(2)}</span>
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPlan('3year')}
+                          className={`w-full flex justify-between items-center px-4 py-3 rounded-xl border-2 transition-all ${selectedPlan === '3year' ? 'border-[#F53900] bg-[#FFF5F2]' : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'}`}
+                        >
+                          <div className="text-left">
+                            <div className="flex items-center gap-2">
+                              <span className={`text-sm font-semibold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>3-Year</span>
+                              <span className="text-[9px] font-bold text-white bg-[#7C5CF6] px-1.5 py-0.5 rounded-full">LOCK IN YOUR RATE</span>
+                            </div>
+                            <p className="text-xs text-[#999] mt-0.5">36 months for the price of 30</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-[#CCC] line-through">${(430.20 * getUserCount()).toFixed(2)}</p>
+                            <span className={`text-base font-bold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${(358.50 * getUserCount()).toFixed(2)}</span>
+                          </div>
+                        </button>
                       </div>
                     </div>
 
@@ -3990,128 +4070,7 @@ export default function Home() {
 
                     </div>
 
-                    {/* Premier Plan line item + payment terms */}
-                    <div>
-                      {/* Line item: Premier Plan for X users with -/+ */}
-                      <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5] mb-3">
-                        <div>
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-[#F59E0B] flex-shrink-0"></div>
-                            <p className="text-sm font-medium text-[#080808]">Premier Plan for {getUserCount()} user{getUserCount() !== 1 ? 's' : ''}</p>
-                          </div>
-                          <p className="text-xs text-[#999] ml-3.5 mt-0.5">$16.95/mo per user</p>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const current = getUserCount();
-                              if (current > 1) setNumUsers(String(current - 1));
-                            }}
-                            disabled={getUserCount() <= 1}
-                            className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
-                              getUserCount() <= 1 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'
-                            }`}
-                          >
-                            <span className="text-xs font-bold">−</span>
-                          </button>
-                          <span className="text-sm font-bold text-[#080808] w-6 text-center">{getUserCount()}</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const current = getUserCount();
-                              if (current < 100) setNumUsers(String(current + 1));
-                            }}
-                            disabled={getUserCount() >= 100}
-                            className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
-                              getUserCount() >= 100 ? 'border-[#E8E8E8] text-[#CCC] cursor-not-allowed' : 'border-[#D9D9D9] text-[#585858] hover:bg-[#FFFBF5] hover:border-[#F59E0B]'
-                            }`}
-                          >
-                            <span className="text-xs font-bold">+</span>
-                          </button>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedPlan('3month')}
-                          className={`w-full flex justify-between items-center px-4 py-3 rounded-xl border-2 transition-all ${
-                            selectedPlan === '3month'
-                              ? 'border-[#F53900] bg-[#FFF5F2]'
-                              : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'
-                          }`}
-                        >
-                          <div className="text-left">
-                            <div className="flex items-center gap-2">
-                              <span className={`text-sm font-semibold ${selectedPlan === '3month' ? 'text-[#F53900]' : 'text-[#080808]'}`}>3-Month</span>
-                              {couponApplied && (
-                                <span className="text-[9px] font-bold text-white bg-[#17DB4E] px-1.5 py-0.5 rounded-full">1 MONTH FREE</span>
-                              )}
-                            </div>
-                            <p className="text-xs text-[#999] mt-0.5">{couponApplied ? '1 month free applied' : '3 months'}</p>
-                          </div>
-                          <div className="text-right">
-                            {couponApplied && (
-                              <p className="text-xs text-[#CCC] line-through">${(35.85 * getUserCount()).toFixed(2)}</p>
-                            )}
-                            <span className={`text-base font-bold ${selectedPlan === '3month' ? 'text-[#F53900]' : 'text-[#080808]'}`}>
-                              ${(couponApplied ? 23.90 * getUserCount() : 35.85 * getUserCount()).toFixed(2)}
-                            </span>
-                          </div>
-                        </button>
 
-                        {/* 1-Year */}
-                        <button
-                          type="button"
-                          onClick={() => setSelectedPlan('annually')}
-                          className={`w-full flex justify-between items-center px-4 py-3 rounded-xl border-2 transition-all relative ${
-                            selectedPlan === 'annually'
-                              ? 'border-[#F53900] bg-[#FFF5F2]'
-                              : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'
-                          }`}
-                        >
-                          <div className="text-left">
-                            <div className="flex items-center gap-2">
-                              <span className={`text-sm font-semibold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>1-Year</span>
-                              <span className="text-[9px] font-bold text-white bg-[#17DB4E] px-1.5 py-0.5 rounded-full">MOST POPULAR</span>
-                            </div>
-                            <p className="text-xs text-[#999] mt-0.5">12 months for the price of 10</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-xs text-[#CCC] line-through">${(143.40 * getUserCount()).toFixed(2)}</p>
-                            <span className={`text-base font-bold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>
-                              ${(119.50 * getUserCount()).toFixed(2)}
-                            </span>
-                          </div>
-                        </button>
-
-                        {/* 3-Year */}
-                        <button
-                          type="button"
-                          onClick={() => setSelectedPlan('3year')}
-                          className={`w-full flex justify-between items-center px-4 py-3 rounded-xl border-2 transition-all ${
-                            selectedPlan === '3year'
-                              ? 'border-[#F53900] bg-[#FFF5F2]'
-                              : 'border-[#E8E8E8] bg-white hover:border-[#F53900]'
-                          }`}
-                        >
-                          <div className="text-left">
-                            <div className="flex items-center gap-2">
-                              <span className={`text-sm font-semibold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>3-Year</span>
-                              <span className="text-[9px] font-bold text-white bg-[#7C5CF6] px-1.5 py-0.5 rounded-full">LOCK IN YOUR RATE</span>
-                            </div>
-                            <p className="text-xs text-[#999] mt-0.5">36 months for the price of 30</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-xs text-[#CCC] line-through">${(430.20 * getUserCount()).toFixed(2)}</p>
-                            <span className={`text-base font-bold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>
-                              ${(358.50 * getUserCount()).toFixed(2)}
-                            </span>
-                          </div>
-                        </button>
-
-                      </div>
-                    </div>
 
 
 
