@@ -2575,7 +2575,7 @@ export default function Home() {
     const planToCalculate = planOverride || selectedPlan;
     
     // Generate cache key from current inputs including date
-    const hardwareAmount = getPhoneHardwarePrice();
+    const hardwareAmount = getPhoneHardwarePrice() + ((hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0);
     const protectionAmount = 0;
     const shippingAmount = getShippingCost();
     const actualPlanPriceForTax = getPlanPriceForTax(planToCalculate);
@@ -2585,7 +2585,7 @@ export default function Home() {
     const dateKey = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
     
     const currentCacheKey = JSON.stringify({
-      date: dateKey, // Invalidate cache on new day
+      date: dateKey,
       zip: addressComponents.zipCode,
       plan: planToCalculate,
       hardware: hardwareAmount,
@@ -2594,6 +2594,7 @@ export default function Home() {
       planPrice: actualPlanPriceForTax,
       numUsers: getUserCount(),
       managedPhones: getTotalManagedPhones(),
+      internetDevice: (hasInternet === false && addInternetPackage) ? internetDevice : null,
       country
     });
     
