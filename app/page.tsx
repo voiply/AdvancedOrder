@@ -2733,7 +2733,7 @@ export default function Home() {
       // Fetch for currently selected plan (will use cache if available)
       fetchTaxBreakdown(false);
     }
-  }, [selectedPlan, selectedPhones, ownDevice, numUsers]);
+  }, [selectedPlan, selectedPhones, ownDevice, numUsers, internetDevice, addInternetPackage]);
   
   const progressPercentage = (() => {
     // Calculate total steps based on flow
