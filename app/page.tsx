@@ -1547,27 +1547,11 @@ export default function Home() {
     };
 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-    const today = new Date();
-    const early = addBusinessDays(today, 3);
-    const late = addBusinessDays(today, 5);
+    const late = addBusinessDays(new Date(), 5);
 
-    const earlyDay = days[early.getDay()].slice(0, 3);
-    const lateDay = days[late.getDay()].slice(0, 3);
-    const lateMonth = months[late.getMonth()];
-    const lateDate = late.getDate();
-
-    // If same day: "Arrives Thu, Mar 20"
-    // If different days same week: "Arrives Mon–Thu, Mar 17–20"
-    if (early.toDateString() === late.toDateString()) {
-      return `${lateDay}, ${lateMonth} ${lateDate}`;
-    }
-    if (early.getMonth() === late.getMonth()) {
-      return `${earlyDay}–${lateDay}, ${lateMonth} ${early.getDate()}–${lateDate}`;
-    }
-    const earlyMonth = months[early.getMonth()];
-    return `${earlyDay}, ${earlyMonth} ${early.getDate()} – ${lateDay}, ${lateMonth} ${lateDate}`;
+    return `${days[late.getDay()]}, ${months[late.getMonth()]} ${late.getDate()}`;
   };
   
   // Validate step 1 and scroll to incomplete section
@@ -3907,7 +3891,7 @@ export default function Home() {
                       <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
                         <div>
                           <p className="text-sm font-medium text-[#080808]">Shipping &amp; Handling</p>
-                          <p className="text-xs text-[#999]">Arrives {getDeliveryDate()}</p>
+                          <p className="text-xs text-[#999]">Arrives by {getDeliveryDate()}</p>
                         </div>
                         <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
                       </div>
