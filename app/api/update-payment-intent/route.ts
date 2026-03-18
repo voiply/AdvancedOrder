@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { paymentIntentId, amount, submission_id, plan } = body;
+    const { paymentIntentId, amount, submission_id, plan, numberType } = body;
     
     if (!paymentIntentId) {
       return NextResponse.json(
@@ -50,12 +50,13 @@ export async function POST(request: NextRequest) {
     if (plan) {
       let description = '';
       if (plan === '3month') {
-        description = '3-Month Advanced';
+        description = '3-Month Business Premier';
       } else if (plan === 'annually') {
-        description = 'Annually Advanced';
+        description = 'Annually Business Premier';
       } else if (plan === '3year') {
-        description = '3-Year Advanced';
+        description = '3-Year Business Premier';
       }
+      if (numberType === 'toll_free') description += ' tollfree';
       if (description) {
         formBody.append('description', description);
       }

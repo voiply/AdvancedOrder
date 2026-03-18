@@ -909,7 +909,8 @@ export default function Home() {
               phone: mobileNumber || '',
               address: customerAddress,
               submission_id: csiSubmissionId || '',
-              plan: selectedPlan
+              plan: selectedPlan,
+              numberType: numberType || 'local'
             })
           });
           
@@ -978,7 +979,8 @@ export default function Home() {
               paymentIntentId,
               amount: total,
               submission_id: csiSubmissionId || '',
-              plan: selectedPlan
+              plan: selectedPlan,
+              numberType: numberType || 'local'
             })
           });
           
