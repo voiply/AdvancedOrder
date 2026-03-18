@@ -174,7 +174,7 @@ const CANADIAN_PROVINCES = [
 
 export default function Home() {
   // Initialize LogRocket
-  LogRocket.init('uyjcld/premier-checkout');
+  LogRocket.init('uyjcld/advanced-checkout');
 
 
   // Step management

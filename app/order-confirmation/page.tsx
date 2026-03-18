@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import LogRocket from 'logrocket';
-LogRocket.init('uyjcld/voiply-checkout');
+LogRocket.init('uyjcld/advanced-checkout');
 
 const basePath = '/business-checkout';
 
