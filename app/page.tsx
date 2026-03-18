@@ -411,6 +411,17 @@ export default function Home() {
       // Check localStorage for stored session ID
       const storedSessionId = localStorage.getItem('voiply_session_id');
       
+      // ── Read ?bc= query param for default plan on new sessions ──────────
+      const bcParam = urlParams.get('bc');
+      const bcPlanMap: { [key: string]: 'quarter' | 'annually' | '3year' } = {
+        'quarter': '3month' as any,
+        'year': 'annually',
+        '3year': '3year'
+      };
+      // Map bc value to internal plan key
+      const bcPlanValue = bcParam === 'quarter' ? '3month' : bcParam === 'year' ? 'annually' : bcParam === '3year' ? '3year' : null;
+      // ──────────────────────────────────────────────────────────────────────
+
       // Priority: URL session > localStorage session > New session
       const sessionIdToLoad = urlSessionId || storedSessionId;
       
@@ -477,6 +488,7 @@ export default function Home() {
             // Session not found or expired, create new one
             const newSessionId = generateSessionId();
             setSessionId(newSessionId);
+            if (bcPlanValue) setSelectedPlan(bcPlanValue as '3month' | 'annually' | '3year');
             localStorage.setItem('voiply_session_id', newSessionId);
             updateURLWithSession(newSessionId);
             setSessionLoaded(true);
@@ -486,6 +498,7 @@ export default function Home() {
           // Create new session on error
           const newSessionId = generateSessionId();
           setSessionId(newSessionId);
+          if (bcPlanValue) setSelectedPlan(bcPlanValue as '3month' | 'annually' | '3year');
           localStorage.setItem('voiply_session_id', newSessionId);
           updateURLWithSession(newSessionId);
           setSessionLoaded(true);
@@ -494,6 +507,7 @@ export default function Home() {
         // No session ID in URL or localStorage, create new one
         const newSessionId = generateSessionId();
         setSessionId(newSessionId);
+        if (bcPlanValue) setSelectedPlan(bcPlanValue as '3month' | 'annually' | '3year');
         localStorage.setItem('voiply_session_id', newSessionId);
         updateURLWithSession(newSessionId);
         setSessionLoaded(true);
