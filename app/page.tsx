@@ -2632,6 +2632,7 @@ export default function Home() {
       
       // Support = total monthly plan revenue minus all users' telco + managed desk phone monthly + shipping
       // actualMonthlyRate is the TOTAL monthly for all users (not per-user), so subtract telco for all users
+      const managedDeskPhoneMonthly = totalManagedPhones * 5;
       const supportTotal = (actualMonthlyRate - (telcoPerUser * numUsers)) + managedDeskPhoneMonthly + (shippingAmount / monthsMultiplier);
       
       const response = await fetch(`${basePath}/api/calculate-taxes`, {
