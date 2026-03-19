@@ -2634,8 +2634,10 @@ export default function Home() {
   // Re-fetch taxes when plan selection or options change on step 5
   useEffect(() => {
     if (currentStep === 5 && addressComponents.zipCode) {
-      // Fetch for currently selected plan (will use cache if available)
-      fetchTaxBreakdown(false);
+      // Reset calculated tax so display immediately shows updated estimate while API call runs
+      setCalculatedTaxAmount(null);
+      // Re-fetch for all plans so plan card prices update too
+      fetchTaxesForAllPlans();
     }
   }, [selectedPlan, selectedPhones, ownDevice, numUsers, internetDevice, addInternetPackage]);
   
