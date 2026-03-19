@@ -3914,7 +3914,7 @@ export default function Home() {
                       </div>
 
                       {/* Selected Phones - Hardware */}
-                      {ownDevice === 0 && Object.entries(selectedPhones).map(([phoneId, qty]) => {
+                      {Object.entries(selectedPhones).map(([phoneId, qty]) => {
                         const phone = PHONES.find(p => p.id === phoneId);
                         if (!phone) return null;
                         return (
@@ -3948,7 +3948,7 @@ export default function Home() {
                       {ownDevice > 0 && (
                         <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
                           <div className="flex items-center gap-1.5">
-                            <p className="text-sm font-medium text-[#080808]">Own Equipment{ownDevice > 1 ? ` ×${ownDevice}` : ''}</p>
+                            <p className="text-sm font-medium text-[#080808]">Bring Your Phone{ownDevice > 1 ? ` ×${ownDevice}` : ''}</p>
                             <button
                               type="button"
                               onClick={() => setCurrentStep(4)}
@@ -3960,7 +3960,7 @@ export default function Home() {
                               </svg>
                             </button>
                           </div>
-                          <span className="text-sm font-bold text-[#17DB4E]">No hardware cost</span>
+                          <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
                         </div>
                       )}
 
