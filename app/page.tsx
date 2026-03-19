@@ -2224,6 +2224,9 @@ export default function Home() {
             return `${phone?.name || id} x${qty}`;
           }).join(', ');
         })(),
+        zip: addressComponents.zipCode,
+        fullName: `${firstName} ${lastName}`.trim(),
+        userCount: getUserCount(),
         billingAddress: preSaveBillingAddr,
         shippingAddress: preSaveShippingAddr,
       };
@@ -2455,70 +2458,7 @@ export default function Home() {
           console.error('Error building webhook data:', webhookError);
         }
 
-        // Update Stripe customer with order metadata, billing and shipping addresses
-        try {
-          const billingAddr = billingSameAsShipping ? {
-            line1: addressComponents.street,
-            line2: address2 || '',
-            city: addressComponents.city,
-            state: addressComponents.state,
-            postal_code: addressComponents.zipCode,
-            country: country === 'CA' ? 'CA' : 'US',
-          } : {
-            line1: billingComponents.street,
-            line2: billingAddress2 || '',
-            city: billingComponents.city,
-            state: billingComponents.state,
-            postal_code: billingComponents.zipCode,
-            country: billingCountry === 'CA' ? 'CA' : 'US',
-          };
-
-          const shippingAddr = {
-            name: `${firstName} ${lastName}`.trim(),
-            line1: addressComponents.street,
-            line2: address2 || '',
-            city: addressComponents.city,
-            state: addressComponents.state,
-            postal_code: addressComponents.zipCode,
-            country: country === 'CA' ? 'CA' : 'US',
-          };
-
-          // 10-digit primary number (port or new)
-          const primaryNumber = (() => {
-            const raw = hasPhone === false && selectedNewNumber
-              ? selectedNewNumber
-              : hasPhone === true && phoneNumber
-              ? phoneNumber
-              : '';
-            const digits = raw.replace(/\D/g, '');
-            return digits.length > 10 ? digits.slice(-10) : digits;
-          })();
-
-          await fetch(`${basePath}/api/update-customer-metadata`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              customerId: finalCustomerId,
-              orderId: orderDetails.orderNumber,
-              primaryNumber,
-              product: ownDevice > 0 ? '' : (() => {
-                const phoneEntries = Object.entries(selectedPhones);
-                if (phoneEntries.length === 0) return '';
-                return phoneEntries.map(([id, qty]) => {
-                  const phone = PHONES.find(p => p.id === id);
-                  return `${phone?.name || id} x${qty}`;
-                }).join(', ');
-              })(),
-              zip: addressComponents.zipCode,
-              fullName: `${firstName} ${lastName}`.trim(),
-              shippingAddress: shippingAddr,
-              billingAddress: billingAddr,
-            }),
-          });
-        } catch (metaError) {
-          console.error('Error updating Stripe customer metadata:', metaError);
-          // Non-blocking — don't prevent redirect
-        }
+        // Metadata update is handled via pendingMetadataUpdate → thank-you page (same pattern as webhook)
         
         // Clear session so returning to the URL starts fresh
         localStorage.removeItem('voiply_session_id');

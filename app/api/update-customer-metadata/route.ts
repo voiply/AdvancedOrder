@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
       product,
       zip,
       fullName,
+      userCount,
       shippingAddress,
       billingAddress,
     } = body;
@@ -36,16 +37,16 @@ export async function POST(request: NextRequest) {
 
     // Top-level name and description on the customer object
     if (fullName) updateBody.append('name', fullName);
-    updateBody.append('description', 'Voiply Residential');
+    updateBody.append('description', 'Voiply Business Premier');
 
     // Metadata
     if (orderId) updateBody.append('metadata[orderId]', orderId);
     if (primaryNumber) updateBody.append('metadata[primary number]', primaryNumber);
     if (product !== undefined) updateBody.append('metadata[product]', product);
     if (zip) updateBody.append('metadata[zip]', zip);
-    updateBody.append('metadata[description]', 'Voiply Residential');
+    updateBody.append('metadata[description]', 'Voiply Business Premier');
     if (fullName) updateBody.append('metadata[fullname]', fullName);
-    updateBody.append('metadata[phones]', '1');
+    updateBody.append('metadata[phones]', userCount ? String(userCount) : '1');
 
     // Shipping address
     if (shippingAddress) {
