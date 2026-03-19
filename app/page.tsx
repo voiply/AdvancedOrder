@@ -2136,7 +2136,7 @@ export default function Home() {
         return pd.length > 10 ? pd.slice(-10) : pd;
       };
       const pendingWebhook = {
-        plan: 'residential',
+        plan: 'premier',
         phoneNumber: getPreSavePhoneDigits(),
         customerId: finalCustomerId,
         orderId: preSaveOrderDetails.orderNumber,
@@ -2153,7 +2153,27 @@ export default function Home() {
         postal_code: addressComponents.zipCode,
         shipping_method: '',
         state: addressComponents.state,
-        bundle: getPhonesSummary(),
+        hardware: (() => {
+              const skuMap: { [id: string]: string } = {
+                'yealink-t31p':      'YEA-SIP-T31P',
+                'yealink-t73w':      'YEA-SIP-T73W',
+                'yealink-t74w':      'YEA-SIP-T74W',
+                'yealink-t85w':      'YEA-SIP-T85W',
+                'yealink-ax83h':     'YEA-AX83H',
+                'grandstream-ht801': 'GS-HT801-V2',
+              };
+              const yealinkIds = ['yealink-t31p','yealink-t73w','yealink-t74w','yealink-t85w','yealink-ax83h'];
+              const lines: string[] = [];
+              let yealinkTotal = 0;
+              Object.entries(selectedPhones).forEach(([phoneId, qty]) => {
+                if (qty > 0 && skuMap[phoneId]) {
+                  lines.push(`${skuMap[phoneId]},${qty}`);
+                  if (yealinkIds.includes(phoneId)) yealinkTotal += qty;
+                }
+              });
+              if (yealinkTotal > 0) lines.push(`GEN-PSU,${yealinkTotal}`);
+              return lines.join(':');
+            })(),
         ...(onlineFax ? { fax: true } : {}),
         ...(hasInternet === false && addInternetPackage ? {
           internetorder: true,
@@ -2426,70 +2446,10 @@ export default function Home() {
             return phoneDigits.length > 10 ? phoneDigits.slice(-10) : phoneDigits;
           };
           
-          const webhookData = {
-            plan: 'premier',
-            phoneNumber: getPhoneDigits(),
-            customerId: finalCustomerId, // Use the guaranteed customer ID
-            orderId: orderDetails.orderNumber,
-            userCount: String(getUserCount()),
-            version: typeof window !== 'undefined' && window.location.hostname.includes('voiply.com') ? 'prod' : 'dev',
-            interval: getInterval(),
-            newNumber: hasPhone === false,
-            email: email,
-            address_1: addressComponents.street,
-            address_2: address2 || '',
-            city: addressComponents.city,
-            country: country,
-            name: `${firstName} ${lastName}`,
-            postal_code: addressComponents.zipCode,
-            shipping_method: '',
-            state: addressComponents.state,
-            bundle: getPhonesSummary(),
-            line_items: (() => {
-              const skuMap: { [id: string]: string } = {
-                'yealink-t31p':      'YEA-SIP-T31P',
-                'yealink-t73w':      'YEA-SIP-T73W',
-                'yealink-t74w':      'YEA-SIP-T74W',
-                'yealink-t85w':      'YEA-SIP-T85W',
-                'yealink-ax83h':     'YEA-AX83H',
-                'grandstream-ht801': 'GS-HT801-V2',
-              };
-              const yealinkIds = ['yealink-t31p','yealink-t73w','yealink-t74w','yealink-t85w','yealink-ax83h'];
-              const lines: string[] = [];
-              let yealinkTotal = 0;
-              Object.entries(selectedPhones).forEach(([phoneId, qty]) => {
-                if (qty > 0 && skuMap[phoneId]) {
-                  lines.push(`${skuMap[phoneId]},${qty}`);
-                  if (yealinkIds.includes(phoneId)) yealinkTotal += qty;
-                }
-              });
-              if (yealinkTotal > 0) lines.push(`GEN-PSU,${yealinkTotal}`);
-              return lines.join('\n');
-            })(),
-            ...(onlineFax ? { fax: true } : {}),
-            ...(hasInternet === false && addInternetPackage ? {
-              internetorder: true,
-              internetrental: internetDevice === 'rental',
-              internetbundle: internetPackage === 'unlimited-5g' ? 'unlimited' : 'phone-only'
-            } : {})
-          };
-          
-          // Verify customer ID exists before sending webhook
-          if (!webhookData.customerId) {
-            console.error('CRITICAL: Webhook customerId is empty!');
-          }
-          
-          
-          // Fire-and-forget — do NOT await. A slow/hung webhook must never block the redirect.
-          fetch('https://voiply.app.n8n.cloud/webhook/6aceed8e-b47d-4b24-84ac-8e948357fed6', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(webhookData)
-          }).catch(e => console.error('n8n webhook error:', e));
-          
+          // Webhook is sent via pendingWebhook → thank-you page → /api/confirm-order
+          // (same pattern as HomeOrder — no direct fire here to avoid duplicates)
         } catch (webhookError) {
-          console.error('Error sending to n8n webhook:', webhookError);
-          // Don't block redirect if webhook fails
+          console.error('Error building webhook data:', webhookError);
         }
 
         // Update Stripe customer with order metadata, billing and shipping addresses
