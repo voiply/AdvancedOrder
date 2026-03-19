@@ -3873,6 +3873,26 @@ export default function Home() {
                         <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
                       </div>
 
+                      {/* Own Equipment — shown first */}
+                      {ownDevice > 0 && (
+                        <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-sm font-medium text-[#080808]">Bring Your Phone{ownDevice > 1 ? ` ×${ownDevice}` : ''}</p>
+                            <button
+                              type="button"
+                              onClick={() => setCurrentStep(4)}
+                              title="Edit hardware selection"
+                              className="w-4 h-4 flex items-center justify-center rounded-full bg-[#E8E8E8] hover:bg-[#D9D9D9] transition-colors flex-shrink-0"
+                            >
+                              <svg className="w-2.5 h-2.5 text-[#666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                              </svg>
+                            </button>
+                          </div>
+                          <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
+                        </div>
+                      )}
+
                       {/* Selected Phones - Hardware */}
                       {Object.entries(selectedPhones).map(([phoneId, qty]) => {
                         const phone = PHONES.find(p => p.id === phoneId);
@@ -3903,26 +3923,6 @@ export default function Home() {
                           </div>
                         );
                       })}
-
-                      {/* Own Equipment */}
-                      {ownDevice > 0 && (
-                        <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
-                          <div className="flex items-center gap-1.5">
-                            <p className="text-sm font-medium text-[#080808]">Bring Your Phone{ownDevice > 1 ? ` ×${ownDevice}` : ''}</p>
-                            <button
-                              type="button"
-                              onClick={() => setCurrentStep(4)}
-                              title="Edit hardware selection"
-                              className="w-4 h-4 flex items-center justify-center rounded-full bg-[#E8E8E8] hover:bg-[#D9D9D9] transition-colors flex-shrink-0"
-                            >
-                              <svg className="w-2.5 h-2.5 text-[#666]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                              </svg>
-                            </button>
-                          </div>
-                          <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
-                        </div>
-                      )}
 
                       {/* Online Fax */}
                       {onlineFax && (
