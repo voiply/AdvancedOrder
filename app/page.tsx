@@ -1248,6 +1248,9 @@ export default function Home() {
   // NOTE: Coupon ONLY applies to 3-month plan
   const getUserCount = () => parseInt(numUsers) || 1;
 
+  // Format a number as a dollar amount with commas e.g. 1234.56 → "1,234.56"
+  const fmt = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
   const getPlanPrice = () => {
     // $11.95/mo per user pricing
     const users = getUserCount();
@@ -3508,7 +3511,7 @@ export default function Home() {
                             {getTotalPhoneCount()} {getTotalPhoneCount() === 1 ? 'phone' : 'phones'} selected
                           </p>
                           <p className="text-xs text-[#585858]">
-                            Hardware: ${getPhoneHardwarePrice().toFixed(2)}
+                            Hardware: ${fmt(getPhoneHardwarePrice())}
                           </p>
                         </div>
                       </div>
@@ -3545,7 +3548,7 @@ export default function Home() {
                                 <span className="text-xs font-bold">+</span>
                               </button>
                               <span className="text-xs font-semibold text-[#080808] w-16 text-right">
-                                {phone.isFree ? 'FREE' : `$${(phone.price * qty).toFixed(2)}`}
+                                {phone.isFree ? 'FREE' : `$${fmt(phone.price * qty)}`}
                               </span>
                             </div>
                           </div>
@@ -3604,7 +3607,7 @@ export default function Home() {
                             {phone.isFree ? (
                               <span className="text-base font-bold text-[#17DB4E]">FREE</span>
                             ) : (
-                              <span className="text-base font-bold text-[#080808]">${phone.price.toFixed(2)}</span>
+                              <span className="text-base font-bold text-[#080808]">${fmt(phone.price)}</span>
                             )}
                           </div>
 
@@ -3812,8 +3815,8 @@ export default function Home() {
                             <p className="text-xs text-[#999] mt-0.5">{couponApplied ? '1 month free applied' : '3 months'}</p>
                           </div>
                           <div className="text-right">
-                            {couponApplied && <p className="text-xs text-[#CCC] line-through">${(35.85 * getUserCount()).toFixed(2)}</p>}
-                            <span className={`text-base font-bold ${selectedPlan === '3month' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${(couponApplied ? 23.90 * getUserCount() : 35.85 * getUserCount()).toFixed(2)}</span>
+                            {couponApplied && <p className="text-xs text-[#CCC] line-through">${fmt(35.85 * getUserCount())}</p>}
+                            <span className={`text-base font-bold ${selectedPlan === '3month' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(couponApplied ? 23.90 * getUserCount() : 35.85 * getUserCount())}</span>
                           </div>
                         </button>
                         <button
@@ -3829,8 +3832,8 @@ export default function Home() {
                             <p className="text-xs text-[#999] mt-0.5">12 months for the price of 10</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-[#CCC] line-through">${(143.40 * getUserCount()).toFixed(2)}</p>
-                            <span className={`text-base font-bold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${(119.50 * getUserCount()).toFixed(2)}</span>
+                            <p className="text-xs text-[#CCC] line-through">${fmt(143.40 * getUserCount())}</p>
+                            <span className={`text-base font-bold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(119.50 * getUserCount())}</span>
                           </div>
                         </button>
                         <button
@@ -3846,8 +3849,8 @@ export default function Home() {
                             <p className="text-xs text-[#999] mt-0.5">36 months for the price of 30</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-[#CCC] line-through">${(430.20 * getUserCount()).toFixed(2)}</p>
-                            <span className={`text-base font-bold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${(358.50 * getUserCount()).toFixed(2)}</span>
+                            <p className="text-xs text-[#CCC] line-through">${fmt(430.20 * getUserCount())}</p>
+                            <span className={`text-base font-bold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(358.50 * getUserCount())}</span>
                           </div>
                         </button>
                       </div>
@@ -3918,7 +3921,7 @@ export default function Home() {
                               <p className="text-xs text-[#999]">Hardware</p>
                             </div>
                             <span className={`text-sm font-bold ${phone.isFree ? 'text-[#17DB4E]' : 'text-[#080808]'}`}>
-                              {phone.isFree ? 'FREE' : `$${(phone.price * qty).toFixed(2)}`}
+                              {phone.isFree ? 'FREE' : `$${fmt(phone.price * qty)}`}
                             </span>
                           </div>
                         );
@@ -3929,7 +3932,7 @@ export default function Home() {
                         <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
                           <div>
                             <p className="text-sm font-medium text-[#080808]">Online Fax</p>
-                            <p className="text-xs text-[#999]">First month free, then ${getOnlineFaxPrice().toFixed(2)}/mo</p>
+                            <p className="text-xs text-[#999]">First month free, then ${fmt(getOnlineFaxPrice())}/mo</p>
                           </div>
                           <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
                         </div>
@@ -4002,7 +4005,7 @@ export default function Home() {
                             <p className="text-sm font-medium text-[#080808]">Shipping</p>
                             <p className="text-xs text-[#999]">Flat rate to Canada</p>
                           </div>
-                          <span className="text-sm font-bold text-[#080808]">${getShippingCost().toFixed(2)} CAD</span>
+                          <span className="text-sm font-bold text-[#080808]">${fmt(getShippingCost())} CAD</span>
                         </div>
                       )}
 
@@ -4026,7 +4029,7 @@ export default function Home() {
                         </div>
                         <span className="text-sm font-bold text-[#080808]">
                           ${(() => {
-                            if (calculatedTaxAmount !== null) return calculatedTaxAmount.toFixed(2);
+                            if (calculatedTaxAmount !== null) return fmt(calculatedTaxAmount);
                             const planPriceForTax = getPlanPriceForTax();
                             const devicePrice = getPhoneHardwarePrice();
                             const protectionPrice = 0;
@@ -4034,7 +4037,7 @@ export default function Home() {
                             const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
             const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
             const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
-                            return (taxableSubtotal * 0.47).toFixed(2);
+                            return fmt(taxableSubtotal * 0.47);
                           })()}{country === 'CA' ? ' CAD' : ''}
                         </span>
                       </div>
@@ -4103,7 +4106,7 @@ export default function Home() {
                           </div>
                           <p className="text-xs text-[#585858] mb-1">Send &amp; receive faxes from any device. Includes dedicated fax number.</p>
                           <p className="text-xs text-[#080808]">
-                            Then <strong className="text-[#F53900]">${getOnlineFaxPrice().toFixed(2)}/mo{country === 'CA' ? ' CAD' : ''}</strong>
+                            Then <strong className="text-[#F53900]">${fmt(getOnlineFaxPrice())}/mo{country === 'CA' ? ' CAD' : ''}</strong>
                             <span className="text-[#999] line-through ml-1">{country === 'CA' ? '$13.90' : '$9.99'}/mo</span>
                           </p>
                         </div>
@@ -4792,7 +4795,7 @@ export default function Home() {
                   )}
                 </div>
                 <span className="text-xl md:text-2xl font-bold text-[#F53900]">
-                  ${(taxBreakdown.estimatedTotalTax || 0).toFixed(2)}
+                  ${fmt(taxBreakdown.estimatedTotalTax || 0)}
                 </span>
               </div>
 
@@ -4812,7 +4815,7 @@ export default function Home() {
                           <div key={index} className="flex justify-between text-base">
                             <span className="text-[#585858]">{item.description}</span>
                             <span className="font-medium text-[#080808]">
-                              ${(item.tax_amount || 0).toFixed(2)}
+                              ${fmt(item.tax_amount || 0)}
                             </span>
                           </div>
                         ))}
@@ -4830,7 +4833,7 @@ export default function Home() {
                                 <div key={`hw-${index}`} className="flex justify-between text-base">
                                   <span className="text-[#585858]">{item.description}</span>
                                   <span className="font-medium text-[#080808]">
-                                    ${(item.tax_amount || 0).toFixed(2)}
+                                    ${fmt(item.tax_amount || 0)}
                                   </span>
                                 </div>
                               ))}
