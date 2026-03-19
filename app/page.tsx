@@ -3880,7 +3880,12 @@ export default function Home() {
                       {ownDevice > 0 && (
                         <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
                           <div className="flex items-center gap-1.5">
-                            <p className="text-sm font-medium text-[#080808]">Bring Your Phone{ownDevice > 1 ? ` ×${ownDevice}` : ''}</p>
+                            <div className="flex items-center gap-1.5">
+                            <p className="text-sm font-medium text-[#080808]">Bring Your Phone</p>
+                            {ownDevice > 1 && (
+                              <span className="inline-flex items-center justify-center h-4 min-w-[1.25rem] px-1 rounded-full bg-[#F0F0F0] text-[10px] font-bold text-[#585858]">×{ownDevice}</span>
+                            )}
+                          </div>
                             <button
                               type="button"
                               onClick={() => setCurrentStep(4)}
@@ -3904,9 +3909,12 @@ export default function Home() {
                           <div key={phoneId} className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
                             <div>
                               <div className="flex items-center gap-1.5">
-                                <p className="text-sm font-medium text-[#080808]">
-                                  {phone.name}{qty > 1 ? ` ×${qty}` : ''}
-                                </p>
+                                <div className="flex items-center gap-1.5">
+                                  <p className="text-sm font-medium text-[#080808]">{phone.name}</p>
+                                  {qty > 1 && (
+                                    <span className="inline-flex items-center justify-center h-4 min-w-[1.25rem] px-1 rounded-full bg-[#F0F0F0] text-[10px] font-bold text-[#585858]">×{qty}</span>
+                                  )}
+                                </div>
                                 <button
                                   type="button"
                                   onClick={() => setCurrentStep(4)}
