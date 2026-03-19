@@ -3971,19 +3971,12 @@ export default function Home() {
                           </button>
                           {taxError && <p className="text-xs text-red-500">{taxError}</p>}
                         </div>
-                        <span className="text-sm font-bold text-[#080808]">
-                          ${(() => {
-                            if (calculatedTaxAmount !== null) return fmt(calculatedTaxAmount);
-                            const planPriceForTax = getPlanPriceForTax();
-                            const devicePrice = getPhoneHardwarePrice();
-                            const protectionPrice = 0;
-                            const shippingCost = getShippingCost();
-                            const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
-            const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
-            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
-                            return fmt(taxableSubtotal * 0.47);
-                          })()}{country === 'CA' ? ' CAD' : ''}
-                        </span>
+                        {calculatedTaxAmount !== null
+                          ? <span className="text-sm font-bold text-[#080808]">${fmt(calculatedTaxAmount)}{country === 'CA' ? ' CAD' : ''}</span>
+                          : taxError
+                            ? <span className="text-sm font-bold text-[#080808]">${(() => { const p = getPlanPriceForTax(); const d = getPhoneHardwarePrice(); const m = getManagedDeskPhonePriceForTax(); const g = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0; return fmt((p + d + m + g + getShippingCost()) * 0.47); })()}{country === 'CA' ? ' CAD' : ''}</span>
+                            : <span className="inline-block w-16 h-4 bg-[#E8E8E8] rounded animate-pulse" />
+                        }
                       </div>
 
                     </div>
@@ -3993,36 +3986,44 @@ export default function Home() {
                     <div className="pt-4 border-t-2 border-[#333]">
                       <div className="flex justify-between items-center">
                         <p className="text-lg md:text-xl font-bold text-[#080808]">Total Due Today</p>
-                        <p className="text-lg md:text-xl font-bold text-[#080808]">
-                          ${(() => {
-                            const planPrice = getPlanPrice();
-                            const planPriceForTax = getPlanPriceForTax();
-                            const devicePrice = getPhoneHardwarePrice();
-                            const managedPhonePrice = getManagedDeskPhonePrice();
-                            const protectionPrice = 0;
-                            const shippingCost = getShippingCost();
-                            
-                            // Calculate internet package pricing (NOT taxed)
-                            let internetPrice = 0;
-                            if (hasInternet === false && addInternetPackage) {
-                              const packagePrices: { [key: string]: number } = {
-                                'phone-only': 16.95,
-              'unlimited-5g': 84.95
-                              };
-                              const packagePrice = packagePrices[internetPackage] || 84.95;
-                              const deviceCost = internetDevice === 'rental' ? 10 : 0; // purchase cost is in taxableSubtotal;
-                              internetPrice = packagePrice + deviceCost;
-                            }
-                            
-                            // Use API-calculated tax when available, fallback to estimate
-                            const managedDeskPhonePriceTax = getManagedDeskPhonePriceForTax();
-                            const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
-                            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePriceTax + protectionPrice + shippingCost + gatewayPurchasePrice;
-                            const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
-                            const total = planPrice + devicePrice + managedPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice + taxes + internetPrice;
-                            return parseFloat(total.toFixed(2)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                          })()}{country === 'CA' ? ' CAD' : ''}
-                        </p>
+                        {calculatedTaxAmount !== null
+                          ? <p className="text-lg md:text-xl font-bold text-[#080808]">
+                              ${(() => {
+                                const planPrice = getPlanPrice();
+                                const devicePrice = getPhoneHardwarePrice();
+                                const managedPhonePrice = getManagedDeskPhonePrice();
+                                const shippingCost = getShippingCost();
+                                const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
+                                let internetPrice = 0;
+                                if (hasInternet === false && addInternetPackage) {
+                                  internetPrice = 84.95 + (internetDevice === 'rental' ? 10 : 0);
+                                }
+                                const total = planPrice + devicePrice + managedPhonePrice + shippingCost + gatewayPurchasePrice + calculatedTaxAmount + internetPrice;
+                                return parseFloat(total.toFixed(2)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                              })()}{country === 'CA' ? ' CAD' : ''}
+                            </p>
+                          : taxError
+                            ? <p className="text-lg md:text-xl font-bold text-[#080808]">
+                                ${(() => {
+                                  const planPrice = getPlanPrice();
+                                  const devicePrice = getPhoneHardwarePrice();
+                                  const managedPhonePrice = getManagedDeskPhonePrice();
+                                  const planPriceForTax = getPlanPriceForTax();
+                                  const managedDeskPhonePriceTax = getManagedDeskPhonePriceForTax();
+                                  const shippingCost = getShippingCost();
+                                  const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
+                                  let internetPrice = 0;
+                                  if (hasInternet === false && addInternetPackage) {
+                                    internetPrice = 84.95 + (internetDevice === 'rental' ? 10 : 0);
+                                  }
+                                  const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePriceTax + shippingCost + gatewayPurchasePrice;
+                                  const taxes = taxableSubtotal * 0.47;
+                                  const total = planPrice + devicePrice + managedPhonePrice + shippingCost + gatewayPurchasePrice + taxes + internetPrice;
+                                  return parseFloat(total.toFixed(2)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                })()}{country === 'CA' ? ' CAD' : ''}
+                              </p>
+                            : <span className="inline-block w-24 h-6 bg-[#E8E8E8] rounded animate-pulse" />
+                        }
                       </div>
                     </div>
 
