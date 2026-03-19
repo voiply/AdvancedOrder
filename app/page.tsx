@@ -1254,22 +1254,22 @@ export default function Home() {
   const getPlanPrice = () => {
     // $11.95/mo per user pricing
     const users = getUserCount();
-    if (selectedPlan === 'annually') return 119.50 * users;
-    if (selectedPlan === '3year') return 358.50 * users;
+    if (selectedPlan === 'annually') return 169.50 * users;
+    if (selectedPlan === '3year') return 508.50 * users;
     if (selectedPlan === '3month') {
-      return couponApplied ? 23.90 * users : 35.85 * users;
+      return couponApplied ? 33.90 * users : 50.85 * users;
     }
-    return 35.85 * users;
+    return 50.85 * users;
   };
   
   // Get plan price for tax calculation (ALWAYS full price, even with coupon)
   const getPlanPriceForTax = (planOverride?: string) => {
     const plan = planOverride || selectedPlan;
     const users = getUserCount();
-    if (plan === 'annually') return 119.50 * users;
-    if (plan === '3year') return 358.50 * users;
-    if (plan === '3month') return 35.85 * users;
-    return 35.85 * users;
+    if (plan === 'annually') return 169.50 * users;
+    if (plan === '3year') return 508.50 * users;
+    if (plan === '3month') return 50.85 * users;
+    return 50.85 * users;
   };
 
   // Get the plan months multiplier (for calculating managed desk phone costs)
@@ -3751,8 +3751,8 @@ export default function Home() {
                             <p className="text-xs text-[#999] mt-0.5">{couponApplied ? '1 month free applied' : '3 months'}</p>
                           </div>
                           <div className="text-right">
-                            {couponApplied && <p className="text-xs text-[#CCC] line-through">${fmt(35.85 * getUserCount())}</p>}
-                            <span className={`text-base font-bold ${selectedPlan === '3month' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(couponApplied ? 23.90 * getUserCount() : 35.85 * getUserCount())}</span>
+                            {couponApplied && <p className="text-xs text-[#CCC] line-through">${fmt(50.85 * getUserCount())}</p>}
+                            <span className={`text-base font-bold ${selectedPlan === '3month' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(couponApplied ? 33.90 * getUserCount() : 50.85 * getUserCount())}</span>
                           </div>
                         </button>
                         <button
@@ -3768,8 +3768,8 @@ export default function Home() {
                             <p className="text-xs text-[#999] mt-0.5">12 months for the price of 10</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-[#CCC] line-through">${fmt(143.40 * getUserCount())}</p>
-                            <span className={`text-base font-bold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(119.50 * getUserCount())}</span>
+                            <p className="text-xs text-[#CCC] line-through">${fmt(203.40 * getUserCount())}</p>
+                            <span className={`text-base font-bold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(169.50 * getUserCount())}</span>
                           </div>
                         </button>
                         <button
@@ -3785,8 +3785,8 @@ export default function Home() {
                             <p className="text-xs text-[#999] mt-0.5">36 months for the price of 30</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-[#CCC] line-through">${fmt(430.20 * getUserCount())}</p>
-                            <span className={`text-base font-bold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(358.50 * getUserCount())}</span>
+                            <p className="text-xs text-[#CCC] line-through">${fmt(610.20 * getUserCount())}</p>
+                            <span className={`text-base font-bold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(508.50 * getUserCount())}</span>
                           </div>
                         </button>
                       </div>
