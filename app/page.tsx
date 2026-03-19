@@ -3731,13 +3731,8 @@ export default function Home() {
                   </button>
                   <button
                     type="button"
-                    disabled={!canProceedStep4}
                     onClick={handleNextStep}
-                    className={`flex-1 h-12 rounded-[5px] text-base transition-colors ${
-                      canProceedStep4
-                        ? 'bg-[#F53900] text-white hover:bg-[#d63300] cursor-pointer' 
-                        : 'bg-[#E9E9E9] text-[#A5A5A5] cursor-not-allowed'
-                    }`}
+                    className="flex-1 h-12 rounded-[5px] text-base transition-colors bg-[#F53900] text-white hover:bg-[#d63300] cursor-pointer"
                   >
                     Next
                   </button>
