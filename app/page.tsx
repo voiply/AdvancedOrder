@@ -2017,20 +2017,18 @@ export default function Home() {
 
       // STEP 4b: Force-update payment intent to the exact total shown on screen
       // This ensures the charge amount always matches what is displayed to the customer
-      // Compute finalTotal outside the try block so it's available for pre-save and success branch
-      const finalPlanPriceForTax = getPlanPriceForTax();
+      const finalPlanPrice = getPlanPrice(); // discounted price (what customer pays)
+      const finalPlanPriceForTax = getPlanPriceForTax(); // full price for tax calc
       const finalDevicePrice = getPhoneHardwarePrice();
       const finalShippingCost = getShippingCost();
+      const finalGatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
       let finalInternetPrice = 0;
       if (hasInternet === false && addInternetPackage) {
-        const pkgPrices: { [key: string]: number } = { 'phone-only': 16.95, 'unlimited-5g': 84.95 };
-        const pkgPrice = pkgPrices[internetPackage] || 16.95;
-        const devCost = internetDevice === 'rental' ? 10 : 0; // purchase cost is in taxableSubtotal
-        finalInternetPrice = pkgPrice + devCost;
+        finalInternetPrice = 84.95 + (internetDevice === 'rental' ? 10 : 0);
       }
-      const finalTaxableSubtotal = finalPlanPriceForTax + finalDevicePrice + finalShippingCost;
+      const finalTaxableSubtotal = finalPlanPriceForTax + finalDevicePrice + finalShippingCost + finalGatewayPurchasePrice;
       const finalTaxes = calculatedTaxAmount !== null ? calculatedTaxAmount : finalTaxableSubtotal * 0.47;
-      const finalTotal = finalTaxableSubtotal + finalTaxes + finalInternetPrice;
+      const finalTotal = finalPlanPrice + finalDevicePrice + finalShippingCost + finalGatewayPurchasePrice + finalTaxes + finalInternetPrice;
 
       try {
 
