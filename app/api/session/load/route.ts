@@ -115,7 +115,11 @@ export async function GET(request: NextRequest) {
       selectedPlan: session.selected_plan,
       selectedBundle: session.selected_bundle,
       selectedPhones: session.selected_phones ? (() => { try { return JSON.parse(session.selected_phones); } catch { return {}; } })() : {},
-      numUsers: session.num_users || 1,
+      numUsers: String(session.num_users || 1),
+      callMethod: session.call_method || '',
+      numLocations: session.num_locations || '',
+      highCallVolume: session.high_call_volume || '',
+      needCallRecording: session.need_call_recording || '',
       ownDevice: session.own_device === 1,
       
       // Protection Plan
