@@ -1298,23 +1298,6 @@ export default function Home() {
     }, 0);
   };
 
-  // Get managed desk phone monthly support cost ($5/mo per phone, includes own devices)
-  const getManagedDeskPhonePrice = () => {
-    const totalPhones = getTotalManagedPhones();
-    const months = getPlanMonths();
-    return totalPhones * 5 * months; // $5/mo per phone * plan months
-  };
-
-  // Get managed desk phone price for tax (always full months, includes own devices)
-  const getManagedDeskPhonePriceForTax = (planOverride?: string) => {
-    const totalPhones = getTotalManagedPhones();
-    const plan = planOverride || selectedPlan;
-    let months = 3;
-    if (plan === 'annually') months = 12;
-    if (plan === '3year') months = 36;
-    return totalPhones * 5 * months;
-  };
-
   // Add phone to cart — auto-increases user count if phones exceed current users
   const addPhoneToCart = (phoneId: string) => {
     const newTotal = getTotalManagedPhones() + 1;
@@ -2492,7 +2475,6 @@ export default function Home() {
       shipping: shippingAmount,
       planPrice: actualPlanPriceForTax,
       numUsers: getUserCount(),
-      managedPhones: getTotalManagedPhones(),
       internetDevice: (hasInternet === false && addInternetPackage) ? internetDevice : null,
       country
     });
@@ -4009,9 +3991,9 @@ export default function Home() {
                                   if (hasInternet === false && addInternetPackage) {
                                     internetPrice = 84.95 + (internetDevice === 'rental' ? 10 : 0);
                                   }
-                                  const taxableSubtotal = planPriceForTax + devicePriceTax + shippingCost + gatewayPurchasePrice;
+                                  const taxableSubtotal = planPriceForTax + devicePrice + shippingCost + gatewayPurchasePrice;
                                   const taxes = taxableSubtotal * 0.47;
-                                  const total = planPrice + devicePrice + managedPhonePrice + shippingCost + gatewayPurchasePrice + taxes + internetPrice;
+                                  const total = planPrice + devicePrice + shippingCost + gatewayPurchasePrice + taxes + internetPrice;
                                   return parseFloat(total.toFixed(2)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                                 })()}{country === 'CA' ? ' CAD' : ''}
                               </p>
