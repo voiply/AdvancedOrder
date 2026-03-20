@@ -853,7 +853,6 @@ export default function Home() {
           const planPrice = getPlanPrice();
           const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
           const devicePrice = getPhoneHardwarePrice();
-          const protectionPrice = 0;
           const shippingCost = getShippingCost();
           const currency = country === 'CA' ? 'cad' : 'usd';
           
@@ -872,10 +871,10 @@ export default function Home() {
           // Tax phone service, device, protection, and shipping (NOT internet)
           // Use planPriceForTax to charge tax on all 3 months even if 1 month is free with coupon
             const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
-            const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
-          const taxes = taxableSubtotal * 0.47;
+            const taxableSubtotal = planPriceForTax + devicePrice + shippingCost + gatewayPurchasePrice;
+          const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
           // Add internet AFTER taxes (internet is not taxed)
-          const total = taxableSubtotal + taxes + internetPrice;
+          const total = planPrice + devicePrice + shippingCost + gatewayPurchasePrice + taxes + internetPrice;
           
           // Prepare customer details for lookup/creation
           const customerAddress = billingSameAsShipping ? {
@@ -943,7 +942,6 @@ export default function Home() {
           const planPrice = getPlanPrice();
           const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
           const devicePrice = getPhoneHardwarePrice();
-          const protectionPrice = 0;
           const shippingCost = getShippingCost();
           
           // Calculate internet (NOT taxed)
@@ -961,10 +959,10 @@ export default function Home() {
           // Tax phone service, device, protection, and shipping (NOT internet)
           // Use planPriceForTax to charge tax on all 3 months even if 1 month is free with coupon
             const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
-            const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
-          const taxes = taxableSubtotal * 0.47;
+            const taxableSubtotal = planPriceForTax + devicePrice + shippingCost + gatewayPurchasePrice;
+          const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
           // Add internet AFTER taxes (internet is not taxed)
-          const total = taxableSubtotal + taxes + internetPrice;
+          const total = planPrice + devicePrice + shippingCost + gatewayPurchasePrice + taxes + internetPrice;
           
           
           // Update payment intent with new amount
@@ -1354,12 +1352,12 @@ export default function Home() {
       const planPrice = getPlanPrice();
       const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
       const devicePrice = getPhoneHardwarePrice();
-      const protectionPrice = 0;
       const shippingCost = getShippingCost();
             const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
-            const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
+            const taxableSubtotal = planPriceForTax + devicePrice + shippingCost + gatewayPurchasePrice;
+            const internetPriceGTM = (hasInternet === false && addInternetPackage) ? (84.95 + (internetDevice === 'rental' ? 10 : 0)) : 0;
       const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
-      const total = taxableSubtotal + taxes;
+      const total = planPrice + devicePrice + shippingCost + gatewayPurchasePrice + taxes + internetPriceGTM;
       
       const eventData = {
         event: eventName,
@@ -1895,7 +1893,6 @@ export default function Home() {
       const planPrice = getPlanPrice();
       const planPriceForTax = getPlanPriceForTax(); // For tax calc (full price even with coupon)
       const devicePrice = getPhoneHardwarePrice();
-      const protectionPrice = 0;
       const shippingCost = getShippingCost();
       
       let internetPrice = 0;
@@ -1910,9 +1907,9 @@ export default function Home() {
       }
       
             const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
-            const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
+            const taxableSubtotal = planPriceForTax + devicePrice + shippingCost + gatewayPurchasePrice;
       const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
-      const expectedTotal = taxableSubtotal + taxes + internetPrice;
+      const expectedTotal = planPrice + devicePrice + shippingCost + gatewayPurchasePrice + taxes + internetPrice;
       
       
       // STEP 3: ENSURE CUSTOMER EXISTS - Create/attach customer to payment intent before confirming
