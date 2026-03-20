@@ -857,23 +857,13 @@ export default function Home() {
           const currency = country === 'CA' ? 'cad' : 'usd';
           
           // Calculate internet (NOT taxed)
-          let internetPrice = 0;
-          if (hasInternet === false && addInternetPackage) {
-            const packagePrices: { [key: string]: number } = {
-              'phone-only': 16.95,
-              'unlimited-5g': 84.95
-            };
-            const packagePrice = packagePrices[internetPackage] || 84.95;
-            const deviceCost = internetDevice === 'rental' ? 10 : 0; // purchase cost is in taxableSubtotal
-            internetPrice = packagePrice + deviceCost;
-          }
-          
-          // Tax phone service, device, protection, and shipping (NOT internet)
-          // Use planPriceForTax to charge tax on all 3 months even if 1 month is free with coupon
-            const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
-            const taxableSubtotal = planPriceForTax + devicePrice + shippingCost + gatewayPurchasePrice;
+          // Internet: $84.95/mo service + $10/mo rental OR $129 purchase (taxed separately)
+          const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
+          const internetPrice = (hasInternet === false && addInternetPackage)
+            ? 84.95 + (internetDevice === 'rental' ? 10 : 0)
+            : 0;
+          const taxableSubtotal = planPriceForTax + devicePrice + shippingCost + gatewayPurchasePrice;
           const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
-          // Add internet AFTER taxes (internet is not taxed)
           const total = planPrice + devicePrice + shippingCost + gatewayPurchasePrice + taxes + internetPrice;
           
           // Prepare customer details for lookup/creation
@@ -945,23 +935,13 @@ export default function Home() {
           const shippingCost = getShippingCost();
           
           // Calculate internet (NOT taxed)
-          let internetPrice = 0;
-          if (hasInternet === false && addInternetPackage) {
-            const packagePrices: { [key: string]: number } = {
-              'phone-only': 16.95,
-              'unlimited-5g': 84.95
-            };
-            const packagePrice = packagePrices[internetPackage] || 84.95;
-            const deviceCost = internetDevice === 'rental' ? 10 : 0; // purchase cost is in taxableSubtotal
-            internetPrice = packagePrice + deviceCost;
-          }
-          
-          // Tax phone service, device, protection, and shipping (NOT internet)
-          // Use planPriceForTax to charge tax on all 3 months even if 1 month is free with coupon
-            const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
-            const taxableSubtotal = planPriceForTax + devicePrice + shippingCost + gatewayPurchasePrice;
+          // Internet: $84.95/mo service + $10/mo rental OR $129 purchase (taxed separately)
+          const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
+          const internetPrice = (hasInternet === false && addInternetPackage)
+            ? 84.95 + (internetDevice === 'rental' ? 10 : 0)
+            : 0;
+          const taxableSubtotal = planPriceForTax + devicePrice + shippingCost + gatewayPurchasePrice;
           const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
-          // Add internet AFTER taxes (internet is not taxed)
           const total = planPrice + devicePrice + shippingCost + gatewayPurchasePrice + taxes + internetPrice;
           
           
@@ -994,7 +974,7 @@ export default function Home() {
     };
     
     updatePaymentIntent();
-  }, [currentStep, paymentIntentId, selectedPlan, selectedPhones, ownDevice, hasInternet, addInternetPackage, internetPackage, internetDevice, onlineFax]);
+  }, [currentStep, paymentIntentId, selectedPlan, selectedPhones, ownDevice, hasInternet, addInternetPackage, internetPackage, internetDevice, onlineFax, calculatedTaxAmount, numUsers]);
   
   // Clean up Stripe when leaving Step 5
   useEffect(() => {
@@ -1895,16 +1875,9 @@ export default function Home() {
       const devicePrice = getPhoneHardwarePrice();
       const shippingCost = getShippingCost();
       
-      let internetPrice = 0;
-      if (hasInternet === false && addInternetPackage) {
-        const packagePrices: { [key: string]: number } = {
-          'phone-only': 16.95,
-              'unlimited-5g': 84.95
-        };
-        const packagePrice = packagePrices[internetPackage] || 84.95;
-        const deviceCost = internetDevice === 'rental' ? 10 : 0; // purchase cost is in taxableSubtotal;
-        internetPrice = packagePrice + deviceCost;
-      }
+      const internetPrice = (hasInternet === false && addInternetPackage)
+        ? 84.95 + (internetDevice === 'rental' ? 10 : 0)
+        : 0;
       
             const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
             const taxableSubtotal = planPriceForTax + devicePrice + shippingCost + gatewayPurchasePrice;
