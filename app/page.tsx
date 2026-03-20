@@ -2531,10 +2531,11 @@ export default function Home() {
       const totalManagedPhones = getTotalManagedPhones(); // desk phones + BYO
       
       // Split users into two telco categories:
-      // - Hardware users: users with a desk phone or BYO device → V001-15
-      // - App-only users: remaining users with no hardware → V001-7
-      // Hardware users = min(totalManagedPhones, numUsers) — can't exceed total users
-      const hardwareUsers = Math.min(totalManagedPhones, numUsers);
+      // - Hardware users: users with a physical desk phone (NOT BYO) → V001-15
+      // - App-only users: remaining users (including BYO) → V001-7
+      // Only desk phones count as hardware — BYO devices don't ship from us
+      const deskPhoneCount = getTotalPhoneCount(); // excludes BYO
+      const hardwareUsers = Math.min(deskPhoneCount, numUsers);
       const appOnlyUsers = numUsers - hardwareUsers;
       
       // Fixed $4/mo per user for telco regardless of category
