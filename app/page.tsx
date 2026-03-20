@@ -871,9 +871,8 @@ export default function Home() {
           
           // Tax phone service, device, protection, and shipping (NOT internet)
           // Use planPriceForTax to charge tax on all 3 months even if 1 month is free with coupon
-          const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
             const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
-            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
+            const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
           const taxes = taxableSubtotal * 0.47;
           // Add internet AFTER taxes (internet is not taxed)
           const total = taxableSubtotal + taxes + internetPrice;
@@ -961,9 +960,8 @@ export default function Home() {
           
           // Tax phone service, device, protection, and shipping (NOT internet)
           // Use planPriceForTax to charge tax on all 3 months even if 1 month is free with coupon
-          const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
             const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
-            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
+            const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
           const taxes = taxableSubtotal * 0.47;
           // Add internet AFTER taxes (internet is not taxed)
           const total = taxableSubtotal + taxes + internetPrice;
@@ -1375,9 +1373,8 @@ export default function Home() {
       const devicePrice = getPhoneHardwarePrice();
       const protectionPrice = 0;
       const shippingCost = getShippingCost();
-      const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
             const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
-            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
+            const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
       const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
       const total = taxableSubtotal + taxes;
       
@@ -1929,9 +1926,8 @@ export default function Home() {
         internetPrice = packagePrice + deviceCost;
       }
       
-      const managedDeskPhonePrice = getManagedDeskPhonePriceForTax();
             const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
-            const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
+            const taxableSubtotal = planPriceForTax + devicePrice + protectionPrice + shippingCost + gatewayPurchasePrice;
       const taxes = calculatedTaxAmount !== null ? calculatedTaxAmount : taxableSubtotal * 0.47;
       const expectedTotal = taxableSubtotal + taxes + internetPrice;
       
@@ -2551,8 +2547,7 @@ export default function Home() {
       
       // Support = total monthly plan revenue minus all users' telco + managed desk phone monthly + shipping
       // actualMonthlyRate is the TOTAL monthly for all users (not per-user), so subtract telco for all users
-      const managedDeskPhoneMonthly = totalManagedPhones * 5;
-      const supportTotal = (actualMonthlyRate - (telcoPerUser * numUsers)) + managedDeskPhoneMonthly + (shippingAmount / monthsMultiplier);
+      const supportTotal = (actualMonthlyRate - (telcoPerUser * numUsers)) + (shippingAmount / monthsMultiplier);
       
       const response = await fetch(`${basePath}/api/calculate-taxes`, {
         method: 'POST',
@@ -3974,7 +3969,7 @@ export default function Home() {
                         {calculatedTaxAmount !== null
                           ? <span className="text-sm font-bold text-[#080808]">${fmt(calculatedTaxAmount)}{country === 'CA' ? ' CAD' : ''}</span>
                           : taxError
-                            ? <span className="text-sm font-bold text-[#080808]">${(() => { const p = getPlanPriceForTax(); const d = getPhoneHardwarePrice(); const m = getManagedDeskPhonePriceForTax(); const g = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0; return fmt((p + d + m + g + getShippingCost()) * 0.47); })()}{country === 'CA' ? ' CAD' : ''}</span>
+                            ? <span className="text-sm font-bold text-[#080808]">${(() => { const p = getPlanPriceForTax(); const d = getPhoneHardwarePrice(); const g = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0; return fmt((p + d + g + getShippingCost()) * 0.47); })()}{country === 'CA' ? ' CAD' : ''}</span>
                             : <span className="inline-block w-16 h-4 bg-[#E8E8E8] rounded animate-pulse" />
                         }
                       </div>
@@ -3991,14 +3986,13 @@ export default function Home() {
                               ${(() => {
                                 const planPrice = getPlanPrice();
                                 const devicePrice = getPhoneHardwarePrice();
-                                const managedPhonePrice = getManagedDeskPhonePrice();
                                 const shippingCost = getShippingCost();
                                 const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
                                 let internetPrice = 0;
                                 if (hasInternet === false && addInternetPackage) {
                                   internetPrice = 84.95 + (internetDevice === 'rental' ? 10 : 0);
                                 }
-                                const total = planPrice + devicePrice + managedPhonePrice + shippingCost + gatewayPurchasePrice + calculatedTaxAmount + internetPrice;
+                                const total = planPrice + devicePrice + shippingCost + gatewayPurchasePrice + calculatedTaxAmount + internetPrice;
                                 return parseFloat(total.toFixed(2)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                               })()}{country === 'CA' ? ' CAD' : ''}
                             </p>
@@ -4007,16 +4001,14 @@ export default function Home() {
                                 ${(() => {
                                   const planPrice = getPlanPrice();
                                   const devicePrice = getPhoneHardwarePrice();
-                                  const managedPhonePrice = getManagedDeskPhonePrice();
                                   const planPriceForTax = getPlanPriceForTax();
-                                  const managedDeskPhonePriceTax = getManagedDeskPhonePriceForTax();
                                   const shippingCost = getShippingCost();
                                   const gatewayPurchasePrice = (hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0;
                                   let internetPrice = 0;
                                   if (hasInternet === false && addInternetPackage) {
                                     internetPrice = 84.95 + (internetDevice === 'rental' ? 10 : 0);
                                   }
-                                  const taxableSubtotal = planPriceForTax + devicePrice + managedDeskPhonePriceTax + shippingCost + gatewayPurchasePrice;
+                                  const taxableSubtotal = planPriceForTax + devicePriceTax + shippingCost + gatewayPurchasePrice;
                                   const taxes = taxableSubtotal * 0.47;
                                   const total = planPrice + devicePrice + managedPhonePrice + shippingCost + gatewayPurchasePrice + taxes + internetPrice;
                                   return parseFloat(total.toFixed(2)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
