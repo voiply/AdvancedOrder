@@ -119,8 +119,6 @@ export async function GET(request: NextRequest) {
       ownDevice: session.own_device === 1,
       
       // Protection Plan
-      protectionPlan: session.protection_plan === 1,
-      protectionPlanTerm: session.protection_plan_term,
       
       // Online Fax & Internet
       onlineFax: session.online_fax === 1,

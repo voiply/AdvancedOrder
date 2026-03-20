@@ -2020,7 +2020,6 @@ export default function Home() {
       // Compute finalTotal outside the try block so it's available for pre-save and success branch
       const finalPlanPriceForTax = getPlanPriceForTax();
       const finalDevicePrice = getPhoneHardwarePrice();
-      const finalProtectionPrice = 0;
       const finalShippingCost = getShippingCost();
       let finalInternetPrice = 0;
       if (hasInternet === false && addInternetPackage) {
@@ -2029,7 +2028,7 @@ export default function Home() {
         const devCost = internetDevice === 'rental' ? 10 : 0; // purchase cost is in taxableSubtotal
         finalInternetPrice = pkgPrice + devCost;
       }
-      const finalTaxableSubtotal = finalPlanPriceForTax + finalDevicePrice + finalProtectionPrice + finalShippingCost;
+      const finalTaxableSubtotal = finalPlanPriceForTax + finalDevicePrice + finalShippingCost;
       const finalTaxes = calculatedTaxAmount !== null ? calculatedTaxAmount : finalTaxableSubtotal * 0.47;
       const finalTotal = finalTaxableSubtotal + finalTaxes + finalInternetPrice;
 
@@ -2455,7 +2454,6 @@ export default function Home() {
     
     // Generate cache key from current inputs including date
     const hardwareAmount = getPhoneHardwarePrice() + ((hasInternet === false && addInternetPackage && internetDevice === 'purchase') ? 129 : 0);
-    const protectionAmount = 0;
     const shippingAmount = getShippingCost();
     const actualPlanPriceForTax = getPlanPriceForTax(planToCalculate);
     
@@ -2468,7 +2466,6 @@ export default function Home() {
       zip: addressComponents.zipCode,
       plan: planToCalculate,
       hardware: hardwareAmount,
-      protection: protectionAmount,
       shipping: shippingAmount,
       planPrice: actualPlanPriceForTax,
       numUsers: getUserCount(),
@@ -2541,7 +2538,6 @@ export default function Home() {
           support: supportTotal, // Monthly support total: (plan-telco)×users + $5×phones + shipping (C001-14)
           telco: telcoAppOnly, // App-only users: $4/mo × qty (V001-7)
           telcoHardware: telcoHardwareTotal, // Hardware users: $4/mo × qty (V001-15)
-          protection: protectionAmount,
           extensions: 1, // Already multiplied into totals above
           locations: 1, // 1 business location for E911 (only charged when hardware present)
           userCount: numUsers, // For regulatory fee ($2.25/mo per user)

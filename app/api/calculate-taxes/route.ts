@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { zip, duration, hardwareAmount, support, telco, telcoHardware, protection, extensions = 1, locations = 1, plan = '', userCount = 1 } = body;
+    const { zip, duration, hardwareAmount, support, telco, telcoHardware, extensions = 1, locations = 1, plan = '', userCount = 1 } = body;
 
     // Validate inputs
     if (!zip || !duration) {
@@ -151,10 +151,6 @@ export async function POST(request: Request) {
     }
 
     // Protection
-    if (protection && protection > 0) {
-      chargeAmount += protection;
-    }
-
 
     if (chargeAmount === 0) {
       return NextResponse.json({
