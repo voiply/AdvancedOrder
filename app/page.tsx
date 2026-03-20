@@ -2127,7 +2127,7 @@ export default function Home() {
         ...(hasInternet === false && addInternetPackage ? {
           internetorder: true,
           internetrental: internetDevice === 'rental',
-          internetbundle: internetPackage === 'unlimited-5g' ? 'unlimited' : 'phone-only'
+          internetbundle: 'unlimited'
         } : {})
       };
       localStorage.setItem('pendingWebhook', JSON.stringify(pendingWebhook));

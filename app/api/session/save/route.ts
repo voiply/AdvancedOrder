@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
           onlineFax ? 1 : 0,
           hasInternet === null || hasInternet === undefined ? null : (hasInternet ? 1 : 0),
           addInternetPackage ? 1 : 0,
-          internetPackage || 'phone-only',
+          internetPackage || 'unlimited-5g',
           internetDevice || 'rental',
           stripeCustomerId || null,
           paymentIntentId || null,
@@ -255,7 +255,7 @@ export async function POST(request: NextRequest) {
           onlineFax ? 1 : 0,
           hasInternet === null || hasInternet === undefined ? null : (hasInternet ? 1 : 0),
           addInternetPackage ? 1 : 0,
-          internetPackage || 'phone-only',
+          internetPackage || 'unlimited-5g',
           internetDevice || 'rental',
           
           stripeCustomerId || null,

@@ -128,7 +128,7 @@ export async function GET(request: NextRequest) {
       onlineFax: session.online_fax === 1,
       hasInternet: session.has_internet === null || session.has_internet === undefined ? null : session.has_internet === 1,
       addInternetPackage: session.add_internet_package === 1,
-      internetPackage: session.internet_package || 'phone-only',
+      internetPackage: session.internet_package || 'unlimited-5g',
       internetDevice: session.internet_device || 'rental',
       
       // Payment Information
