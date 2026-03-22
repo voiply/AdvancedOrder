@@ -2180,34 +2180,6 @@ export default function Home() {
 
       // Pending GTM purchase event (GA4 ecommerce)
       const preSaveGtmTax = calculatedTaxAmount !== null ? calculatedTaxAmount : finalTaxes;
-      const pendingGTMPurchasePreSave = {
-        event: 'purchase',
-        user_firstname: firstName || undefined,
-        user_lastname: lastName || undefined,
-        user_email: email || undefined,
-        user_phone: mobileNumber || undefined,
-        user_city: addressComponents.city || undefined,
-        user_region: addressComponents.state || undefined,
-        user_postal: addressComponents.zipCode || undefined,
-        user_country: country || undefined,
-        product: 'premier',
-        plan: 'premier',
-        ecommerce: {
-          transaction_id: String(preSaveOrderDetails.orderNumber),
-          value: parseFloat(finalTotal.toFixed(2)),
-          tax: parseFloat(preSaveGtmTax.toFixed(2)),
-          currency: country === 'CA' ? 'CAD' : 'USD',
-          items: [{
-            item_id: 'premier',
-            item_name: 'Voiply Premier Business',
-            item_category: 'premier',
-            quantity: getUserCount(),
-            price: parseFloat(finalTotal.toFixed(2)),
-          }],
-        },
-      };
-      localStorage.setItem('pendingGTMPurchase', JSON.stringify(pendingGTMPurchasePreSave));
-      // ──────────────────────────────────────────────────────────────────────
 
       // Confirm the payment with Stripe
       // return_url MUST include basePath — used when 3DS requires a full-page redirect
@@ -2310,38 +2282,6 @@ export default function Home() {
         const orderDetails = confirmedOrder;
         const orderTotal = finalTotal;
 
-        // Send GTM purchase event with full GA4 ecommerce object
-        const gtmPurchaseDirect = {
-          event: 'purchase',
-          user_firstname: firstName || undefined,
-          user_lastname: lastName || undefined,
-          user_email: email || undefined,
-          user_phone: mobileNumber || undefined,
-          user_city: orderDetails.address?.city || undefined,
-          user_region: orderDetails.address?.state || undefined,
-          user_postal: orderDetails.address?.zipCode || undefined,
-          user_country: country || undefined,
-          product: 'premier',
-          plan: 'premier',
-          quantity: getUserCount(),
-          ecommerce: {
-            transaction_id: String(orderDetails.orderNumber),
-            value: parseFloat(orderTotal.toFixed(2)),
-            tax: parseFloat((calculatedTaxAmount ?? finalTaxes).toFixed(2)),
-            currency: country === 'CA' ? 'CAD' : 'USD',
-            items: [{
-              item_id: 'premier',
-              item_name: 'Voiply Premier Business',
-              item_category: 'premier',
-              quantity: getUserCount(),
-              price: parseFloat(orderTotal.toFixed(2)),
-            }],
-          },
-        };
-        if (typeof window !== 'undefined' && (window as any).dataLayer) {
-          (window as any).dataLayer.push({ ecommerce: null });
-          (window as any).dataLayer.push(gtmPurchaseDirect);
-        }
 
         // Persist GTM purchase event data to localStorage.
         // Fired on the thank you page — same clean-page strategy as the n8n webhook.
@@ -2357,7 +2297,7 @@ export default function Home() {
           user_region: orderDetails.address?.state || undefined,
           user_postal: orderDetails.address?.zipCode || undefined,
           user_country: country || undefined,
-          product: 'premier',
+          product: 'business',
           plan: 'premier',
           ecommerce: {
             transaction_id: String(orderDetails.orderNumber),
