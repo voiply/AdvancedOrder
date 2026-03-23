@@ -1356,14 +1356,13 @@ export default function Home() {
         tax: taxes.toFixed(2),
         currency: country === 'CA' ? 'CAD' : 'USD',
         ecommerce: {
-          transaction_id: additionalData.transaction_id ? String(additionalData.transaction_id) : undefined,
           value: parseFloat(total.toFixed(2)),
           tax: parseFloat(taxes.toFixed(2)),
           currency: country === 'CA' ? 'CAD' : 'USD',
           items: [{
-            item_id: 'premier',
+            item_id: 'business',
             item_name: 'Voiply Premier Business',
-            item_category: 'premier',
+            item_category: 'business',
             quantity: getUserCount(),
             price: parseFloat(total.toFixed(2)),
           }],
