@@ -1624,7 +1624,7 @@ export default function Home() {
         return; // Stop if validation fails
       }
       // Send GTM lead event
-      sendGTMEvent('premier_lead');
+      sendGTMEvent('lead');
       // Always go to business needs assessment
       setCurrentStep(2);
     } else if (currentStep === 2) {
@@ -1643,7 +1643,7 @@ export default function Home() {
       }
     } else if (currentStep === 4) {
       // Send GTM add_to_cart event
-      sendGTMEvent('add_to_cart_premier');
+      sendGTMEvent('add_to_cart');
       // From phones to payment
       setCurrentStep(5);
     }
@@ -4019,7 +4019,7 @@ export default function Home() {
                             setStep5Errors(prev => ({ ...prev, email: undefined }));
                             // Fire GTM begin_checkout once email is verified
                             if (!beginCheckoutFired) {
-                              sendGTMEvent('begin_business_checkout');
+                              sendGTMEvent('begin_checkout');
                               setBeginCheckoutFired(true);
                             }
                             // Fire HubSpot res_lead once email is verified
