@@ -422,6 +422,13 @@ export default function Home() {
       const bcPlanValue = bcParam === 'quarter' ? '3month' : bcParam === 'year' ? 'annually' : bcParam === '3year' ? '3year' : null;
       // ──────────────────────────────────────────────────────────────────────
 
+      // ── Persist click IDs to sessionStorage (tab-scoped, no cleanup needed) ──
+      ['gclid', 'fbclid', 'msclkid'].forEach(key => {
+        const val = urlParams.get(key);
+        if (val) sessionStorage.setItem(`advanced_${key}`, val);
+      });
+      // ────────────────────────────────────────────────────────────────────────
+
       // Priority: URL session > localStorage session > New session
       const sessionIdToLoad = urlSessionId || storedSessionId;
       
@@ -2298,6 +2305,10 @@ export default function Home() {
           user_country: country || undefined,
           product: 'business',
           plan: 'premier',
+          // Include click IDs from sessionStorage if captured on landing
+          ...(sessionStorage.getItem('advanced_gclid') ? { gclid: sessionStorage.getItem('advanced_gclid') } : {}),
+          ...(sessionStorage.getItem('advanced_fbclid') ? { fbclid: sessionStorage.getItem('advanced_fbclid') } : {}),
+          ...(sessionStorage.getItem('advanced_msclkid') ? { msclkid: sessionStorage.getItem('advanced_msclkid') } : {}),
           ecommerce: {
             transaction_id: String(orderDetails.orderNumber),
             value: parseFloat(orderTotal.toFixed(2)),
