@@ -255,6 +255,9 @@ export default function Home() {
   const [sessionId, setSessionId] = useState<string>('');
   const [sessionLoaded, setSessionLoaded] = useState(false);
   const [savingSession, setSavingSession] = useState(false);
+
+  // Ad click IDs — captured once on mount, persisted to localStorage, used in GTM + n8n
+  const [clickIds, setClickIds] = useState<{ gclid?: string; fbclid?: string; msclkid?: string }>({});
   
   // Billing address
   const [billingSameAsShipping, setBillingSameAsShipping] = useState(true);
@@ -422,11 +425,21 @@ export default function Home() {
       const bcPlanValue = bcParam === 'quarter' ? '3month' : bcParam === 'year' ? 'annually' : bcParam === '3year' ? '3year' : null;
       // ──────────────────────────────────────────────────────────────────────
 
-      // ── Persist click IDs to sessionStorage (tab-scoped, no cleanup needed) ──
-      ['gclid', 'fbclid', 'msclkid'].forEach(key => {
-        const val = urlParams.get(key);
-        if (val) sessionStorage.setItem(`advanced_${key}`, val);
+      // ── Persist click IDs: URL wins → falls back to localStorage → stored in state ──
+      // localStorage means they survive page refreshes and session restores mid-checkout.
+      const CLICK_ID_KEYS = ['gclid', 'fbclid', 'msclkid'] as const;
+      const storedClickIds: Record<string, string> = {};
+      CLICK_ID_KEYS.forEach(key => {
+        const fromUrl = urlParams.get(key);
+        if (fromUrl) {
+          storedClickIds[key] = fromUrl;
+          localStorage.setItem(`voiply_advanced_${key}`, fromUrl);
+        } else {
+          const fromStorage = localStorage.getItem(`voiply_advanced_${key}`);
+          if (fromStorage) storedClickIds[key] = fromStorage;
+        }
       });
+      if (Object.keys(storedClickIds).length > 0) setClickIds(storedClickIds);
       // ────────────────────────────────────────────────────────────────────────
 
       // Priority: URL session > localStorage session > New session
@@ -1362,6 +1375,10 @@ export default function Home() {
         total: total.toFixed(2),
         tax: taxes.toFixed(2),
         currency: country === 'CA' ? 'CAD' : 'USD',
+        // Ad click IDs — passed to GTM for Google Ads, Meta CAPI, and Microsoft Ads
+        gclid: clickIds.gclid || undefined,
+        fbclid: clickIds.fbclid || undefined,
+        msclkid: clickIds.msclkid || undefined,
         ecommerce: {
           value: parseFloat(total.toFixed(2)),
           tax: parseFloat(taxes.toFixed(2)),
@@ -2134,7 +2151,10 @@ export default function Home() {
           internetorder: true,
           internetrental: internetDevice === 'rental',
           internetbundle: 'unlimited'
-        } : {})
+        } : {}),
+        ...(clickIds.gclid ? { gclid: clickIds.gclid } : {}),
+        ...(clickIds.fbclid ? { fbclid: clickIds.fbclid } : {}),
+        ...(clickIds.msclkid ? { msclkid: clickIds.msclkid } : {}),
       };
       localStorage.setItem('pendingWebhook', JSON.stringify(pendingWebhook));
 
@@ -2305,10 +2325,10 @@ export default function Home() {
           user_country: country || undefined,
           product: 'business',
           plan: 'premier',
-          // Include click IDs from sessionStorage if captured on landing
-          ...(sessionStorage.getItem('advanced_gclid') ? { gclid: sessionStorage.getItem('advanced_gclid') } : {}),
-          ...(sessionStorage.getItem('advanced_fbclid') ? { fbclid: sessionStorage.getItem('advanced_fbclid') } : {}),
-          ...(sessionStorage.getItem('advanced_msclkid') ? { msclkid: sessionStorage.getItem('advanced_msclkid') } : {}),
+          // Include click IDs from state (backed by localStorage, survive page refreshes)
+          ...(clickIds.gclid ? { gclid: clickIds.gclid } : {}),
+          ...(clickIds.fbclid ? { fbclid: clickIds.fbclid } : {}),
+          ...(clickIds.msclkid ? { msclkid: clickIds.msclkid } : {}),
           ecommerce: {
             transaction_id: String(orderDetails.orderNumber),
             value: parseFloat(orderTotal.toFixed(2)),
