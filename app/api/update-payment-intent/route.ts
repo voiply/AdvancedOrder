@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { paymentIntentId, amount, submission_id, plan, numberType } = body;
+    const { paymentIntentId, amount, submission_id, plan, numberType, metadata } = body;
     
     if (!paymentIntentId) {
       return NextResponse.json(
@@ -64,6 +64,10 @@ export async function POST(request: NextRequest) {
     
     if (submission_id) {
       formBody.append('metadata[submission_id]', submission_id);
+    }
+
+    if (metadata) {
+      Object.entries(metadata).forEach(([k, v]) => formBody.append(`metadata[${k}]`, String(v)));
     }
     
     const stripeResponse = await fetch(stripeUrl, {
