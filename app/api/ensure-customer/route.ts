@@ -33,6 +33,10 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Deterministic idempotency key based on email — prevents duplicate customer
+    // creation if create-payment-intent and ensure-customer both fire within 24h
+    const idempotencyKey = `cust-create-${Buffer.from(email.toLowerCase().trim()).toString('base64')}`;
+
     let customerId = '';
     
     try {
@@ -50,10 +54,40 @@ export async function POST(request: NextRequest) {
         const searchData = await searchResponse.json();
         
         if (searchData.data && searchData.data.length > 0) {
-          // Customer exists, use their ID
+          // Customer exists — use most recent record and refresh their details
           customerId = searchData.data[0].id;
+          console.log('[ensure-customer] Found existing customer:', customerId);
+
+          // Patch existing customer with latest name, phone, address
+          const patchBody = new URLSearchParams();
+          if (name) patchBody.append('name', name);
+          if (phone) patchBody.append('phone', phone);
+          if (address && address.line1 && address.city && address.state && address.postal_code) {
+            patchBody.append('address[line1]', address.line1);
+            if (address.line2) patchBody.append('address[line2]', address.line2);
+            patchBody.append('address[city]', address.city);
+            patchBody.append('address[state]', address.state);
+            patchBody.append('address[postal_code]', address.postal_code);
+            patchBody.append('address[country]', address.country || 'US');
+          }
+          if (patchBody.toString()) {
+            const patchRes = await fetch(`https://api.stripe.com/v1/customers/${customerId}`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${stripeSecretKey}`,
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: patchBody.toString(),
+            });
+            if (!patchRes.ok) {
+              const errText = await patchRes.text();
+              console.error('[ensure-customer] Failed to patch existing customer:', errText);
+            } else {
+              console.log('[ensure-customer] Patched existing customer with latest details');
+            }
+          }
         } else {
-          // Step 2: Customer doesn't exist, create new one
+          // Step 2: Customer doesn't exist, create new one with idempotency key to prevent duplicates
           const createCustomerUrl = 'https://api.stripe.com/v1/customers';
           const customerBody = new URLSearchParams({
             email: email,
@@ -74,7 +108,8 @@ export async function POST(request: NextRequest) {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${stripeSecretKey}`,
-              'Content-Type': 'application/x-www-form-urlencoded'
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Idempotency-Key': idempotencyKey,
             },
             body: customerBody.toString()
           });
@@ -82,6 +117,7 @@ export async function POST(request: NextRequest) {
           if (createResponse.ok) {
             const customerData = await createResponse.json();
             customerId = customerData.id;
+            console.log('[ensure-customer] Created new customer:', customerId);
           } else {
             const errorText = await createResponse.text();
             console.error('Failed to create customer:', errorText);
