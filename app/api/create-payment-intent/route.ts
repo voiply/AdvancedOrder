@@ -63,6 +63,10 @@ export async function POST(request: NextRequest) {
         if (searchResponse.ok) {
           const searchData = await searchResponse.json();
           
+          // Deterministic idempotency key — prevents duplicate customer creation
+          // if create-payment-intent and ensure-customer both fire within 24h
+          const idempotencyKey = `cust-create-${Buffer.from(email.toLowerCase().trim()).toString('base64')}`;
+
           if (searchData.data && searchData.data.length > 0) {
             customerId = searchData.data[0].id;
           } else {
@@ -86,7 +90,8 @@ export async function POST(request: NextRequest) {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${stripeSecretKey}`,
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Idempotency-Key': idempotencyKey,
               },
               body: customerBody.toString()
             });
