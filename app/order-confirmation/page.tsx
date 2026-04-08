@@ -99,6 +99,8 @@ export default function OrderConfirmation() {
           const gtmSessionKey = `gtm_purchase_sent_${transactionId}`;
           if (!sessionStorage.getItem(gtmSessionKey)) {
             sessionStorage.setItem(gtmSessionKey, '1');
+            // Remove undefined values before pushing — prevents GA4 data quality issues
+            Object.keys(gtmData).forEach(k => gtmData[k] === undefined && delete gtmData[k]);
             (window as any).dataLayer = (window as any).dataLayer || [];
             (window as any).dataLayer.push({ ecommerce: null });
             (window as any).dataLayer.push(gtmData);
