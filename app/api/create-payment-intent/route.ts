@@ -77,13 +77,15 @@ export async function POST(request: NextRequest) {
             
             if (name) customerBody.append('name', name);
             if (phone) customerBody.append('phone', phone);
-            if (address) {
-              if (address.line1) customerBody.append('address[line1]', address.line1);
+            // Only attach address when all required fields are present — partial addresses cause Stripe errors
+            const hasValidAddress = address && address.line1 && address.city && address.state && address.postal_code && address.country;
+            if (hasValidAddress) {
+              customerBody.append('address[line1]', address.line1);
               if (address.line2) customerBody.append('address[line2]', address.line2);
-              if (address.city) customerBody.append('address[city]', address.city);
-              if (address.state) customerBody.append('address[state]', address.state);
-              if (address.postal_code) customerBody.append('address[postal_code]', address.postal_code);
-              if (address.country) customerBody.append('address[country]', address.country);
+              customerBody.append('address[city]', address.city);
+              customerBody.append('address[state]', address.state);
+              customerBody.append('address[postal_code]', address.postal_code);
+              customerBody.append('address[country]', address.country);
             }
             
             const createResponse = await fetch(createCustomerUrl, {
@@ -152,10 +154,10 @@ export async function POST(request: NextRequest) {
     });
     
     if (!stripeResponse.ok) {
-      const errorText = await stripeResponse.text();
-      console.error('Stripe API error:', errorText);
+      const errorData = await stripeResponse.json().catch(() => ({}));
+      console.error('Stripe API error:', JSON.stringify(errorData));
       return NextResponse.json(
-        { error: 'Failed to create payment intent' },
+        { error: (errorData as any)?.error?.message || 'Failed to create payment intent', stripe_error: (errorData as any)?.error },
         { status: stripeResponse.status }
       );
     }
