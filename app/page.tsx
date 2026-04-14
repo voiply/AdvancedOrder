@@ -560,7 +560,7 @@ export default function Home() {
           event: 'coupon_activated',
           coupon_type: '1_month_free',
           coupon_source: 'url_parameter',
-          coupon_value: 11.95
+          coupon_value: country === 'CA' ? 23.95 : 16.95
         });
       }
     }
@@ -1219,7 +1219,7 @@ export default function Home() {
       (window as any).dataLayer.push({
         event: 'coupon_activated',
         coupon_type: '1_month_free',
-        coupon_value: 11.95
+        coupon_value: country === 'CA' ? 23.95 : 16.95
       });
     }
     
@@ -1232,7 +1232,7 @@ export default function Home() {
           email: couponEmail,
           coupon_type: '1_month_free',
           coupon_source: 'exit_popup',
-          coupon_value: 11.95,
+          coupon_value: country === 'CA' ? 23.95 : 16.95,
           plan_selected: '3month'
         }
       }]);
@@ -1248,24 +1248,26 @@ export default function Home() {
   const fmt = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const getPlanPrice = () => {
-    // $11.95/mo per user pricing
     const users = getUserCount();
-    if (selectedPlan === 'annually') return 169.50 * users;
-    if (selectedPlan === '3year') return 508.50 * users;
+    const isCAD = country === 'CA';
+    if (selectedPlan === 'annually') return (isCAD ? 239.50 : 169.50) * users;
+    if (selectedPlan === '3year') return (isCAD ? 718.50 : 508.50) * users;
     if (selectedPlan === '3month') {
-      return couponApplied ? 33.90 * users : 50.85 * users;
+      if (couponApplied) return (isCAD ? 47.90 : 33.90) * users;
+      return (isCAD ? 71.85 : 50.85) * users;
     }
-    return 50.85 * users;
+    return (isCAD ? 71.85 : 50.85) * users;
   };
-  
+
   // Get plan price for tax calculation (ALWAYS full price, even with coupon)
   const getPlanPriceForTax = (planOverride?: string) => {
     const plan = planOverride || selectedPlan;
     const users = getUserCount();
-    if (plan === 'annually') return 169.50 * users;
-    if (plan === '3year') return 508.50 * users;
-    if (plan === '3month') return 50.85 * users;
-    return 50.85 * users;
+    const isCAD = country === 'CA';
+    if (plan === 'annually') return (isCAD ? 239.50 : 169.50) * users;
+    if (plan === '3year') return (isCAD ? 718.50 : 508.50) * users;
+    if (plan === '3month') return (isCAD ? 71.85 : 50.85) * users;
+    return (isCAD ? 71.85 : 50.85) * users;
   };
 
   // Get the plan months multiplier (for calculating managed desk phone costs)
@@ -3625,7 +3627,7 @@ export default function Home() {
                           </div>
                           <div>
                             <p className="text-sm font-semibold text-[#080808]">Premier Plan</p>
-                            <p className="text-xs text-[#999] mt-0.5">$16.95/mo per user</p>
+                            <p className="text-xs text-[#999] mt-0.5">${country === 'CA' ? '23.95' : '16.95'}/mo per user</p>
                           </div>
                         </div>
                         {/* User stepper — pill style matching plan cards */}
@@ -3663,8 +3665,8 @@ export default function Home() {
                             <p className="text-xs text-[#999] mt-0.5">{couponApplied ? '1 month free applied' : '3 months'}</p>
                           </div>
                           <div className="text-right">
-                            {couponApplied && <p className="text-xs text-[#CCC] line-through">${fmt(50.85 * getUserCount())}</p>}
-                            <span className={`text-base font-bold ${selectedPlan === '3month' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(couponApplied ? 33.90 * getUserCount() : 50.85 * getUserCount())}</span>
+                            {couponApplied && <p className="text-xs text-[#CCC] line-through">${fmt((country === 'CA' ? 71.85 : 50.85) * getUserCount())}</p>}
+                            <span className={`text-base font-bold ${selectedPlan === '3month' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(couponApplied ? (country === 'CA' ? 47.90 : 33.90) * getUserCount() : (country === 'CA' ? 71.85 : 50.85) * getUserCount())}</span>
                           </div>
                         </button>
                         <button
@@ -3680,8 +3682,8 @@ export default function Home() {
                             <p className="text-xs text-[#999] mt-0.5">12 months for the price of 10</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-[#CCC] line-through">${fmt(203.40 * getUserCount())}</p>
-                            <span className={`text-base font-bold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(169.50 * getUserCount())}</span>
+                            <p className="text-xs text-[#CCC] line-through">${fmt((country === 'CA' ? 287.40 : 203.40) * getUserCount())}</p>
+                            <span className={`text-base font-bold ${selectedPlan === 'annually' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt((country === 'CA' ? 239.50 : 169.50) * getUserCount())}</span>
                           </div>
                         </button>
                         <button
@@ -3697,8 +3699,8 @@ export default function Home() {
                             <p className="text-xs text-[#999] mt-0.5">36 months for the price of 30</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-[#CCC] line-through">${fmt(610.20 * getUserCount())}</p>
-                            <span className={`text-base font-bold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt(508.50 * getUserCount())}</span>
+                            <p className="text-xs text-[#CCC] line-through">${fmt((country === 'CA' ? 862.20 : 610.20) * getUserCount())}</p>
+                            <span className={`text-base font-bold ${selectedPlan === '3year' ? 'text-[#F53900]' : 'text-[#080808]'}`}>${fmt((country === 'CA' ? 718.50 : 508.50) * getUserCount())}</span>
                           </div>
                         </button>
                       </div>
