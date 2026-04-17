@@ -1298,17 +1298,19 @@ export default function Home() {
     }, 0);
   };
 
-  // Add phone to cart — auto-increases user count if phones exceed current users
+  // Add phone to cart — each phone/adapter requires 1 user
   const addPhoneToCart = (phoneId: string) => {
     const newTotal = getTotalManagedPhones() + 1;
     if (newTotal > getUserCount()) {
-      setNumUsers(String(newTotal));
+      // Can't add more phones than users — show alert
+      return;
     }
     setSelectedPhones(prev => ({
       ...prev,
       [phoneId]: (prev[phoneId] || 0) + 1
     }));
   };
+  const phoneLimitReached = getTotalManagedPhones() >= getUserCount();
 
   // Remove phone from cart
   const removePhoneFromCart = (phoneId: string) => {
@@ -1342,8 +1344,9 @@ export default function Home() {
     return country === 'CA' ? 6.95 : 5.00;
   };
   
-  // Get shipping cost based on country
+  // Get shipping cost — only charged when hardware is in the cart
   const getShippingCost = () => {
+    if (getPhoneHardwarePrice() === 0 && getTotalPhoneCount() === 0) return 0;
     return country === 'CA' ? 14.99 : 0;
   };
   
@@ -3398,8 +3401,8 @@ export default function Home() {
                                 <span className="text-xs font-bold">−</span>
                               </button>
                               <span className="text-sm font-semibold w-6 text-center">{qty}</span>
-                              <button type="button" onClick={() => addPhoneToCart(phoneId)}
-                                className="w-6 h-6 rounded-full border border-[#D9D9D9] flex items-center justify-center text-[#585858] hover:bg-[#F5F5F5]">
+                              <button type="button" onClick={() => addPhoneToCart(phoneId)} disabled={phoneLimitReached}
+                                className={`w-6 h-6 rounded-full border border-[#D9D9D9] flex items-center justify-center ${phoneLimitReached ? 'text-[#CCC] cursor-not-allowed' : 'text-[#585858] hover:bg-[#F5F5F5]'}`}>
                                 <span className="text-xs font-bold">+</span>
                               </button>
                               <span className="text-xs font-semibold text-[#080808] w-16 text-right">
@@ -3410,6 +3413,14 @@ export default function Home() {
                         );
                       })}
                     </div>
+                  </div>
+                )}
+
+                {/* Phone limit notice */}
+                {phoneLimitReached && (
+                  <div className="flex items-center gap-2 px-4 py-3 bg-[#FFF5F2] border border-[#F53900]/20 rounded-xl mb-4">
+                    <svg width="16" height="16" fill="none" stroke="#F53900" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <p className="text-xs text-[#F53900] font-medium">Each phone or adapter requires 1 user. Increase the user count above to add more devices.</p>
                   </div>
                 )}
 
@@ -3471,9 +3482,10 @@ export default function Home() {
                             <button
                               type="button"
                               onClick={() => addPhoneToCart(phone.id)}
-                              className="w-full py-2.5 rounded-lg text-sm font-semibold transition-colors bg-[#F53900] text-white hover:bg-[#d63300]"
+                              disabled={phoneLimitReached}
+                              className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-colors ${phoneLimitReached ? 'bg-[#CCC] text-white cursor-not-allowed' : 'bg-[#F53900] text-white hover:bg-[#d63300]'}`}
                             >
-                              Add to Cart
+                              {phoneLimitReached ? 'Add more users first' : 'Add to Cart'}
                             </button>
                           ) : (
                             <div className="flex items-center justify-between bg-[#F5F5F5] rounded-lg py-1.5 px-3">
@@ -3482,8 +3494,8 @@ export default function Home() {
                                 <span className="text-sm font-bold text-[#585858]">−</span>
                               </button>
                               <span className="text-base font-bold text-[#080808]">{qtyInCart}</span>
-                              <button type="button" onClick={() => addPhoneToCart(phone.id)}
-                                className="w-8 h-8 rounded-full bg-white border border-[#D9D9D9] flex items-center justify-center transition-colors hover:bg-[#FFF5F2] text-[#585858]">
+                              <button type="button" onClick={() => addPhoneToCart(phone.id)} disabled={phoneLimitReached}
+                                className={`w-8 h-8 rounded-full bg-white border border-[#D9D9D9] flex items-center justify-center transition-colors ${phoneLimitReached ? 'text-[#CCC] cursor-not-allowed' : 'hover:bg-[#FFF5F2] text-[#585858]'}`}>
                                 <span className="text-sm font-bold">+</span>
                               </button>
                             </div>
@@ -3544,11 +3556,11 @@ export default function Home() {
                           <button
                             type="button"
                             onClick={() => {
-                              const newTotal = getTotalManagedPhones() + 1;
-                              if (newTotal > getUserCount()) setNumUsers(String(newTotal));
+                              if (phoneLimitReached) return;
                               setOwnDevice(ownDevice + 1);
                             }}
-                            className="w-9 h-9 rounded-full border-2 border-[#F53900] text-[#F53900] flex items-center justify-center transition-all active:scale-95 hover:bg-[#FFF5F2]"
+                            disabled={phoneLimitReached}
+                            className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all active:scale-95 ${phoneLimitReached ? 'border-[#CCC] text-[#CCC] cursor-not-allowed' : 'border-[#F53900] text-[#F53900] hover:bg-[#FFF5F2]'}`}
                           >
                             <span className="text-lg font-bold leading-none">+</span>
                           </button>
@@ -3717,14 +3729,16 @@ export default function Home() {
                         <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
                       </div>
 
-                      {/* Shipping & Handling */}
+                      {/* Shipping & Handling — only shown when hardware is in the order */}
+                      {(getTotalPhoneCount() > 0 || ownDevice > 0) && (
                       <div className="flex justify-between items-center py-2.5 border-b border-[#F5F5F5]">
                         <div>
                           <p className="text-sm font-medium text-[#080808]">Shipping &amp; Handling</p>
                           <p className="text-xs text-[#999]">Arrives by {getDeliveryDate()}</p>
                         </div>
-                        <span className="text-sm font-bold text-[#17DB4E]">FREE</span>
+                        <span className={`text-sm font-bold ${getShippingCost() === 0 ? 'text-[#17DB4E]' : 'text-[#080808]'}`}>{getShippingCost() === 0 ? 'FREE' : `$${fmt(getShippingCost())}`}</span>
                       </div>
+                      )}
 
                       {/* Own Equipment — shown first */}
                       {ownDevice > 0 && (
